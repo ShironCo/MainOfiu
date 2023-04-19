@@ -34,6 +34,11 @@ val Typography = Typography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 30.sp
     ),
+    h2 = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp
+    ),
     h3 = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
