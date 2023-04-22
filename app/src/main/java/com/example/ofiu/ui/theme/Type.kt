@@ -49,5 +49,10 @@ val Typography = Typography(
         fontFamily = Monserrat,
         fontWeight = FontWeight.Light,
         fontSize = 16.sp
+    ),
+    body2 = TextStyle(
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp
     )
 )

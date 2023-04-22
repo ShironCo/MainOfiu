@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Ofiu</string>
     <string name="welcome">Bienvenidos a Ofiu</string>
-    <string name="login">CONECTARSE</string>
-    <string name="register">REGISTRARSE</string>
+    <string name="login">Conectarse</string>
+    <string name="register">Registrarse</string>
     <string name="loginapp">───── O conectate usando ─────</string>
+    <string name="forgotPass">¿Olvidaste la contraseña?</string>
+
 
 </resources>
