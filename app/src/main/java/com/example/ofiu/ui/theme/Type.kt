@@ -35,14 +35,14 @@ val Typography = Typography(
         fontSize = 30.sp
     ),
     h2 = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = Monserrat,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp
     ),
     h3 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 20.sp
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp
     ),
     body1 = TextStyle(
         fontFamily = FontFamily.Default,

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Ofiu</string>
     <string name="welcome">Bienvenidos a Ofiu</string>
-    <string name="login">Conectarse</string>
+    <string name="login">CONECTARSE</string>
 
 </resources>

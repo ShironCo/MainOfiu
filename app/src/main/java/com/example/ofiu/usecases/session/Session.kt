@@ -34,12 +34,15 @@ fun Entry(modifier: Modifier = Modifier){
             Modifier
                 .fillMaxWidth()
                 .height(350.dp)
-                .clip(RoundedCornerShape(bottomStart = 70.dp, bottomEnd = 70.dp))
+                .clip(RoundedCornerShape(bottomStart = 50.dp, bottomEnd = 50.dp))
                 .background(MaterialTheme.colors.background)
         )
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(30.dp)){
             Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 60.dp, start = 60.dp, end = 60.dp),
+                .wrapContentWidth()
+                .padding(top = 30.dp, start = 30.dp, end = 30.dp, bottom = 20.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -52,26 +55,29 @@ fun Entry(modifier: Modifier = Modifier){
                     Modifier.weight(1F)
                 )
             }
-    }
-}
-
-@Composable
-fun SessionCard(){
-    Surface(
-        Modifier
-            .padding(30.dp)
-            .background(MaterialTheme.colors.onPrimary).width(300.dp),
-        elevation = 8.dp,
-        shape = MaterialTheme.shapes.large
-    ) {
-        Column {
-            Text(text = stringResource(R.string.welcome),
-            style = MaterialTheme.typography.h2,
-            textAlign = TextAlign.Center)
-            Button(onClick = { /*TODO*/ }) {
-                Text(stringResource(id = R.string.login))
+            Surface(modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp),
+                elevation = 8.dp,
+                shape = RoundedCornerShape(30.dp),
+                color = MaterialTheme.colors.onPrimary
+            ){
+                Column(
+                    modifier = Modifier.padding(20.dp)
+                ) {
+                    Text(stringResource(id = R.string.welcome),
+                    style = MaterialTheme.typography.h2,
+                    color = MaterialTheme.colors.secondaryVariant)
+                    Button(onClick = { /*TODO*/ },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.primaryVariant
+                        )
+                    ) {
+                        Text(stringResource(id = R.string.login),
+                        style = MaterialTheme.typography.h3)
+                    }
+                }
             }
-
         }
     }
 }
@@ -80,5 +86,5 @@ fun SessionCard(){
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SessionAppPreview(){
-    SessionCard()
+    Entry()
 }
