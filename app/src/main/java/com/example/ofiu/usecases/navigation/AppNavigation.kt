@@ -1,11 +1,14 @@
 package com.example.ofiu.usecases.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ofiu.usecases.splash.SplashScreen
 import com.example.ofiu.usecases.session.SessionApp
+import com.example.ofiu.usecases.session.login.LoginApp
+import com.example.ofiu.usecases.session.register.RegisterApp
 
 @Composable
 fun AppNavigation(){
@@ -15,7 +18,13 @@ fun AppNavigation(){
             SplashScreen(navController)
         }
         composable(AppScreens.Session.route){
-            SessionApp()
+            SessionApp(navController)
+        }
+        composable(AppScreens.Login.route){
+            LoginApp()
+        }
+        composable(AppScreens.Register.route){
+            RegisterApp()
         }
     }
 }

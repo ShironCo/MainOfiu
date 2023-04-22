@@ -2,5 +2,7 @@
     <string name="app_name">Ofiu</string>
     <string name="welcome">Bienvenidos a Ofiu</string>
     <string name="login">CONECTARSE</string>
+    <string name="register">REGISTRARSE</string>
+    <string name="loginapp">───── O conectate usando ─────</string>
 
 </resources>
