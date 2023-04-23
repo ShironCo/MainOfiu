@@ -21,7 +21,7 @@ fun AppNavigation(){
             SessionApp(navController)
         }
         composable(AppScreens.Login.route){
-            LoginApp()
+            LoginApp(navController)
         }
         composable(AppScreens.Register.route){
             RegisterApp()

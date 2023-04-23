@@ -1,6 +1,5 @@
 package com.example.ofiu.usecases.session.login
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,17 +9,39 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.ofiu.R
 import com.example.ofiu.usecases.navigation.AppScreens
 
 @Composable
-fun LoginApp() {
+fun LoginApp(navController: NavHostController) {
+    Scaffold (
+        topBar = { LoginTolBar(navController)},
+    ){
+        paddingValues ->
+        LoginContent(modifier = Modifier.padding(paddingValues))
+    }
+}
+
+
+@Composable
+fun LoginTolBar(navController: NavHostController){
+    TopAppBar(
+        title = {
+            IconButton(onClick = {navController.popBackStack()}) {
+                Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24),null, )            }
+        }, backgroundColor = MaterialTheme.colors.background,
+        elevation = 0.dp,
+    )
+}
+
+@Composable
+fun LoginContent(modifier: Modifier){
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -41,7 +62,7 @@ fun LoginApp() {
             Text(stringResource(id = R.string.login),
                 style = MaterialTheme.typography.h1,
                 color = MaterialTheme.colors.secondary,
-                modifier = Modifier.padding(top = 40.dp)
+                modifier = Modifier.padding(top = 70.dp)
             )
             Spacer(modifier = Modifier.height(30.dp))
             Surface(
@@ -58,8 +79,8 @@ fun LoginApp() {
                         .wrapContentWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TextField(value = "", 
-                        onValueChange = {}, 
+                    TextField(value = "",
+                        onValueChange = {},
                         singleLine = true,
                         leadingIcon = {
                             Image(painter = painterResource(id = R.drawable.baseline_person_24),
@@ -100,13 +121,15 @@ fun LoginApp() {
                     }
 
                     Spacer(modifier = Modifier.height(2.dp))
-
-                    Text(
-                        stringResource(id = R.string.forgotPass),
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.secondaryVariant,
-                    )
-
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Text(
+                            stringResource(id = R.string.forgotPass),
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.secondaryVariant,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.End
+                        )
+                    }
                     Spacer(modifier = Modifier.height(30.dp))
 
                     Text(
@@ -130,9 +153,4 @@ fun LoginApp() {
             }
         }
     }
-}
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LoginAppPreview(){
-    LoginApp()
 }
