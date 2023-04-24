@@ -4,13 +4,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -19,21 +26,24 @@ import com.example.ofiu.R
 import com.example.ofiu.usecases.navigation.AppScreens
 
 @Composable
-fun LoginApp(navController: NavHostController) {
+fun LoginApp(navController: NavHostController, viewModel: LoginViewModel) {
     Scaffold (
-        topBar = { LoginTolBar(navController)},
+        topBar = { LoginTolBar(navController, viewModel)},
     ){
         paddingValues ->
-        LoginContent(modifier = Modifier.padding(paddingValues))
+        LoginContent(modifier = Modifier.padding(paddingValues), viewModel)
     }
 }
 
 
 @Composable
-fun LoginTolBar(navController: NavHostController){
+fun LoginTolBar(navController: NavHostController, viewModel: LoginViewModel){
+    val backEnable : Boolean by viewModel.backEnable.observeAsState(initial = true)
     TopAppBar(
         title = {
-            IconButton(onClick = {navController.popBackStack()}) {
+            IconButton(onClick = { viewModel.onBackEnable()
+                         navController.popBackStack()
+                                 }, enabled = backEnable) {
                 Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24),null, )            }
         }, backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp,
@@ -41,7 +51,12 @@ fun LoginTolBar(navController: NavHostController){
 }
 
 @Composable
-fun LoginContent(modifier: Modifier){
+fun LoginContent(modifier: Modifier, viewModel: LoginViewModel){
+
+    val email : String by viewModel.email.observeAsState(initial = "")
+    val password : String by viewModel.password.observeAsState(initial = "")
+    val loginEnable : Boolean by viewModel.loginEnable.observeAsState(initial = false)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -79,41 +94,22 @@ fun LoginContent(modifier: Modifier){
                         .wrapContentWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TextField(value = "",
-                        onValueChange = {},
-                        singleLine = true,
-                        leadingIcon = {
-                            Image(painter = painterResource(id = R.drawable.baseline_person_24),
-                                contentDescription = "Icon Person"
-                            )},
-                        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface),
-                        shape = MaterialTheme.shapes.medium
-                    )
-
+                    TextFieldLoginEmail(email) {viewModel.onTextLoginChange(it, password) }
                     Spacer(modifier = Modifier.height(24.dp))
-
-                    TextField(value = "",
-                        onValueChange = {},
-                        singleLine = true,
-                        leadingIcon = {
-                            Image(painter = painterResource(id = R.drawable.baseline_lock_24),
-                                contentDescription = "Icon Person"
-                            )},
-                        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface),
-                        shape = MaterialTheme.shapes.medium
-                    )
+                    TextFieldLoginPassword(password) {viewModel.onTextLoginChange(email, it) }
 
                     Spacer(modifier = Modifier.height(30.dp))
-
                     Button(modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
                         .clip(MaterialTheme.shapes.small),
                         shape = MaterialTheme.shapes.small,
-                        onClick = {},
+                        onClick = {
+                            viewModel.onLoginSelected()
+                                  },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colors.primaryVariant,
-                        )
+                        ), enabled = loginEnable
                     ) {
                         Text(stringResource(id = R.string.login),
                             style = MaterialTheme.typography.h3,
@@ -153,4 +149,43 @@ fun LoginContent(modifier: Modifier){
             }
         }
     }
+}
+@Composable
+fun TextFieldLoginEmail(email: String, onTextLoginChange:(String) -> Unit){
+    TextField(value = email,
+        onValueChange = {onTextLoginChange(it)},
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+        singleLine = true,
+        leadingIcon = {
+            Image(painter = painterResource(id = R.drawable.baseline_person_24),
+                contentDescription = "Icon Person"
+            )},
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = MaterialTheme.colors.surface,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
+        shape = MaterialTheme.shapes.medium
+    )
+
+
+
+
+}
+@Composable
+    fun TextFieldLoginPassword(password: String, onTextLoginChange:(String) -> Unit) {
+    TextField(value = password,
+        onValueChange = {onTextLoginChange(it)},
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        leadingIcon = {
+            Image(painter = painterResource(id = R.drawable.baseline_lock_24),
+                contentDescription = "Icon Person"
+            )},
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = MaterialTheme.colors.surface,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,),
+        shape = MaterialTheme.shapes.medium
+    )
 }
