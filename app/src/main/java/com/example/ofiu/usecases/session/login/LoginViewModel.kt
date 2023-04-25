@@ -20,6 +20,9 @@ class LoginViewModel: ViewModel(){
     private val _backEnable = MutableLiveData<Boolean>()
     val backEnable : LiveData<Boolean> = _backEnable
 
+    private val _visibilityButton = MutableLiveData<Boolean>()
+    val visibilityButton : LiveData<Boolean> = _visibilityButton
+
     fun onTextLoginChange(email: String, password: String) {
         _email.value = email
         _password.value = password
@@ -30,10 +33,15 @@ class LoginViewModel: ViewModel(){
         _backEnable.value = false
     }
 
+    fun onVisibilityButton(){
+        _visibilityButton.value = _visibilityButton.value != true
+    }
+
+
     private fun isValidEmail(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
     private fun isValidPassword(password: String): Boolean {
-        val pattern = "^(?=.*[0-9])(?=.*[!@#\$%^&*])(?=\\S+\$).{8,}\$".toRegex()
+        val pattern = "^(?=.*[!@#\$%^&*()-+])(?=.{8,})[a-zA-Z0-9!@#\$%^&*()-+]+$".toRegex()
         return pattern.matches(password)
     }
     fun onLoginSelected() {

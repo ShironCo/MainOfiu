@@ -5,6 +5,7 @@
     <string name="register">Registrarse</string>
     <string name="loginapp">───── O conectate usando ─────</string>
     <string name="forgotPass">¿Olvidaste la contraseña?</string>
+    <string name="valPass">La contraseña debe tener una longitud mínima de 8 caracteres y además, incluir al menos un carácter especial.</string>
 
 
 </resources>

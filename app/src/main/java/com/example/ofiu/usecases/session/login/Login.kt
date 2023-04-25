@@ -14,16 +14,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.ofiu.R
-import com.example.ofiu.usecases.navigation.AppScreens
 
 @Composable
 fun LoginApp(navController: NavHostController, viewModel: LoginViewModel) {
@@ -94,30 +95,29 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel){
                         .wrapContentWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    
                     TextFieldLoginEmail(email) {viewModel.onTextLoginChange(it, password) }
+                    
                     Spacer(modifier = Modifier.height(24.dp))
-                    TextFieldLoginPassword(password) {viewModel.onTextLoginChange(email, it) }
+                    TextFieldLoginPassword(password,{viewModel.onTextLoginChange(email, it)}, viewModel)
 
-                    Spacer(modifier = Modifier.height(30.dp))
-                    Button(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .clip(MaterialTheme.shapes.small),
-                        shape = MaterialTheme.shapes.small,
-                        onClick = {
-                            viewModel.onLoginSelected()
-                                  },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.primaryVariant,
-                        ), enabled = loginEnable
-                    ) {
-                        Text(stringResource(id = R.string.login),
-                            style = MaterialTheme.typography.h3,
-                            color = MaterialTheme.colors.secondary)
+                    if (!loginEnable){
+                        Text(text = stringResource(id = R.string.valPass),
+                        color = MaterialTheme.colors.background,
+                        style = MaterialTheme.typography.subtitle1,
+                        modifier = Modifier.padding(start = 5.dp, end = 5.dp))
                     }
+                    Spacer(modifier = Modifier.height(30.dp))
+                    
+                    ButtonLogin(viewModel, loginEnable)
 
                     Spacer(modifier = Modifier.height(2.dp))
-                    TextButton(onClick = { /*TODO*/ }) {
+                    TextButton(onClick = { /*TODO*/ },
+                    colors = ButtonDefaults.textButtonColors(
+                        backgroundColor = Color.Transparent,
+                        disabledContentColor = Color.Transparent,
+                        contentColor = Color.Transparent
+                    )) {
                         Text(
                             stringResource(id = R.string.forgotPass),
                             style = MaterialTheme.typography.body2,
@@ -150,6 +150,27 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel){
         }
     }
 }
+
+@Composable
+fun ButtonLogin(viewModel: LoginViewModel, loginEnable: Boolean){
+    Button(modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp)
+        .clip(MaterialTheme.shapes.small),
+        shape = MaterialTheme.shapes.small,
+        onClick = {
+            viewModel.onLoginSelected()
+        },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.primaryVariant,
+        ), enabled = loginEnable
+    ) {
+        Text(stringResource(id = R.string.login),
+            style = MaterialTheme.typography.h3,
+            color = MaterialTheme.colors.secondary)
+    }
+}
+
 @Composable
 fun TextFieldLoginEmail(email: String, onTextLoginChange:(String) -> Unit){
     TextField(value = email,
@@ -173,19 +194,42 @@ fun TextFieldLoginEmail(email: String, onTextLoginChange:(String) -> Unit){
 
 }
 @Composable
-    fun TextFieldLoginPassword(password: String, onTextLoginChange:(String) -> Unit) {
+    fun TextFieldLoginPassword(
+    password: String,
+    onTextLoginChange: (String) -> Unit,
+    viewModel: LoginViewModel
+
+) {
+    val visibilityButton : Boolean by viewModel.visibilityButton.observeAsState(initial = false)
+    val iconVisibility: Int = if (visibilityButton){
+        R.drawable.baseline_visibility_24
+    } else {
+        R.drawable.baseline_visibility_off_24
+    }
+
+    val focusManager = LocalFocusManager.current
     TextField(value = password,
         onValueChange = {onTextLoginChange(it)},
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions (onDone = {focusManager.clearFocus()}),
         leadingIcon = {
             Image(painter = painterResource(id = R.drawable.baseline_lock_24),
                 contentDescription = "Icon Person"
             )},
+        trailingIcon = {
+                       IconButton(onClick = {viewModel.onVisibilityButton()}) {
+                           Icon(
+                               painter = painterResource(iconVisibility),
+                               null,
+                               tint = Color(0xFF969696))
+                       }
+        },
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,),
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
+        visualTransformation = if (visibilityButton) VisualTransformation.None else PasswordVisualTransformation()
     )
 }
