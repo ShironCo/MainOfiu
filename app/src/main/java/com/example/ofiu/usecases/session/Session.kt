@@ -101,7 +101,7 @@ fun Entry(navController: NavController){
                         .clip(MaterialTheme.shapes.small),
                         shape = MaterialTheme.shapes.small,
                         border = BorderStroke(2.dp, MaterialTheme.colors.primaryVariant),
-                        onClick = { /*TODO*/ },
+                        onClick = {navController.navigate(AppScreens.Legal.route)},
                         colors = ButtonDefaults.outlinedButtonColors(
                             backgroundColor = MaterialTheme.colors.onPrimary,
                         )

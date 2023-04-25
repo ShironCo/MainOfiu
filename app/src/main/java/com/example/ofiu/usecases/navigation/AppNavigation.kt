@@ -9,6 +9,7 @@ import com.example.ofiu.usecases.splash.SplashScreen
 import com.example.ofiu.usecases.session.SessionApp
 import com.example.ofiu.usecases.session.login.LoginApp
 import com.example.ofiu.usecases.session.login.LoginViewModel
+import com.example.ofiu.usecases.session.register.LegalApp
 import com.example.ofiu.usecases.session.register.RegisterApp
 
 @Composable
@@ -23,6 +24,9 @@ fun AppNavigation(){
         }
         composable(AppScreens.Login.route){
             LoginApp(navController, LoginViewModel())
+        }
+        composable(AppScreens.Legal.route){
+            LegalApp()
         }
         composable(AppScreens.Register.route){
             RegisterApp()

@@ -3,9 +3,17 @@
     <string name="welcome">Bienvenidos a Ofiu</string>
     <string name="login">Conectarse</string>
     <string name="register">Registrarse</string>
-    <string name="loginapp">───── O conectate usando ─────</string>
+    <string name="loginapp">─── O conectate usando ───</string>
     <string name="forgotPass">¿Olvidaste la contraseña?</string>
     <string name="valPass">La contraseña debe tener una longitud mínima de 8 caracteres y además, incluir al menos un carácter especial.</string>
+    <string name="policy">Para poder continuar con el proceso, es necesario que aceptes las siguientes políticas.</string>
+    <string name="policyTitle">Políticas Legales</string>
+    <string name="termAndConditions">Términos y condiciones</string>
+    <string name="termAndConditionsDesc">Aquí aceptaras los derechos como los compromisos de Ofiu como las tuyas.</string>
+    <string name="noticePrivacity">Aviso de privacidad</string>
+    <string name="noticePrivacityDesc">Aquí se te informara y aceptara el manejo y protección de sus datos personales.</string>
+    <string name="readDocument">Click aquí para leer el documento completo</string>
+    <string name="acceptPolicy">Aceptar todo</string>
 
 
 </resources>

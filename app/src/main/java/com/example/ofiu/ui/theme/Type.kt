@@ -38,26 +38,32 @@ val Typography = Typography(
     h2 = TextStyle(
         fontFamily = Monserrat,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 20.sp
+        fontSize = 22.sp
     ),
     h3 = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.Bold,
-        fontSize = 18.sp
+        fontSize = 20.sp
     ),
     body1 = TextStyle(
         fontFamily = Monserrat,
         fontWeight = FontWeight.Light,
-        fontSize = 16.sp
+        fontSize = 18.sp
     ),
     body2 = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp
+        fontSize = 16.sp
     ),
     subtitle1 = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
-    )
+        fontSize = 16.sp
+    ),
+    subtitle2 = TextStyle(
+        fontFamily = Monserrat,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp
+    ),
+
 )

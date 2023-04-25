@@ -29,7 +29,7 @@ import com.example.ofiu.R
 @Composable
 fun LoginApp(navController: NavHostController, viewModel: LoginViewModel) {
     Scaffold (
-        topBar = { LoginTolBar(navController, viewModel)},
+        topBar = { LoginTolBar(navController, viewModel)}
     ){
         paddingValues ->
         LoginContent(modifier = Modifier.padding(paddingValues), viewModel)
@@ -45,7 +45,8 @@ fun LoginTolBar(navController: NavHostController, viewModel: LoginViewModel){
             IconButton(onClick = { viewModel.onBackEnable()
                          navController.popBackStack()
                                  }, enabled = backEnable) {
-                Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24),null, )            }
+                    Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24),null, )
+            }
         }, backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp,
     )
@@ -78,7 +79,7 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel){
             Text(stringResource(id = R.string.login),
                 style = MaterialTheme.typography.h1,
                 color = MaterialTheme.colors.secondary,
-                modifier = Modifier.padding(top = 70.dp)
+                modifier = Modifier.padding(top = 50.dp)
             )
             Spacer(modifier = Modifier.height(30.dp))
             Surface(
@@ -186,10 +187,9 @@ fun TextFieldLoginEmail(email: String, onTextLoginChange:(String) -> Unit){
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
         ),
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
+        textStyle = MaterialTheme.typography.subtitle2.copy(Color.Black)
     )
-
-
 
 
 }
@@ -230,6 +230,7 @@ fun TextFieldLoginEmail(email: String, onTextLoginChange:(String) -> Unit){
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,),
         shape = MaterialTheme.shapes.medium,
+        textStyle = MaterialTheme.typography.subtitle2.copy(Color.Black),
         visualTransformation = if (visibilityButton) VisualTransformation.None else PasswordVisualTransformation()
     )
 }
