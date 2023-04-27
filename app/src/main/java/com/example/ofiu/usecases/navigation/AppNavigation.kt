@@ -1,7 +1,6 @@
 package com.example.ofiu.usecases.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,6 +10,7 @@ import com.example.ofiu.usecases.session.login.LoginApp
 import com.example.ofiu.usecases.session.login.LoginViewModel
 import com.example.ofiu.usecases.session.register.LegalApp
 import com.example.ofiu.usecases.session.register.RegisterApp
+import com.example.ofiu.usecases.session.register.RegisterViewModel
 
 @Composable
 fun AppNavigation(){
@@ -26,7 +26,7 @@ fun AppNavigation(){
             LoginApp(navController, LoginViewModel())
         }
         composable(AppScreens.Legal.route){
-            LegalApp()
+            LegalApp(navController, RegisterViewModel())
         }
         composable(AppScreens.Register.route){
             RegisterApp()

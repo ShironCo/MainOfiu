@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -17,28 +18,32 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.ofiu.R
+import com.example.ofiu.usecases.navigation.AppScreens
 
 @Composable
-fun LegalApp(){
+fun LegalApp(navController: NavController, viewModel: RegisterViewModel){
     Scaffold(
-        topBar = { LegalTopBar() }
-    ){paddingValues -> LegalContent(modifier = Modifier.padding(paddingValues))
-
+        topBar = { LegalTopBar(navController, viewModel) }
+    ){paddingValues -> LegalContent(modifier = Modifier.padding(paddingValues), viewModel, navController)
     }
 
 }
 
 
 @Composable
-fun LegalTopBar(){
+fun LegalTopBar(navController: NavController, viewModel: RegisterViewModel){
+    val backEnable : Boolean by viewModel.backEnable.observeAsState(initial = true)
     TopAppBar(
         title = {
             Row(modifier = Modifier.fillMaxSize(),
             verticalAlignment = CenterVertically
             ) {
                 IconButton(onClick = {
-                }, enabled = true) {
+                    viewModel.onBackEnable()
+                    navController.popBackStack()
+                }, enabled = backEnable) {
                     Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24), null,)
 
                 }
@@ -53,7 +58,8 @@ fun LegalTopBar(){
 }
 
 @Composable
-fun LegalContent(modifier:Modifier = Modifier){
+fun LegalContent(modifier:Modifier = Modifier, viewModel: RegisterViewModel, navController: NavController){
+    val buttonLegal : Boolean by viewModel.buttonLegal.observeAsState(initial = false)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -72,7 +78,9 @@ fun LegalContent(modifier:Modifier = Modifier){
             Spacer(modifier = Modifier.height(16.dp))
             LegalCard(R.string.noticePrivacity, R.string.noticePrivacityDesc)
             Spacer(modifier = Modifier.height(16.dp))
-            ButtonLegal(modifier = Modifier.wrapContentWidth(Alignment.Start))
+            ButtonLegal(buttonLegal, viewModel)
+            Spacer(modifier = Modifier.height(16.dp))
+            ButtonRegister(buttonLegal, navController)
         }
     }
 }
@@ -87,7 +95,7 @@ fun LegalCard(title:Int, desc:Int){
         shape = MaterialTheme.shapes.small,
         color = MaterialTheme.colors.primaryVariant
     ) {
-        Column(modifier = Modifier.padding(20.dp, 20.dp, 20.dp, 0.dp)) {
+        Column(modifier = Modifier.padding(20.dp, 20.dp, 20.dp, 10.dp)) {
             Row(modifier = Modifier.fillMaxWidth(),
             verticalAlignment = CenterVertically) {
                 Image(painter = painterResource(R.drawable.si_clipboard_filled),
@@ -123,18 +131,36 @@ fun LegalCard(title:Int, desc:Int){
 }
 
 @Composable
-fun ButtonLegal(modifier: Modifier){
-    val checked = remember { mutableStateOf(false)}
+fun ButtonLegal(buttonLegal:Boolean, viewModel: RegisterViewModel){
     Row(modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp),
         verticalAlignment = CenterVertically) {
-        Checkbox(checked = checked.value, onCheckedChange = { checked.value = it},
+        Checkbox(checked = buttonLegal, onCheckedChange = {viewModel.onButtonLegal()},
             colors = CheckboxDefaults.colors(
                 checkedColor = MaterialTheme.colors.background,
                 uncheckedColor = MaterialTheme.colors.background,
                 checkmarkColor = MaterialTheme.colors.onPrimary,
-            )
+            ),
         )
         Text(text = stringResource(id = R.string.acceptPolicy),
-            style = MaterialTheme.typography.body2)
+            style = MaterialTheme.typography.body2,
+        color = Color.Black)
     }
 }
+
+@Composable
+fun ButtonRegister(buttonLegal: Boolean, navController: NavController){
+    Column(modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        Button(onClick = {navController.popBackStack()
+                         navController.navigate(AppScreens.Register.route)},
+        modifier = Modifier.wrapContentSize().align(Alignment.End),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.background,
+        ),
+        enabled = buttonLegal) {
+            Icon(painterResource(R.drawable.baseline_arrow_forward_24), null,
+            tint = Color.White)
+        }
+        }
+    }
