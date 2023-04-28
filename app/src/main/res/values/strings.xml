@@ -14,6 +14,15 @@
     <string name="noticePrivacityDesc">Aquí se te informara y aceptara el manejo y protección de sus datos personales.</string>
     <string name="readDocument">Click aquí para leer el documento completo</string>
     <string name="acceptPolicy">Aceptar todo</string>
+    <string name="name">Nombre</string>
+    <string name="lastName">Apellido</string>
+    <string name="email">Correo</string>
+    <string name="phone">Teléfono</string>
+    <string name="passwordRepeat">Repite Contraseña</string>
+    <string name="password">Contraseña</string>
+    <string name="emailVal">¡Correo invalido!</string>
+    <string name="phoneVal">¡Telefono invalido!</string>
+    <string name="passVal">Las contraseñas no coinciden</string>
 
 
 </resources>

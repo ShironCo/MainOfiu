@@ -1,5 +1,6 @@
 package com.example.ofiu.usecases.session.register
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -80,7 +81,14 @@ fun LegalContent(modifier:Modifier = Modifier, viewModel: RegisterViewModel, nav
             Spacer(modifier = Modifier.height(16.dp))
             ButtonLegal(buttonLegal, viewModel)
             Spacer(modifier = Modifier.height(16.dp))
-            ButtonRegister(buttonLegal, navController)
+            AnimatedVisibility(
+                visible = buttonLegal,
+                enter = slideInHorizontally() + fadeIn(),
+                exit = slideOutHorizontally() + fadeOut()
+            ) {
+                ButtonRegister(navController)
+            }
+
         }
     }
 }
@@ -148,17 +156,18 @@ fun ButtonLegal(buttonLegal:Boolean, viewModel: RegisterViewModel){
 }
 
 @Composable
-fun ButtonRegister(buttonLegal: Boolean, navController: NavController){
+fun ButtonRegister(navController: NavController){
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Bottom
     ) {
         Button(onClick = {navController.popBackStack()
                          navController.navigate(AppScreens.Register.route)},
-        modifier = Modifier.wrapContentSize().align(Alignment.End),
+        modifier = Modifier
+            .wrapContentSize()
+            .align(Alignment.End),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.background,
-        ),
-        enabled = buttonLegal) {
+        )) {
             Icon(painterResource(R.drawable.baseline_arrow_forward_24), null,
             tint = Color.White)
         }

@@ -29,7 +29,7 @@ fun AppNavigation(){
             LegalApp(navController, RegisterViewModel())
         }
         composable(AppScreens.Register.route){
-            RegisterApp()
+            RegisterApp(RegisterViewModel(), navController)
         }
     }
 }

@@ -57,7 +57,6 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel){
 
     val email : String by viewModel.email.observeAsState(initial = "")
     val password : String by viewModel.password.observeAsState(initial = "")
-    val loginEnable : Boolean by viewModel.loginEnable.observeAsState(initial = false)
 
     Box(
         modifier = Modifier
@@ -101,16 +100,8 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel){
                     
                     Spacer(modifier = Modifier.height(24.dp))
                     TextFieldLoginPassword(password,{viewModel.onTextLoginChange(email, it)}, viewModel)
-
-                    if (!loginEnable){
-                        Text(text = stringResource(id = R.string.valPass),
-                        color = MaterialTheme.colors.background,
-                        style = MaterialTheme.typography.subtitle1,
-                        modifier = Modifier.padding(start = 5.dp, end = 5.dp))
-                    }
                     Spacer(modifier = Modifier.height(30.dp))
-                    
-                    ButtonLogin(viewModel, loginEnable)
+                    ButtonLogin(viewModel)
 
                     Spacer(modifier = Modifier.height(2.dp))
                     TextButton(onClick = { /*TODO*/ },
@@ -153,7 +144,7 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel){
 }
 
 @Composable
-fun ButtonLogin(viewModel: LoginViewModel, loginEnable: Boolean){
+fun ButtonLogin(viewModel: LoginViewModel){
     Button(modifier = Modifier
         .fillMaxWidth()
         .height(50.dp)
@@ -164,7 +155,7 @@ fun ButtonLogin(viewModel: LoginViewModel, loginEnable: Boolean){
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,
-        ), enabled = loginEnable
+        ),
     ) {
         Text(stringResource(id = R.string.login),
             style = MaterialTheme.typography.h3,
@@ -188,7 +179,7 @@ fun TextFieldLoginEmail(email: String, onTextLoginChange:(String) -> Unit){
             unfocusedIndicatorColor = Color.Transparent,
         ),
         shape = MaterialTheme.shapes.medium,
-        textStyle = MaterialTheme.typography.subtitle2.copy(Color.Black)
+        textStyle = MaterialTheme.typography.subtitle2.copy(MaterialTheme.colors.onSecondary)
     )
 
 
@@ -206,10 +197,9 @@ fun TextFieldLoginEmail(email: String, onTextLoginChange:(String) -> Unit){
     } else {
         R.drawable.baseline_visibility_off_24
     }
-
     val focusManager = LocalFocusManager.current
     TextField(value = password,
-        onValueChange = {onTextLoginChange(it)},
+        onValueChange = { onTextLoginChange(it) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions (onDone = {focusManager.clearFocus()}),
@@ -230,7 +220,7 @@ fun TextFieldLoginEmail(email: String, onTextLoginChange:(String) -> Unit){
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,),
         shape = MaterialTheme.shapes.medium,
-        textStyle = MaterialTheme.typography.subtitle2.copy(Color.Black),
+        textStyle = MaterialTheme.typography.subtitle2.copy(MaterialTheme.colors.onSecondary),
         visualTransformation = if (visibilityButton) VisualTransformation.None else PasswordVisualTransformation()
     )
 }
