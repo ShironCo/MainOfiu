@@ -23,6 +23,12 @@
     <string name="emailVal">¡Correo invalido!</string>
     <string name="phoneVal">¡Telefono invalido!</string>
     <string name="passVal">Las contraseñas no coinciden</string>
-
+    <string name="forgotPassword">Recuperar contraseña</string>
+    <string name="enterEmail">Digite su correo</string>
+    <string name="enterCode">Digite su código</string>
+    <string name="next">Siguiente</string>
+    <string name="recover">Recuperar</string>
+    <string name="change">Cambiar</string>
+    <string name="recoverEmail">Por favor introduzca el código que ha sido enviado al correo electrónico:</string>
 
 </resources>

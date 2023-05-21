@@ -30,7 +30,7 @@ import com.example.ofiu.R
 
 
 @Composable
-fun RegisterApp(viewModel: RegisterViewModel, navController: NavController){
+fun RegisterApp(navController: NavController, viewModel: RegisterViewModel){
     Scaffold(
         topBar = {RegisterTopBar(viewModel, navController)}
             ){paddingValues ->   RegisterContent(Modifier.padding(paddingValues), viewModel)

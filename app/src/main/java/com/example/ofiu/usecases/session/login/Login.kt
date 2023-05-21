@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.ofiu.R
+import com.example.ofiu.usecases.navigation.AppScreens
 
 @Composable
 fun LoginApp(navController: NavHostController, viewModel: LoginViewModel) {
@@ -32,7 +33,7 @@ fun LoginApp(navController: NavHostController, viewModel: LoginViewModel) {
         topBar = { LoginTolBar(navController, viewModel)}
     ){
         paddingValues ->
-        LoginContent(modifier = Modifier.padding(paddingValues), viewModel)
+        LoginContent(modifier = Modifier.padding(paddingValues), viewModel, navController)
     }
 }
 
@@ -53,7 +54,7 @@ fun LoginTolBar(navController: NavHostController, viewModel: LoginViewModel){
 }
 
 @Composable
-fun LoginContent(modifier: Modifier, viewModel: LoginViewModel){
+fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostController){
 
     val email : String by viewModel.email.observeAsState(initial = "")
     val password : String by viewModel.password.observeAsState(initial = "")
@@ -110,13 +111,15 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel){
                         disabledContentColor = Color.Transparent,
                         contentColor = Color.Transparent
                     )) {
-                        Text(
-                            stringResource(id = R.string.forgotPass),
-                            style = MaterialTheme.typography.body2,
-                            color = MaterialTheme.colors.secondaryVariant,
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.End
-                        )
+                        TextButton(onClick = {navController.navigate(AppScreens.ForgotPassword.route)}) {
+                            Text(
+                                stringResource(id = R.string.forgotPass),
+                                style = MaterialTheme.typography.body2,
+                                color = MaterialTheme.colors.secondaryVariant,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.End
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.height(30.dp))
 

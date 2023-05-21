@@ -6,6 +6,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ofiu.usecases.splash.SplashScreen
 import com.example.ofiu.usecases.session.SessionApp
+import com.example.ofiu.usecases.session.forgotPassword.ForgotPassword
+import com.example.ofiu.usecases.session.forgotPassword.ForgotPasswordThree
+import com.example.ofiu.usecases.session.forgotPassword.ForgotPasswordTwo
+import com.example.ofiu.usecases.session.forgotPassword.ForgotPasswordViewModel
 import com.example.ofiu.usecases.session.login.LoginApp
 import com.example.ofiu.usecases.session.login.LoginViewModel
 import com.example.ofiu.usecases.session.register.LegalApp
@@ -29,7 +33,17 @@ fun AppNavigation(){
             LegalApp(navController, RegisterViewModel())
         }
         composable(AppScreens.Register.route){
-            RegisterApp(RegisterViewModel(), navController)
+            RegisterApp(navController, RegisterViewModel())
+        }
+        composable(AppScreens.ForgotPassword.route){
+            ForgotPassword(navController, ForgotPasswordViewModel())
+        }
+        composable(AppScreens.ForgotPasswordTwo.route+"/{email}"){
+            val email = it.arguments?.getString("email")
+            ForgotPasswordTwo(navController, ForgotPasswordViewModel(), email)
+        }
+        composable(AppScreens.ForgotPasswordThree.route){
+            ForgotPasswordThree(navController, ForgotPasswordViewModel())
         }
     }
 }
