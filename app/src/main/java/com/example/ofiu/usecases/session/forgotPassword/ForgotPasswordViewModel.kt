@@ -34,4 +34,29 @@ class ForgotPasswordViewModel: ViewModel() {
        return code.isNotEmpty() && (code.length == 6)
     }
 
+    //Tercer paso
+
+    private val _password = MutableLiveData<String>()
+    val password : LiveData<String> = _password
+
+    private val _passwordRepeat = MutableLiveData<String>()
+    val passwordRepeat : LiveData<String> = _passwordRepeat
+
+    private val _changeStep = MutableLiveData<Boolean>()
+    val changeStep : LiveData<Boolean> = _changeStep
+
+    fun onTextChangeThree(password: String, passwordRepeat: String){
+        _password.value = password
+        _passwordRepeat.value = passwordRepeat
+        _buttonValidation.value = isValidPassword(password) && (password == passwordRepeat)
+    }
+
+    private fun isValidPassword(password: String): Boolean {
+        val pattern = "^(?=.*[!@#\$%^&*()-+])(?=.{8,})[a-zA-Z0-9!@#\$%^&*()-+]+$".toRegex()
+        return pattern.matches(password)
+    }
+
+     fun onStepChange(){
+        _changeStep.value = _changeStep.value != true
+    }
 }

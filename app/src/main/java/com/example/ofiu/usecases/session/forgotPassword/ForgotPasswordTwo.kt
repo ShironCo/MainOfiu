@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ofiu.R
+import com.example.ofiu.usecases.navigation.AppScreens
 
 
 @Composable
@@ -99,7 +100,7 @@ fun ForgotPasswordContentTwo(modifier: Modifier, viewModel: ForgotPasswordViewMo
                     Spacer(modifier = Modifier.height(30.dp))
                     EmailTextFieldTwo(viewModel, code)
                     Spacer(modifier = Modifier.height(30.dp))
-                    ForgotPasswordButtonTwo(email, button)
+                    ForgotPasswordButtonTwo(email, button, navController)
                 }
             }
         }
@@ -117,7 +118,7 @@ fun EmailTextFieldTwo(viewModel: ForgotPasswordViewModel, code:String){
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.body2)
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
@@ -129,7 +130,7 @@ fun EmailTextFieldTwo(viewModel: ForgotPasswordViewModel, code:String){
 }
 
 @Composable
-fun ForgotPasswordButtonTwo(email: String?, button:Boolean){
+fun ForgotPasswordButtonTwo(email: String?, button:Boolean, navController: NavController){
     val context = LocalContext.current
     Button(modifier = Modifier
         .fillMaxWidth()
@@ -137,7 +138,7 @@ fun ForgotPasswordButtonTwo(email: String?, button:Boolean){
         .clip(MaterialTheme.shapes.small),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            Toast.makeText(context, email, Toast.LENGTH_LONG).show()
+            navController.navigate(AppScreens.ForgotPasswordThree.route+"/$email")
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,

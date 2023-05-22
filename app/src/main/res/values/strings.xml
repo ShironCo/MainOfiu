@@ -30,5 +30,9 @@
     <string name="recover">Recuperar</string>
     <string name="change">Cambiar</string>
     <string name="recoverEmail">Por favor introduzca el código que ha sido enviado al correo electrónico:</string>
+    <string name="newPassword">Escribe la nueva contraseña</string>
+    <string name="newPasswordRepeat">Repite la contraseña</string>
+    <string name="updatePassword">Actualice la contraseña de su cuenta</string>
+    <string name="updateSuccessful">Se actualizó correctamente la contraseña de su cuenta</string>
 
 </resources>

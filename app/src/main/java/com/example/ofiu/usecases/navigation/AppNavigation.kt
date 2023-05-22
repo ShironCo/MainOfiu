@@ -42,8 +42,9 @@ fun AppNavigation(){
             val email = it.arguments?.getString("email")
             ForgotPasswordTwo(navController, ForgotPasswordViewModel(), email)
         }
-        composable(AppScreens.ForgotPasswordThree.route){
-            ForgotPasswordThree(navController, ForgotPasswordViewModel())
+        composable(AppScreens.ForgotPasswordThree.route+"/{email}"){
+            val email = it.arguments?.getString("email")
+            ForgotPasswordThree(navController, ForgotPasswordViewModel(), email)
         }
     }
 }

@@ -79,7 +79,7 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
             Text(stringResource(id = R.string.login),
                 style = MaterialTheme.typography.h1,
                 color = MaterialTheme.colors.secondary,
-                modifier = Modifier.padding(top = 50.dp)
+                modifier = Modifier.padding(top = 40.dp)
             )
             Spacer(modifier = Modifier.height(30.dp))
             Surface(
