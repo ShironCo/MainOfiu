@@ -4,8 +4,11 @@ import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ForgotPasswordViewModel: ViewModel() {
+@HiltViewModel
+class ForgotPasswordViewModel @Inject constructor(): ViewModel() {
     //Primer paso
     private val _email = MutableLiveData<String>()
     val email : LiveData<String> = _email
@@ -45,6 +48,9 @@ class ForgotPasswordViewModel: ViewModel() {
     private val _changeStep = MutableLiveData<Boolean>()
     val changeStep : LiveData<Boolean> = _changeStep
 
+    private val _visibilityButton = MutableLiveData<Boolean>()
+    val visibilityButton : LiveData<Boolean> = _visibilityButton
+
     fun onTextChangeThree(password: String, passwordRepeat: String){
         _password.value = password
         _passwordRepeat.value = passwordRepeat
@@ -58,5 +64,8 @@ class ForgotPasswordViewModel: ViewModel() {
 
      fun onStepChange(){
         _changeStep.value = _changeStep.value != true
+    }
+    fun onVisibilityButton(){
+        _visibilityButton.value = _visibilityButton.value != true
     }
 }

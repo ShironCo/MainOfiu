@@ -22,9 +22,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.ofiu.R
 import com.example.ofiu.usecases.navigation.AppScreens
@@ -32,8 +35,8 @@ import com.example.ofiu.usecases.navigation.AppScreens
 @Composable
 fun ForgotPasswordThree(
     navController: NavController,
-    viewModel: ForgotPasswordViewModel,
-    email: String?
+    email: String?,
+    viewModel: ForgotPasswordViewModel = hiltViewModel()
 ) {
     Scaffold(
         topBar = { ForgotPasswordTopBarThree(navController) }
@@ -70,6 +73,7 @@ fun ForgotPasswordContentThree(
     val password: String by viewModel.password.observeAsState(initial = "")
     val passwordRepeat: String by viewModel.passwordRepeat.observeAsState(initial = "")
     val changeStep: Boolean by viewModel.changeStep.observeAsState(initial = false)
+    val visibilityButton: Boolean by viewModel.visibilityButton.observeAsState(initial = false)
 
     Box(
         modifier = Modifier
@@ -112,10 +116,19 @@ fun ForgotPasswordContentThree(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (!changeStep) {
-                        StepThree(viewModel, password, passwordRepeat, button, email)
+                        StepThree(
+                            viewModel,
+                            password,
+                            passwordRepeat,
+                            button,
+                            email,
+                            visibilityButton
+                        )
                     }
-                    AnimatedVisibility(visible = changeStep,
-                        enter = scaleIn()) {
+                    AnimatedVisibility(
+                        visible = changeStep,
+                        enter = scaleIn()
+                    ) {
                         StepFourth(email, navController)
                     }
                 }
@@ -146,7 +159,8 @@ fun StepThree(
     password: String,
     passwordRepeat: String,
     button: Boolean,
-    email: String?
+    email: String?,
+    visibilityButton: Boolean
 ) {
     Column() {
         Text(
@@ -156,12 +170,11 @@ fun StepThree(
         )
     }
     Spacer(modifier = Modifier.height(30.dp))
-    PasswordTextFieldThree(R.string.newPassword, password) {
-        viewModel.onTextChangeThree(it, passwordRepeat)
-    }
+    PasswordTextFieldThree(R.string.newPassword, password, visibilityButton, {viewModel.onTextChangeThree(it, passwordRepeat)},
+        {viewModel.onVisibilityButton()})
     Spacer(modifier = Modifier.height(30.dp))
-    PasswordTextFieldThree(R.string.newPasswordRepeat, passwordRepeat) {
-        viewModel.onTextChangeThree(password, it)
+    PasswordTextFieldThree(R.string.newPasswordRepeat, passwordRepeat, visibilityButton, {viewModel.onTextChangeThree(password, it)}) {
+        viewModel.onVisibilityButton()
     }
     Spacer(modifier = Modifier.height(30.dp))
     ForgotPasswordButtonThree(R.string.change, button) {
@@ -170,7 +183,13 @@ fun StepThree(
 }
 
 @Composable
-fun PasswordTextFieldThree(text: Int, password: String, onTextLoginChange: (String) -> Unit) {
+fun PasswordTextFieldThree(
+    text: Int,
+    password: String,
+    visibilityButton: Boolean,
+    onTextLoginChange: (String) -> Unit,
+    onVisibilityButton: () -> Unit
+) {
     TextField(
         value = password,
         onValueChange = { onTextLoginChange(it) },
@@ -183,6 +202,15 @@ fun PasswordTextFieldThree(text: Int, password: String, onTextLoginChange: (Stri
                 style = MaterialTheme.typography.body2
             )
         },
+        trailingIcon = {
+            IconButton(onClick = {onVisibilityButton()}) {
+                Icon(
+                    painter = if (visibilityButton) painterResource(R.drawable.baseline_visibility_24) else painterResource(R.drawable.baseline_visibility_off_24),
+                    contentDescription = null,
+                    tint = Color(0xFF969696)
+                )
+            }
+        },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Next
@@ -194,6 +222,7 @@ fun PasswordTextFieldThree(text: Int, password: String, onTextLoginChange: (Stri
         ),
         shape = MaterialTheme.shapes.medium,
         textStyle = MaterialTheme.typography.subtitle2.copy(MaterialTheme.colors.onSecondary),
+        visualTransformation = if (visibilityButton) VisualTransformation.None else PasswordVisualTransformation()
     )
 }
 

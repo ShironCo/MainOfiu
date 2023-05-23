@@ -1,11 +1,17 @@
 package com.example.ofiu.usecases.session.register
 
-import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.ofiu.domain.OfiuRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class RegisterViewModel : ViewModel(){
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
+    private val repository: OfiuRepository
+        )
+    : ViewModel(){
     //Botones vista LEGAL
     private val _buttonLegal = MutableLiveData<Boolean>()
     val buttonLegal : LiveData<Boolean> = _buttonLegal

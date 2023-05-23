@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,12 +24,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.ofiu.R
 import com.example.ofiu.usecases.navigation.AppScreens
 
 @Composable
-fun LoginApp(navController: NavHostController, viewModel: LoginViewModel) {
+fun LoginApp(navController: NavHostController, viewModel: LoginViewModel = hiltViewModel()) {
     Scaffold (
         topBar = { LoginTolBar(navController, viewModel)}
     ){
@@ -46,7 +48,7 @@ fun LoginTolBar(navController: NavHostController, viewModel: LoginViewModel){
             IconButton(onClick = { viewModel.onBackEnable()
                          navController.popBackStack()
                                  }, enabled = backEnable) {
-                    Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24),null, )
+                   Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24),null, )
             }
         }, backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp,

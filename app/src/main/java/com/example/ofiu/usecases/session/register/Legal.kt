@@ -19,12 +19,14 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.ofiu.R
 import com.example.ofiu.usecases.navigation.AppScreens
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
-fun LegalApp(navController: NavController, viewModel: RegisterViewModel){
+fun LegalApp(navController: NavController, viewModel: RegisterViewModel = hiltViewModel()){
     Scaffold(
         topBar = { LegalTopBar(navController, viewModel) }
     ){paddingValues -> LegalContent(modifier = Modifier.padding(paddingValues), viewModel, navController)

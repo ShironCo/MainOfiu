@@ -25,12 +25,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.ofiu.R
 
 
 @Composable
-fun RegisterApp(navController: NavController, viewModel: RegisterViewModel){
+fun RegisterApp(navController: NavController, viewModel: RegisterViewModel = hiltViewModel()){
     Scaffold(
         topBar = {RegisterTopBar(viewModel, navController)}
             ){paddingValues ->   RegisterContent(Modifier.padding(paddingValues), viewModel)
@@ -363,7 +364,9 @@ fun TextsEnable(textAlign: TextAlign, modienable:Boolean, emailVal:Int){
         Text(text = stringResource(emailVal),
             color = MaterialTheme.colors.background,
             style = MaterialTheme.typography.body2.copy(fontSize = 14.sp),
-            modifier = Modifier.padding(start = 5.dp, end = 5.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(start = 5.dp, end = 5.dp)
+                .fillMaxWidth(),
             textAlign = textAlign,
             )
     }

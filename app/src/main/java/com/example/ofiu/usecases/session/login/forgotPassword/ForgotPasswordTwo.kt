@@ -22,35 +22,47 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.ofiu.R
 import com.example.ofiu.usecases.navigation.AppScreens
 
 
 @Composable
-fun ForgotPasswordTwo(navController: NavController, viewModel: ForgotPasswordViewModel, email:String?){
+fun ForgotPasswordTwo(
+    navController: NavController,
+    email: String?,
+    viewModel: ForgotPasswordViewModel = hiltViewModel()
+) {
     Scaffold(
         topBar = { ForgotPasswordTopBarTwo(navController) }
-    ){paddingValues ->   ForgotPasswordContentTwo(Modifier.padding(paddingValues), viewModel, navController, email)
+    ) { paddingValues ->
+        ForgotPasswordContentTwo(Modifier.padding(paddingValues), viewModel, navController, email)
     }
 }
 
 @Composable
-fun ForgotPasswordTopBarTwo(navController: NavController){
+fun ForgotPasswordTopBarTwo(navController: NavController) {
     TopAppBar(
         title = {
-            IconButton(onClick = {navController.popBackStack()}) {
-                Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24),null, )
+            IconButton(onClick = { navController.popBackStack() }) {
+                Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24), null)
             }
-        }, backgroundColor = MaterialTheme.colors.background,
+        },
+        backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp,
     )
 }
 
 @Composable
-fun ForgotPasswordContentTwo(modifier: Modifier, viewModel: ForgotPasswordViewModel, navController: NavController, email: String?){
+fun ForgotPasswordContentTwo(
+    modifier: Modifier,
+    viewModel: ForgotPasswordViewModel,
+    navController: NavController,
+    email: String?
+) {
 
-    val button : Boolean by viewModel.buttonValidation.observeAsState(initial = false)
+    val button: Boolean by viewModel.buttonValidation.observeAsState(initial = false)
     val code: String by viewModel.code.observeAsState(initial = "")
 
     Box(
@@ -93,7 +105,8 @@ fun ForgotPasswordContentTwo(modifier: Modifier, viewModel: ForgotPasswordViewMo
                         .wrapContentWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = stringResource(id = R.string.recoverEmail) + " $email",
+                    Text(
+                        text = stringResource(id = R.string.recoverEmail) + " $email",
                         style = MaterialTheme.typography.body2,
                         color = MaterialTheme.colors.secondaryVariant
                     )
@@ -108,17 +121,23 @@ fun ForgotPasswordContentTwo(modifier: Modifier, viewModel: ForgotPasswordViewMo
 }
 
 @Composable
-fun EmailTextFieldTwo(viewModel: ForgotPasswordViewModel, code:String){
-    TextField(value = code,
-        onValueChange = {viewModel.onTextChangeTwo(it)},
+fun EmailTextFieldTwo(viewModel: ForgotPasswordViewModel, code: String) {
+    TextField(
+        value = code,
+        onValueChange = { viewModel.onTextChangeTwo(it) },
         singleLine = true,
         placeholder = {
-            Text(text = stringResource(R.string.enterCode),
+            Text(
+                text = stringResource(R.string.enterCode),
                 color = MaterialTheme.colors.onBackground,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.body2)
+                style = MaterialTheme.typography.body2
+            )
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next
+        ),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
@@ -130,15 +149,16 @@ fun EmailTextFieldTwo(viewModel: ForgotPasswordViewModel, code:String){
 }
 
 @Composable
-fun ForgotPasswordButtonTwo(email: String?, button:Boolean, navController: NavController){
+fun ForgotPasswordButtonTwo(email: String?, button: Boolean, navController: NavController) {
     val context = LocalContext.current
-    Button(modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp)
-        .clip(MaterialTheme.shapes.small),
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clip(MaterialTheme.shapes.small),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            navController.navigate(AppScreens.ForgotPasswordThree.route+"/$email")
+            navController.navigate(AppScreens.ForgotPasswordThree.route + "/$email")
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,
@@ -147,6 +167,7 @@ fun ForgotPasswordButtonTwo(email: String?, button:Boolean, navController: NavCo
         Text(
             stringResource(id = R.string.recover),
             style = MaterialTheme.typography.h3,
-            color = MaterialTheme.colors.secondary)
+            color = MaterialTheme.colors.secondary
+        )
     }
 }
