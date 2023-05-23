@@ -102,7 +102,8 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
                     Spacer(modifier = Modifier.height(24.dp))
                     TextFieldLoginPassword(password,{viewModel.onTextLoginChange(email, it)}, viewModel)
                     Spacer(modifier = Modifier.height(30.dp))
-                    ButtonLogin(viewModel)
+
+                    ButtonLogin(viewModel, navController)
 
                     Spacer(modifier = Modifier.height(2.dp))
                     TextButton(onClick = { /*TODO*/ },
@@ -147,7 +148,7 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
 }
 
 @Composable
-fun ButtonLogin(viewModel: LoginViewModel){
+fun ButtonLogin(viewModel: LoginViewModel, navController: NavHostController){
     Button(modifier = Modifier
         .fillMaxWidth()
         .height(50.dp)
@@ -155,6 +156,7 @@ fun ButtonLogin(viewModel: LoginViewModel){
         shape = MaterialTheme.shapes.small,
         onClick = {
             viewModel.onLoginSelected()
+            navController.navigate(AppScreens.BottomBarScreen.route)
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,

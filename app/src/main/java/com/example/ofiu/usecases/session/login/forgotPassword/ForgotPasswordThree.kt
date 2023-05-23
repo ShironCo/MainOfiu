@@ -1,5 +1,9 @@
-package com.example.ofiu.usecases.session.forgotPassword
+package com.example.ofiu.usecases.session.login.forgotPassword
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,37 +30,43 @@ import com.example.ofiu.R
 import com.example.ofiu.usecases.navigation.AppScreens
 
 @Composable
-fun ForgotPasswordThree(navController: NavController, viewModel: ForgotPasswordViewModel, email:String?){
+fun ForgotPasswordThree(
+    navController: NavController,
+    viewModel: ForgotPasswordViewModel,
+    email: String?
+) {
     Scaffold(
-        topBar = { ForgotPasswordTopBarThree(navController, viewModel) }
-    ){paddingValues ->   ForgotPasswordContentThree(Modifier.padding(paddingValues), viewModel, navController, email)
+        topBar = { ForgotPasswordTopBarThree(navController) }
+    ) { paddingValues ->
+        ForgotPasswordContentThree(Modifier.padding(paddingValues), viewModel, navController, email)
     }
 }
 
 @Composable
-fun ForgotPasswordTopBarThree(navController: NavController, viewModel: ForgotPasswordViewModel){
-    val changeStep: Boolean by viewModel.changeStep.observeAsState(initial = false)
+fun ForgotPasswordTopBarThree(navController: NavController) {
     TopAppBar(
         title = {
             IconButton(onClick = {
-                if (changeStep){
-                    navController.popBackStack()
-                    navController.navigate(AppScreens.Login.route)
-                }else{
-                    navController.popBackStack()
-                }
+                navController.popBackStack()
             }) {
-                Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24),null, )
+                Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24), null)
             }
-        }, backgroundColor = MaterialTheme.colors.background,
+        },
+        backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp,
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ForgotPasswordContentThree(modifier: Modifier, viewModel: ForgotPasswordViewModel, navController: NavController, email: String?){
+fun ForgotPasswordContentThree(
+    modifier: Modifier,
+    viewModel: ForgotPasswordViewModel,
+    navController: NavController,
+    email: String?
+) {
 
-    val button : Boolean by viewModel.buttonValidation.observeAsState(initial = false)
+    val button: Boolean by viewModel.buttonValidation.observeAsState(initial = false)
     val password: String by viewModel.password.observeAsState(initial = "")
     val passwordRepeat: String by viewModel.passwordRepeat.observeAsState(initial = "")
     val changeStep: Boolean by viewModel.changeStep.observeAsState(initial = false)
@@ -101,10 +111,12 @@ fun ForgotPasswordContentThree(modifier: Modifier, viewModel: ForgotPasswordView
                         .wrapContentWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (changeStep){
-                        StepFourth(email, navController)
-                    }else{
+                    if (!changeStep) {
                         StepThree(viewModel, password, passwordRepeat, button, email)
+                    }
+                    AnimatedVisibility(visible = changeStep,
+                        enter = scaleIn()) {
+                        StepFourth(email, navController)
                     }
                 }
             }
@@ -113,29 +125,32 @@ fun ForgotPasswordContentThree(modifier: Modifier, viewModel: ForgotPasswordView
 }
 
 @Composable
-fun StepFourth(email:String?, navController: NavController){
+fun StepFourth(email: String?, navController: NavController) {
     Column {
-        Text(text = stringResource(id = R.string.updateSuccessful)+" $email",
+        Text(
+            text = stringResource(id = R.string.updateSuccessful) + " $email",
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.secondaryVariant
         )
         Spacer(modifier = Modifier.height(30.dp))
-       ForgotPasswordButtonThree(R.string.login, true){
-           navController.navigate(AppScreens.Login.route)
-       }
+        ForgotPasswordButtonThree(R.string.login, true) {
+            navController.navigate(AppScreens.Login.route)
+        }
     }
 
 }
+
 @Composable
 fun StepThree(
     viewModel: ForgotPasswordViewModel,
     password: String,
     passwordRepeat: String,
     button: Boolean,
-    email:String?
-){
+    email: String?
+) {
     Column() {
-        Text(text = stringResource(id = R.string.updatePassword)+" $email",
+        Text(
+            text = stringResource(id = R.string.updatePassword) + " $email",
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.secondaryVariant
         )
@@ -145,7 +160,7 @@ fun StepThree(
         viewModel.onTextChangeThree(it, passwordRepeat)
     }
     Spacer(modifier = Modifier.height(30.dp))
-    PasswordTextFieldThree(R.string.newPasswordRepeat, passwordRepeat){
+    PasswordTextFieldThree(R.string.newPasswordRepeat, passwordRepeat) {
         viewModel.onTextChangeThree(password, it)
     }
     Spacer(modifier = Modifier.height(30.dp))
@@ -155,17 +170,23 @@ fun StepThree(
 }
 
 @Composable
-fun PasswordTextFieldThree(text: Int, password:String,  onTextLoginChange: (String) -> Unit){
-    TextField(value = password,
-        onValueChange = {onTextLoginChange(it)},
+fun PasswordTextFieldThree(text: Int, password: String, onTextLoginChange: (String) -> Unit) {
+    TextField(
+        value = password,
+        onValueChange = { onTextLoginChange(it) },
         singleLine = true,
         placeholder = {
-            Text(text = stringResource(text),
+            Text(
+                text = stringResource(text),
                 color = MaterialTheme.colors.onBackground,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.body2)
+                style = MaterialTheme.typography.body2
+            )
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Next
+        ),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
@@ -177,11 +198,12 @@ fun PasswordTextFieldThree(text: Int, password:String,  onTextLoginChange: (Stri
 }
 
 @Composable
-fun ForgotPasswordButtonThree(text: Int, button: Boolean, onFunction: () -> Unit){
-    Button(modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp)
-        .clip(MaterialTheme.shapes.small),
+fun ForgotPasswordButtonThree(text: Int, button: Boolean, onFunction: () -> Unit) {
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clip(MaterialTheme.shapes.small),
         shape = MaterialTheme.shapes.small,
         onClick = {
             onFunction()
@@ -193,6 +215,7 @@ fun ForgotPasswordButtonThree(text: Int, button: Boolean, onFunction: () -> Unit
         Text(
             stringResource(text),
             style = MaterialTheme.typography.h3,
-            color = MaterialTheme.colors.secondary)
+            color = MaterialTheme.colors.secondary
+        )
     }
 }

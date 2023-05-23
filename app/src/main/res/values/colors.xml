@@ -6,4 +6,5 @@
     <color name="DarkGris">#FF3A3A3A</color>
     <color name="WhiteGris">#FFB0B0B0</color>
     <color name="ReWhiteGris">#FFD9D9D9</color>
+    <color name="NavBottom">#001B40</color>
 </resources>

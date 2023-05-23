@@ -1,4 +1,4 @@
-package com.example.ofiu.usecases.session.forgotPassword
+package com.example.ofiu.usecases.session.login.forgotPassword
 
 import android.widget.Toast
 import androidx.compose.foundation.Image

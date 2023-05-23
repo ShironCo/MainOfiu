@@ -9,8 +9,8 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import com.example.ofiu.ui.theme.OfiuTheme
 import com.example.ofiu.usecases.navigation.AppNavigation
-import com.example.ofiu.usecases.session.forgotPassword.ForgotPassword
-import com.example.ofiu.usecases.session.forgotPassword.ForgotPasswordTwo
+import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPassword
+import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPasswordTwo
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

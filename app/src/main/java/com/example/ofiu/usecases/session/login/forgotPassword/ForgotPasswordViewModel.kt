@@ -1,4 +1,4 @@
-package com.example.ofiu.usecases.session.forgotPassword
+package com.example.ofiu.usecases.session.login.forgotPassword
 
 import android.util.Patterns
 import androidx.lifecycle.LiveData

@@ -3,5 +3,6 @@
     <style name="Theme.Ofiu" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/DarkBlue</item>
         <item name="android:windowBackground">@color/DarkBlue</item>
+        <item name="android:navigationBarColor">@color/NavBottom</item>
     </style>
 </resources>
