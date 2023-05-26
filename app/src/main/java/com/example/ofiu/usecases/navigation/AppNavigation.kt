@@ -4,17 +4,17 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.ofiu.usecases.clientUser.BottonScreen
+import com.example.ofiu.usecases.menú.MenuApp
 import com.example.ofiu.usecases.splash.SplashScreen
 import com.example.ofiu.usecases.session.SessionApp
 import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPassword
 import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPasswordThree
 import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPasswordTwo
-import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPasswordViewModel
 import com.example.ofiu.usecases.session.login.LoginApp
-import com.example.ofiu.usecases.session.login.LoginViewModel
 import com.example.ofiu.usecases.session.register.LegalApp
 import com.example.ofiu.usecases.session.register.RegisterApp
+import com.example.ofiu.usecases.users.clientUser.BottomScreen
+import com.example.ofiu.usecases.users.workerUser.DrawerScreen
 
 
 @Composable
@@ -48,8 +48,14 @@ fun AppNavigation(){
             val email = it.arguments?.getString("email")
             ForgotPasswordThree(navController, email)
         }
+        composable(AppScreens.Menu.route){
+            MenuApp(navController)
+        }
         composable(AppScreens.BottomBarScreen.route){
-            BottonScreen()
+            BottomScreen()
+        }
+        composable(AppScreens.DrawerScreen.route){
+            DrawerScreen()
         }
     }
 }

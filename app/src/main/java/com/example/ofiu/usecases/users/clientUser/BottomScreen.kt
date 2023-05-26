@@ -1,4 +1,4 @@
-package com.example.ofiu.usecases.clientUser
+package com.example.ofiu.usecases.users.clientUser
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
@@ -24,7 +24,7 @@ import com.example.ofiu.usecases.navigation.BottomNavGraph
 
 
 @Composable
-fun BottonScreen(
+fun BottomScreen(
 ) {
     val navController = rememberNavController()
     Scaffold(

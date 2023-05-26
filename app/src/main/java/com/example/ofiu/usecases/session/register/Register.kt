@@ -1,6 +1,7 @@
 package com.example.ofiu.usecases.session.register
 
 import android.opengl.Visibility
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,43 +30,53 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.ofiu.R
+import com.example.ofiu.remote.dto.RegisterUserRequest
+import com.example.ofiu.remote.dto.RegisterUserResponse
 
 
 @Composable
-fun RegisterApp(navController: NavController, viewModel: RegisterViewModel = hiltViewModel()){
+fun RegisterApp(navController: NavController, viewModel: RegisterViewModel = hiltViewModel()) {
     Scaffold(
-        topBar = {RegisterTopBar(viewModel, navController)}
-            ){paddingValues ->   RegisterContent(Modifier.padding(paddingValues), viewModel)
+        topBar = { RegisterTopBar(viewModel, navController) }
+    ) { paddingValues ->
+        RegisterContent(Modifier.padding(paddingValues), viewModel)
     }
 }
 
 @Composable
-fun RegisterTopBar(viewModel: RegisterViewModel, navController: NavController){
-    val backEnable:Boolean by viewModel.backEnable.observeAsState(initial = true)
+fun RegisterTopBar(viewModel: RegisterViewModel, navController: NavController) {
+    val backEnable: Boolean by viewModel.backEnable.observeAsState(initial = true)
     TopAppBar(
         title = {
-            IconButton(onClick = { viewModel.onBackEnable()
+            IconButton(onClick = {
+                viewModel.onBackEnable()
                 navController.popBackStack()
             }, enabled = backEnable) {
-                Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24),null, )
+                Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24), null)
             }
-        }, backgroundColor = MaterialTheme.colors.background,
+        },
+        backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp,
     )
 }
 
 @Composable
 fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
-    
-    val name :String by viewModel.name.observeAsState(initial = "")
-    val lastName:String by viewModel.lastName.observeAsState(initial = "")
+
+    val name: String by viewModel.name.observeAsState(initial = "")
+    val lastName: String by viewModel.lastName.observeAsState(initial = "")
     val email: String by viewModel.email.observeAsState(initial = "")
-    val phone:String by viewModel.phone.observeAsState(initial = "")
-    val password:String by viewModel.password.observeAsState(initial = "")
-    val passwordRepeat:String by viewModel.passwordRepeat.observeAsState(initial = "")
-    val passwordEnable:Boolean by viewModel.passwordEnable.observeAsState(initial = false)
-    val passwordVal:Boolean by viewModel.passwordVal.observeAsState(initial = false)
-    val visibility:Boolean by viewModel.visibility.observeAsState(initial = false)
+    val phone: String by viewModel.phone.observeAsState(initial = "")
+    val password: String by viewModel.password.observeAsState(initial = "")
+    val passwordRepeat: String by viewModel.passwordRepeat.observeAsState(initial = "")
+    val passwordEnable: Boolean by viewModel.passwordEnable.observeAsState(initial = false)
+    val passwordVal: Boolean by viewModel.passwordVal.observeAsState(initial = false)
+    val visibility: Boolean by viewModel.visibility.observeAsState(initial = false)
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val validButton: Boolean by viewModel.validButton.observeAsState(initial = true)
+    val messageIndicator: RegisterUserResponse by viewModel.response.observeAsState(
+        RegisterUserResponse("")
+    )
 
     Box(
         modifier = Modifier
@@ -125,7 +137,7 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    RegisterTextFieldEmail(email){
+                    RegisterTextFieldEmail(email) {
                         viewModel.onTextChange(
                             name,
                             lastName,
@@ -147,7 +159,7 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    RegisterTextFieldPassword(password, visibility, viewModel){
+                    RegisterTextFieldPassword(password, visibility, viewModel) {
                         viewModel.onTextChange(
                             name,
                             lastName,
@@ -159,7 +171,7 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
                     }
                     TextsEnable(textAlign = TextAlign.Start, passwordEnable, R.string.valPass)
                     Spacer(modifier = Modifier.height(10.dp))
-                    RegisterTextFieldPasswordRepeat(passwordRepeat, visibility, viewModel){
+                    RegisterTextFieldPasswordRepeat(passwordRepeat, visibility, viewModel) {
                         viewModel.onTextChange(
                             name,
                             lastName,
@@ -171,7 +183,17 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
                     }
                     TextsEnable(textAlign = TextAlign.Start, passwordVal, R.string.passVal)
                     Spacer(modifier = Modifier.height(30.dp))
-                    ButtonRegister(viewModel)
+                    ButtonRegister(
+                        viewModel,
+                        isLoading,
+                        validButton,
+                        name,
+                        lastName,
+                        email,
+                        phone,
+                        password
+                    )
+                    Text(text = messageIndicator.response)
                 }
             }
         }
@@ -179,17 +201,23 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
 }
 
 @Composable
-fun RegisterTextFieldName(name:String, onTextChange:(String) -> Unit){
-    TextField(value = name,
-        onValueChange = { onTextChange(it)},
+fun RegisterTextFieldName(name: String, onTextChange: (String) -> Unit) {
+    TextField(
+        value = name,
+        onValueChange = { onTextChange(it) },
         singleLine = true,
         placeholder = {
-            Text(text = stringResource(R.string.name),
-            color = MaterialTheme.colors.onBackground,
-            modifier = Modifier.fillMaxWidth(),
-            style = MaterialTheme.typography.body2)
-           },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
+            Text(
+                text = stringResource(R.string.name),
+                color = MaterialTheme.colors.onBackground,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.body2
+            )
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Next
+        ),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
@@ -201,17 +229,23 @@ fun RegisterTextFieldName(name:String, onTextChange:(String) -> Unit){
 }
 
 @Composable
-fun RegisterTextFieldLastName(lastName:String, onTextChange:(String) -> Unit){
-    TextField(value = lastName,
-        onValueChange = {onTextChange(it)},
+fun RegisterTextFieldLastName(lastName: String, onTextChange: (String) -> Unit) {
+    TextField(
+        value = lastName,
+        onValueChange = { onTextChange(it) },
         singleLine = true,
         placeholder = {
-            Text(text = stringResource(R.string.lastName),
+            Text(
+                text = stringResource(R.string.lastName),
                 color = MaterialTheme.colors.onBackground,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.body2)
+                style = MaterialTheme.typography.body2
+            )
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Next
+        ),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
@@ -223,17 +257,23 @@ fun RegisterTextFieldLastName(lastName:String, onTextChange:(String) -> Unit){
 }
 
 @Composable
-fun RegisterTextFieldEmail(email:String, onTextChange:(String) -> Unit){
-    TextField(value = email,
-        onValueChange = {onTextChange(it)},
+fun RegisterTextFieldEmail(email: String, onTextChange: (String) -> Unit) {
+    TextField(
+        value = email,
+        onValueChange = { onTextChange(it) },
         singleLine = true,
         placeholder = {
-            Text(text = stringResource(R.string.email),
+            Text(
+                text = stringResource(R.string.email),
                 color = MaterialTheme.colors.onBackground,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.body2)
+                style = MaterialTheme.typography.body2
+            )
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next
+        ),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
@@ -245,17 +285,23 @@ fun RegisterTextFieldEmail(email:String, onTextChange:(String) -> Unit){
 }
 
 @Composable
-fun RegisterTextFieldPhone(phone:String, onTextChange:(String) -> Unit){
-    TextField(value = phone,
-        onValueChange = {onTextChange(it)},
+fun RegisterTextFieldPhone(phone: String, onTextChange: (String) -> Unit) {
+    TextField(
+        value = phone,
+        onValueChange = { onTextChange(it) },
         singleLine = true,
         placeholder = {
-            Text(text = stringResource(R.string.phone),
+            Text(
+                text = stringResource(R.string.phone),
                 color = MaterialTheme.colors.onBackground,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.body2)
+                style = MaterialTheme.typography.body2
+            )
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Phone,
+            imeAction = ImeAction.Next
+        ),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
@@ -267,32 +313,46 @@ fun RegisterTextFieldPhone(phone:String, onTextChange:(String) -> Unit){
 }
 
 @Composable
-fun RegisterTextFieldPassword(password:String, visibility: Boolean, viewModel: RegisterViewModel, onTextChange:(String) -> Unit){
-    TextField(value = password,
-        onValueChange = {onTextChange(it)},
+fun RegisterTextFieldPassword(
+    password: String,
+    visibility: Boolean,
+    viewModel: RegisterViewModel,
+    onTextChange: (String) -> Unit
+) {
+    TextField(
+        value = password,
+        onValueChange = { onTextChange(it) },
         singleLine = true,
         placeholder = {
-            Text(text = stringResource(R.string.password),
+            Text(
+                text = stringResource(R.string.password),
                 color = MaterialTheme.colors.onBackground,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.body2)
+                style = MaterialTheme.typography.body2
+            )
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Next
+        ),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
         ),
         leadingIcon = {
-            Image(painter = painterResource(id = R.drawable.baseline_lock_24),
+            Image(
+                painter = painterResource(id = R.drawable.baseline_lock_24),
                 contentDescription = "Icon Person"
-            )},
+            )
+        },
         trailingIcon = {
-            IconButton(onClick = {viewModel.onVisibility()}) {
+            IconButton(onClick = { viewModel.onVisibility() }) {
                 Icon(
-                    painter = painterResource(if (visibility)R.drawable.baseline_visibility_off_24 else R.drawable.baseline_visibility_24),
+                    painter = painterResource(if (visibility) R.drawable.baseline_visibility_off_24 else R.drawable.baseline_visibility_24),
                     null,
-                    tint = Color(0xFF969696))
+                    tint = Color(0xFF969696)
+                )
             }
         },
         shape = MaterialTheme.shapes.medium,
@@ -302,34 +362,48 @@ fun RegisterTextFieldPassword(password:String, visibility: Boolean, viewModel: R
 }
 
 @Composable
-fun RegisterTextFieldPasswordRepeat(passwordRepeat:String, visibility: Boolean, viewModel: RegisterViewModel, onTextChange:(String) -> Unit){
+fun RegisterTextFieldPasswordRepeat(
+    passwordRepeat: String,
+    visibility: Boolean,
+    viewModel: RegisterViewModel,
+    onTextChange: (String) -> Unit
+) {
     val focusManager = LocalFocusManager.current
-    TextField(value = passwordRepeat,
-        onValueChange = {onTextChange(it)},
+    TextField(
+        value = passwordRepeat,
+        onValueChange = { onTextChange(it) },
         singleLine = true,
         placeholder = {
-            Text(text = stringResource(R.string.passwordRepeat),
+            Text(
+                text = stringResource(R.string.passwordRepeat),
                 color = MaterialTheme.colors.onBackground,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.body2)
+                style = MaterialTheme.typography.body2
+            )
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions (onDone = {focusManager.clearFocus()}),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
         ),
         leadingIcon = {
-            Image(painter = painterResource(id = R.drawable.baseline_lock_24),
+            Image(
+                painter = painterResource(id = R.drawable.baseline_lock_24),
                 contentDescription = "Icon Person"
-            )},
+            )
+        },
         trailingIcon = {
-            IconButton(onClick = {viewModel.onVisibility()}) {
+            IconButton(onClick = { viewModel.onVisibility() }) {
                 Icon(
-                    painter = painterResource(if (visibility)R.drawable.baseline_visibility_off_24 else R.drawable.baseline_visibility_24),
+                    painter = painterResource(if (visibility) R.drawable.baseline_visibility_off_24 else R.drawable.baseline_visibility_24),
                     null,
-                    tint = Color(0xFF969696))
+                    tint = Color(0xFF969696)
+                )
             }
         },
         shape = MaterialTheme.shapes.medium,
@@ -339,36 +413,62 @@ fun RegisterTextFieldPasswordRepeat(passwordRepeat:String, visibility: Boolean, 
 }
 
 @Composable
-fun ButtonRegister(viewModel: RegisterViewModel){
-    Button(modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp)
-        .clip(MaterialTheme.shapes.small),
+fun ButtonRegister(
+    viewModel: RegisterViewModel,
+    isLoading: Boolean,
+    validButton: Boolean,
+    name: String,
+    lastName: String,
+    email: String,
+    phone: String,
+    password: String
+) {
+    val context = LocalContext.current
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clip(MaterialTheme.shapes.small),
         shape = MaterialTheme.shapes.small,
         onClick = {
-
+            Toast.makeText(context, "$name $lastName $email $phone $password", Toast.LENGTH_LONG).show()
+            viewModel.onButtonClick(name, lastName, email, phone, password)
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,
-        ), enabled = true
+        ), enabled = validButton
     ) {
-        Text(stringResource(id = R.string.register),
-            style = MaterialTheme.typography.h3,
-            color = MaterialTheme.colors.secondary)
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+                    .padding(10.dp)
+            ) {
+                CircularProgressIndicator(color = Color.White)
+            }
+        } else {
+            Text(
+                stringResource(id = R.string.register),
+                style = MaterialTheme.typography.h3,
+                color = MaterialTheme.colors.secondary
+            )
+        }
     }
 }
 
 @Composable
-fun TextsEnable(textAlign: TextAlign, modienable:Boolean, emailVal:Int){
-    if (!modienable){
-        Text(text = stringResource(emailVal),
+fun TextsEnable(textAlign: TextAlign, modienable: Boolean, emailVal: Int) {
+    if (!modienable) {
+        Text(
+            text = stringResource(emailVal),
             color = MaterialTheme.colors.background,
             style = MaterialTheme.typography.body2.copy(fontSize = 14.sp),
             modifier = Modifier
                 .padding(start = 5.dp, end = 5.dp)
                 .fillMaxWidth(),
             textAlign = textAlign,
-            )
+        )
     }
 }
 

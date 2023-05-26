@@ -5,10 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.ofiu.usecases.clientUser.BottonScreen
-import com.example.ofiu.usecases.clientUser.chat.ChatApp
-import com.example.ofiu.usecases.clientUser.home.HomeApp
-import com.example.ofiu.usecases.clientUser.profile.ProfileApp
+import com.example.ofiu.usecases.users.clientUser.chat.ChatApp
+import com.example.ofiu.usecases.users.clientUser.home.HomeApp
+import com.example.ofiu.usecases.users.clientUser.profile.ProfileApp
 
 @Composable
 fun BottomNavGraph(modifier: Modifier, navController: NavHostController) {

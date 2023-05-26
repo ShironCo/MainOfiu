@@ -1,4 +1,4 @@
-package com.example.ofiu.usecases.clientUser.chat
+package com.example.ofiu.usecases.users.clientUser.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

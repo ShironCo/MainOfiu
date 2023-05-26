@@ -34,5 +34,8 @@
     <string name="newPasswordRepeat">Repite la contraseña</string>
     <string name="updatePassword">Actualice la contraseña de su cuenta</string>
     <string name="updateSuccessful">Se actualizó correctamente la contraseña de su cuenta</string>
+    <string name="client">Soy cliente</string>
+    <string name="professional">Soy profesional</string>
+    <string name="rol">Elige un rol</string>
 
 </resources>

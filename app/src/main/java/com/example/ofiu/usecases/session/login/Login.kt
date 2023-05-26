@@ -158,7 +158,7 @@ fun ButtonLogin(viewModel: LoginViewModel, navController: NavHostController){
         shape = MaterialTheme.shapes.small,
         onClick = {
             viewModel.onLoginSelected()
-            navController.navigate(AppScreens.BottomBarScreen.route)
+            navController.navigate(AppScreens.Menu.route)
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,

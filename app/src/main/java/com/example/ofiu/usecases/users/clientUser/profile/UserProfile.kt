@@ -1,4 +1,4 @@
-package com.example.ofiu.usecases.clientUser.profile
+package com.example.ofiu.usecases.users.clientUser.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
