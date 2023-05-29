@@ -7,7 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -15,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,39 +27,46 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.ofiu.R
+import com.example.ofiu.remote.dto.LoginResponse
 import com.example.ofiu.usecases.navigation.AppScreens
 
 @Composable
 fun LoginApp(navController: NavHostController, viewModel: LoginViewModel = hiltViewModel()) {
-    Scaffold (
-        topBar = { LoginTolBar(navController, viewModel)}
-    ){
-        paddingValues ->
+    Scaffold(
+        topBar = { LoginTolBar(navController, viewModel) }
+    ) { paddingValues ->
         LoginContent(modifier = Modifier.padding(paddingValues), viewModel, navController)
     }
 }
 
 
 @Composable
-fun LoginTolBar(navController: NavHostController, viewModel: LoginViewModel){
-    val backEnable : Boolean by viewModel.backEnable.observeAsState(initial = true)
+fun LoginTolBar(navController: NavHostController, viewModel: LoginViewModel) {
+    val backEnable: Boolean by viewModel.backEnable.observeAsState(initial = true)
     TopAppBar(
         title = {
-            IconButton(onClick = { viewModel.onBackEnable()
-                         navController.popBackStack()
-                                 }, enabled = backEnable) {
-                   Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24),null, )
+            IconButton(onClick = {
+                viewModel.onBackEnable()
+                navController.popBackStack()
+            }, enabled = backEnable) {
+                Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24), null)
             }
-        }, backgroundColor = MaterialTheme.colors.background,
+        },
+        backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp,
     )
 }
 
 @Composable
-fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostController){
+fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostController) {
+    val email: String by viewModel.email.observeAsState(initial = "")
+    val password: String by viewModel.password.observeAsState(initial = "")
+    val response: LoginResponse by viewModel.response.observeAsState(initial = LoginResponse(
+        null, null, null, null, null, null
+    ))
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val validButton: Boolean by viewModel.buttonValid.observeAsState(initial = false)
 
-    val email : String by viewModel.email.observeAsState(initial = "")
-    val password : String by viewModel.password.observeAsState(initial = "")
 
     Box(
         modifier = Modifier
@@ -78,7 +85,8 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
                 .fillMaxWidth()
                 .padding(30.dp)
         ) {
-            Text(stringResource(id = R.string.login),
+            Text(
+                stringResource(id = R.string.login),
                 style = MaterialTheme.typography.h1,
                 color = MaterialTheme.colors.secondary,
                 modifier = Modifier.padding(top = 40.dp)
@@ -98,32 +106,34 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
                         .wrapContentWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    
-                    TextFieldLoginEmail(email) {viewModel.onTextLoginChange(it, password) }
-                    
+
+                    TextFieldLoginEmail(email) {
+                        viewModel.onTextLoginChange(it, password)
+                    }
                     Spacer(modifier = Modifier.height(24.dp))
-                    TextFieldLoginPassword(password,{viewModel.onTextLoginChange(email, it)}, viewModel)
+                    TextFieldLoginPassword(
+                        password,
+                        { viewModel.onTextLoginChange(email, it) },
+                        viewModel
+                    )
+                    if ((response.successful).equals("false")) {
+                        TextIndicator(info = "Email o contraseña incorrectos.")
+                    }
                     Spacer(modifier = Modifier.height(30.dp))
 
-                    ButtonLogin(viewModel, navController)
+                    ButtonLogin(navController, viewModel, email, password, isLoading, validButton)
 
                     Spacer(modifier = Modifier.height(2.dp))
-                    TextButton(onClick = { /*TODO*/ },
-                    colors = ButtonDefaults.textButtonColors(
-                        backgroundColor = Color.Transparent,
-                        disabledContentColor = Color.Transparent,
-                        contentColor = Color.Transparent
-                    )) {
-                        TextButton(onClick = {navController.navigate(AppScreens.ForgotPassword.route)}) {
-                            Text(
-                                stringResource(id = R.string.forgotPass),
-                                style = MaterialTheme.typography.body2,
-                                color = MaterialTheme.colors.secondaryVariant,
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.End
-                            )
-                        }
+                    TextButton(onClick = { navController.navigate(AppScreens.ForgotPassword.route) }) {
+                        Text(
+                            stringResource(id = R.string.forgotPass),
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.secondaryVariant,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.End
+                        )
                     }
+
                     Spacer(modifier = Modifier.height(30.dp))
 
                     Text(
@@ -150,36 +160,63 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
 }
 
 @Composable
-fun ButtonLogin(viewModel: LoginViewModel, navController: NavHostController){
-    Button(modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp)
-        .clip(MaterialTheme.shapes.small),
+fun ButtonLogin(
+    navController: NavHostController,
+    viewModel: LoginViewModel,
+    email: String,
+    password: String,
+    isLoading: Boolean,
+    validButton: Boolean
+) {
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clip(MaterialTheme.shapes.small),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            viewModel.onLoginSelected()
-            navController.navigate(AppScreens.Menu.route)
+            viewModel.onLoginSelected(email, password, navController)
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,
         ),
+        enabled = validButton
     ) {
-        Text(stringResource(id = R.string.login),
-            style = MaterialTheme.typography.h3,
-            color = MaterialTheme.colors.secondary)
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                CircularProgressIndicator(color = Color.White)
+
+            }
+        } else {
+            Text(
+                stringResource(id = R.string.login),
+                style = MaterialTheme.typography.h3,
+                color = MaterialTheme.colors.secondary
+            )
+        }
     }
 }
 
 @Composable
-fun TextFieldLoginEmail(email: String, onTextLoginChange:(String) -> Unit){
-    TextField(value = email,
-        onValueChange = {onTextLoginChange(it)},
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+fun TextFieldLoginEmail(email: String, onTextLoginChange: (String) -> Unit) {
+    TextField(
+        value = email,
+        onValueChange = { onTextLoginChange(it) },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next
+        ),
         singleLine = true,
         leadingIcon = {
-            Image(painter = painterResource(id = R.drawable.baseline_person_24),
+            Image(
+                painter = painterResource(id = R.drawable.baseline_person_24),
                 contentDescription = "Icon Person"
-            )},
+            )
+        },
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
@@ -191,43 +228,61 @@ fun TextFieldLoginEmail(email: String, onTextLoginChange:(String) -> Unit){
 
 
 }
+
 @Composable
-    fun TextFieldLoginPassword(
+fun TextFieldLoginPassword(
     password: String,
     onTextLoginChange: (String) -> Unit,
     viewModel: LoginViewModel
 
 ) {
-    val visibilityButton : Boolean by viewModel.visibilityButton.observeAsState(initial = false)
-    val iconVisibility: Int = if (visibilityButton){
+    val visibilityButton: Boolean by viewModel.visibilityButton.observeAsState(initial = false)
+    val iconVisibility: Int = if (visibilityButton) {
         R.drawable.baseline_visibility_24
     } else {
         R.drawable.baseline_visibility_off_24
     }
     val focusManager = LocalFocusManager.current
-    TextField(value = password,
+    TextField(
+        value = password,
         onValueChange = { onTextLoginChange(it) },
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions (onDone = {focusManager.clearFocus()}),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         leadingIcon = {
-            Image(painter = painterResource(id = R.drawable.baseline_lock_24),
+            Image(
+                painter = painterResource(id = R.drawable.baseline_lock_24),
                 contentDescription = "Icon Person"
-            )},
+            )
+        },
         trailingIcon = {
-                       IconButton(onClick = {viewModel.onVisibilityButton()}) {
-                           Icon(
-                               painter = painterResource(iconVisibility),
-                               null,
-                               tint = Color(0xFF969696))
-                       }
+            IconButton(onClick = { viewModel.onVisibilityButton() }) {
+                Icon(
+                    painter = painterResource(iconVisibility),
+                    null,
+                    tint = Color(0xFF969696)
+                )
+            }
         },
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.surface,
             focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,),
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
         shape = MaterialTheme.shapes.medium,
         textStyle = MaterialTheme.typography.subtitle2.copy(MaterialTheme.colors.onSecondary),
         visualTransformation = if (visibilityButton) VisualTransformation.None else PasswordVisualTransformation()
+    )
+}
+
+@Composable
+fun TextIndicator(info: String) {
+    Text(
+        text = info,
+        style = MaterialTheme.typography.body2,
+        color = MaterialTheme.colors.onError
     )
 }

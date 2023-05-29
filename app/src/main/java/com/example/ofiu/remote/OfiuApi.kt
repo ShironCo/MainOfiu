@@ -1,7 +1,9 @@
 package com.example.ofiu.remote
 
+import com.example.ofiu.remote.dto.LoginResponse
+import com.example.ofiu.remote.dto.LoginUserRequest
 import com.example.ofiu.remote.dto.RegisterUserRequest
-import com.example.ofiu.remote.dto.RegisterUserResponse
+import com.example.ofiu.remote.dto.UserResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -13,5 +15,9 @@ interface OfiuApi {
    @POST("reg_users.php")
     suspend fun addUser(
        @Body registerUser: RegisterUserRequest
-    ): RegisterUserResponse
+    ): UserResponse
+    @POST("ini_sesion.php")
+    suspend fun loginUser(
+       @Body loginUser: LoginUserRequest
+    ): LoginResponse
 }

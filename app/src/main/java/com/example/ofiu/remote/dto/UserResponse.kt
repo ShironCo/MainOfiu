@@ -1,5 +1,5 @@
 package com.example.ofiu.remote.dto
 
-data class RegisterUserResponse(
+data class UserResponse(
     val response: String
 )

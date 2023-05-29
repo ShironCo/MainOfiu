@@ -1,6 +1,5 @@
 package com.example.ofiu.usecases.session.register
 
-import android.opengl.Visibility
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,8 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.ofiu.R
-import com.example.ofiu.remote.dto.RegisterUserRequest
-import com.example.ofiu.remote.dto.RegisterUserResponse
+import com.example.ofiu.remote.dto.UserResponse
 
 
 @Composable
@@ -73,9 +71,9 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
     val passwordVal: Boolean by viewModel.passwordVal.observeAsState(initial = false)
     val visibility: Boolean by viewModel.visibility.observeAsState(initial = false)
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    val validButton: Boolean by viewModel.validButton.observeAsState(initial = true)
-    val messageIndicator: RegisterUserResponse by viewModel.response.observeAsState(
-        RegisterUserResponse("")
+    val validButton: Boolean by viewModel.validButton.observeAsState(initial = false)
+    val messageIndicator: UserResponse by viewModel.response.observeAsState(
+        UserResponse("")
     )
 
     Box(
@@ -443,7 +441,6 @@ fun ButtonRegister(
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(Alignment.Center)
-                    .padding(10.dp)
             ) {
                 CircularProgressIndicator(color = Color.White)
             }

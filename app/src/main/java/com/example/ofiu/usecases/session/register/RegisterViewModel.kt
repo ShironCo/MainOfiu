@@ -1,14 +1,12 @@
 package com.example.ofiu.usecases.session.register
 
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.remote.dto.RegisterUserRequest
-import com.example.ofiu.remote.dto.RegisterUserResponse
+import com.example.ofiu.remote.dto.UserResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,8 +32,8 @@ class RegisterViewModel @Inject constructor(
 
     //Botones vista REGISTER
 
-    private val _response = MutableLiveData<RegisterUserResponse>()
-    val response: LiveData<RegisterUserResponse> = _response
+    private val _response = MutableLiveData<UserResponse>()
+    val response: LiveData<UserResponse> = _response
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -126,17 +124,13 @@ class RegisterViewModel @Inject constructor(
     ) {
         _isLoading.value = true
         viewModelScope.launch {
-            val user =  RegisterUserRequest(
-                name = "juan",
-                lastName = "forero",
-                email = "Juan@gmail.com",
-                phone = "3132126908",
-                password = "dada"
+            val user = RegisterUserRequest(
+                name, lastName, email, phone, password
             )
             repository.addUser(user).onSuccess {
                 _response.value = it
             }.onFailure {
-                _response.value = RegisterUserResponse("Es un error $it")
+                _response.value = UserResponse("Es un error $it")
             }
             _isLoading.value = false
         }

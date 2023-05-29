@@ -37,5 +37,6 @@
     <string name="client">Soy cliente</string>
     <string name="professional">Soy profesional</string>
     <string name="rol">Elige un rol</string>
+    <string name="verifyDescription">Con el fin de garantizar la seguridad tanto de nuestros clientes como la tuya, es imprescindible que verifiquemos tu identidad antes de proceder con la creación de tu perfil como profesional.</string>
 
 </resources>

@@ -1,31 +1,56 @@
 package com.example.ofiu.usecases.session.login
 
-import android.util.Patterns
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
+import com.example.ofiu.domain.OfiuRepository
+import com.example.ofiu.remote.dto.LoginResponse
+import com.example.ofiu.remote.dto.LoginUserRequest
+import com.example.ofiu.usecases.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(): ViewModel(){
+class LoginViewModel @Inject constructor(
+    private val repository: OfiuRepository
+): ViewModel() {
 
+    private val _response = MutableLiveData<LoginResponse>()
+    val response: LiveData<LoginResponse> = _response
 
     private val _email = MutableLiveData<String>()
-    val email : LiveData<String> = _email
+    val email: LiveData<String> = _email
 
     private val _password = MutableLiveData<String>()
-    val password : LiveData<String> = _password
+    val password: LiveData<String> = _password
 
     private val _backEnable = MutableLiveData<Boolean>()
-    val backEnable : LiveData<Boolean> = _backEnable
+    val backEnable: LiveData<Boolean> = _backEnable
 
     private val _visibilityButton = MutableLiveData<Boolean>()
-    val visibilityButton : LiveData<Boolean> = _visibilityButton
+    val visibilityButton: LiveData<Boolean> = _visibilityButton
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _buttonValid = MutableLiveData<Boolean>()
+    val buttonValid: LiveData<Boolean> = _buttonValid
+
+
 
     fun onTextLoginChange(email: String, password: String) {
         _email.value = email
         _password.value = password
+        _buttonValid.value = validData(email, password)
+    }
+
+    fun validData(email: String, password: String): Boolean {
+        return (email.isNotBlank() && password.isNotBlank())
     }
 
     fun onBackEnable(){
@@ -36,8 +61,23 @@ class LoginViewModel @Inject constructor(): ViewModel(){
         _visibilityButton.value = _visibilityButton.value != true
     }
 
-    fun onLoginSelected() {
-
+    fun onLoginSelected(
+        email: String,
+        password: String,
+        navController: NavHostController,
+    ) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            repository.loginUser(LoginUserRequest(email, password)).onSuccess {
+                _response.value = it
+                if(_response.value?.successful.contentEquals("true")){
+                    navController.navigate(AppScreens.Menu.route)
+                }
+            }.onFailure {
+                _response.value = LoginResponse("Error $it", null, null, null, null, null)
+            }
+            _isLoading.value = false
+        }
     }
 
 

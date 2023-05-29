@@ -3,6 +3,7 @@ package com.example.ofiu.usecases.users.workerUser
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.ofiu.R
+import com.example.ofiu.ui.theme.Shapes
 import com.example.ofiu.usecases.navigation.DrawerNavGraph
 import com.example.ofiu.usecases.navigation.DrawerScreens
 import kotlinx.coroutines.launch
@@ -60,13 +62,18 @@ fun DrawerScreen() {
                         }
                     }
                     DrawerScreens.VerifyId.route -> {
-
+                        title = DrawerScreens.VerifyId.title
+                        navController.popBackStack()
+                        navController.navigate(DrawerScreens.VerifyId.route)
+                        scope.launch {
+                            scaffoldState.drawerState.close()
+                        }
                     }
                     else -> {}
                 }
             })
         },
-        drawerShape = MaterialTheme.shapes.small
+        drawerShape = RoundedCornerShape(0.dp)
     ) { padding ->
         DrawerNavGraph(modifier = Modifier.padding(padding), navController = navController)
     }

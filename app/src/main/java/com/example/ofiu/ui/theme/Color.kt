@@ -3,6 +3,7 @@ package com.example.ofiu.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val DarkBlue = Color(0xFF0C3A76)
+val DarkRed = Color(0xFFBB0000)
 val Blue = Color(0xFF114C9A)
 val WhiteBlue = Color(0xFFD7E8FF)
 val DarkGris = Color(0xFF3A3A3A)
