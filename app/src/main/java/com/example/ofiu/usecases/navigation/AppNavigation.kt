@@ -15,6 +15,9 @@ import com.example.ofiu.usecases.session.register.LegalApp
 import com.example.ofiu.usecases.session.register.RegisterApp
 import com.example.ofiu.usecases.users.clientUser.BottomScreen
 import com.example.ofiu.usecases.users.workerUser.DrawerScreen
+import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyFaceApp
+import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyIdApp
+import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyWorkerApp
 
 
 @Composable
@@ -55,7 +58,17 @@ fun AppNavigation(){
             BottomScreen()
         }
         composable(AppScreens.DrawerScreen.route){
-            DrawerScreen()
+            DrawerScreen(navController)
+        }
+        //Verify
+        composable(DrawerScreens.VerifyId.route){
+            VerifyWorkerApp(navController)
+        }
+        composable(AppScreens.VerifyId.route){
+            VerifyIdApp(navController)
+        }
+        composable(AppScreens.VerifyFace.route){
+            VerifyFaceApp()
         }
     }
 }

@@ -15,6 +15,7 @@ import com.example.ofiu.usecases.session.login.LoginViewModel
 import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPassword
 import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPasswordTwo
 import com.example.ofiu.usecases.session.register.RegisterViewModel
+import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyIdApp
 import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyWorkerApp
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -12,4 +12,6 @@ sealed class AppScreens (val route: String){
     object BottomBarScreen: AppScreens("bottom_barScreen")
     object DrawerScreen: AppScreens("drawer_screen")
     object Menu: AppScreens("menu")
+    object VerifyId: AppScreens("verify_id")
+    object VerifyFace: AppScreens("verify_face")
 }

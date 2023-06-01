@@ -38,5 +38,14 @@
     <string name="professional">Soy profesional</string>
     <string name="rol">Elige un rol</string>
     <string name="verifyDescription">Con el fin de garantizar la seguridad tanto de nuestros clientes como la tuya, es imprescindible que verifiquemos tu identidad antes de proceder con la creación de tu perfil como profesional.</string>
+    <string name="verifyAccount">Verificación de identidad </string>
+    <string name="verifyId">Verificación de cedula </string>
+    <string name="verifyFace">Verificación de rostro </string>
+    <string name="verifyIdDesc">A continuacion te pediremos que uses la camara para escanear tu Cedula de Ciudadania.</string>
+    <string name="verifyIdItem1">Busca un lugar con buena luz.</string>
+    <string name="verifyIdItem2">Enfoca tu documento en el rectangulo.</string>
+    <string name="verifyIdItem3">Asegurate de que se vean bien todos los datos.</string>
+    <string name="verifyIdButton1">Frontal</string>
+    <string name="verifyIdButton2">Trasera</string>
 
 </resources>

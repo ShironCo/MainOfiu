@@ -2,6 +2,7 @@ package com.example.ofiu.usecases.session.login
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.ui.focus.FocusManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -65,18 +66,23 @@ class LoginViewModel @Inject constructor(
         email: String,
         password: String,
         navController: NavHostController,
+        focusManager: FocusManager
     ) {
         _isLoading.value = true
         viewModelScope.launch {
-            repository.loginUser(LoginUserRequest(email, password)).onSuccess {
-                _response.value = it
-                if(_response.value?.successful.contentEquals("true")){
-                    navController.navigate(AppScreens.Menu.route)
+                repository.loginUser(LoginUserRequest(email, password)).onSuccess {
+                    _response.value = it
+                    if (_response.value?.successful.contentEquals("true")) {
+                        _password.value = ""
+                        focusManager.clearFocus()
+                        navController.navigate(AppScreens.Menu.route)
+                        _response.value = LoginResponse(null, null, null, null, null, null)
+                        _buttonValid.value = false
+                    }
+                }.onFailure {
+                    _response.value = LoginResponse("Error $it", null, null, null, null, null)
                 }
-            }.onFailure {
-                _response.value = LoginResponse("Error $it", null, null, null, null, null)
-            }
-            _isLoading.value = false
+                _isLoading.value = false
         }
     }
 

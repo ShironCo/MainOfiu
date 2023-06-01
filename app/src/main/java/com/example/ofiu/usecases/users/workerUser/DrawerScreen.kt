@@ -13,16 +13,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.ofiu.R
 import com.example.ofiu.ui.theme.Shapes
+import com.example.ofiu.usecases.navigation.AppScreens
 import com.example.ofiu.usecases.navigation.DrawerNavGraph
 import com.example.ofiu.usecases.navigation.DrawerScreens
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun DrawerScreen() {
+fun DrawerScreen(navControllerMain: NavController) {
     val navController = rememberNavController()
     val screens = listOf(
         DrawerScreens.Profile,
@@ -64,7 +66,7 @@ fun DrawerScreen() {
                     DrawerScreens.VerifyId.route -> {
                         title = DrawerScreens.VerifyId.title
                         navController.popBackStack()
-                        navController.navigate(DrawerScreens.VerifyId.route)
+                        navControllerMain.navigate(DrawerScreens.VerifyId.route)
                         scope.launch {
                             scaffoldState.drawerState.close()
                         }

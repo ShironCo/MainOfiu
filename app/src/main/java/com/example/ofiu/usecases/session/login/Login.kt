@@ -118,6 +118,10 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
                     )
                     if ((response.successful).equals("false")) {
                         TextIndicator(info = "Email o contraseña incorrectos.")
+                    }else if(response.successful.equals("true")){
+                    }else if(response.successful.equals(null)){
+                    }else{
+                        TextIndicator(info = "Ha ocurrido un error")
                     }
                     Spacer(modifier = Modifier.height(30.dp))
 
@@ -168,6 +172,7 @@ fun ButtonLogin(
     isLoading: Boolean,
     validButton: Boolean
 ) {
+    val focusManager = LocalFocusManager.current
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -175,7 +180,7 @@ fun ButtonLogin(
             .clip(MaterialTheme.shapes.small),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            viewModel.onLoginSelected(email, password, navController)
+            viewModel.onLoginSelected(email, password, navController, focusManager)
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,

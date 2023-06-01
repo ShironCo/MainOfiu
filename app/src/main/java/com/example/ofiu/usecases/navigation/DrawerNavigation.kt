@@ -23,8 +23,5 @@ fun DrawerNavGraph(modifier: Modifier, navController: NavHostController) {
         composable(DrawerScreens.Chat.route){
             ChatWorkerApp()
         }
-        composable(DrawerScreens.VerifyId.route){
-            VerifyWorkerApp()
-        }
     }
 }
