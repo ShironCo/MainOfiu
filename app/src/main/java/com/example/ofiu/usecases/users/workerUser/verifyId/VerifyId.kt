@@ -39,16 +39,15 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @Composable
 fun VerifyIdApp(navController: NavHostController, viewModel: VerifyViewModel = hiltViewModel()) {
-    Scaffold(
-        topBar = { VerifyIdTopBar(navController) }
-    ) { paddingValues ->
-        VerifyIdContent(modifier = Modifier.padding(paddingValues), viewModel, navController)
-    }
+//    Scaffold(
+//        topBar = { VerifyIdTopBar(navController) }
+//    ) { paddingValues ->
+    VerifyIdContent(modifier = Modifier.padding(), viewModel, navController)
+    //  }
 }
 
 @Composable
 fun VerifyIdTopBar(navController: NavHostController) {
-    //  val backEnable: Boolean by viewModel.backEnable.observeAsState(initial = true)
     TopAppBar(
         title = {
             Row(
@@ -76,15 +75,22 @@ fun VerifyIdTopBar(navController: NavHostController) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun VerifyIdContent(modifier: Modifier, viewModel: VerifyViewModel, navController: NavHostController) {
+fun VerifyIdContent(
+    modifier: Modifier,
+    viewModel: VerifyViewModel,
+    navController: NavHostController
+) {
 
-    val image1 : String = viewModel.getDataPreference("imageFrontal")
-
-    val image2 : String = viewModel.getDataPreference("imageTrasera")
-
-    var validButtonIdFrontal : Boolean = true
-    if (image1.isNotBlank()){
+    val image1: String = viewModel.getDataPreference("imageFrontal")
+    val image2: String = viewModel.getDataPreference("imageTrasera")
+    var validButtonIdFrontal = true
+    var validButtonIdTrasera = false
+    if (image1.isNotBlank()) {
         validButtonIdFrontal = false
+        validButtonIdTrasera = true
+    }
+    if (image2.isNotBlank()) {
+        validButtonIdTrasera = false
     }
 
     val changeView: Boolean by viewModel.changeView.observeAsState(initial = false)
@@ -126,12 +132,12 @@ fun VerifyIdContent(modifier: Modifier, viewModel: VerifyViewModel, navControlle
                     .wrapContentHeight(Alignment.Bottom)
             ) {
                 VerifyIdButton(title = R.string.verifyIdButton1, validButtonIdFrontal) {
-                    viewModel.onTextChange("imageFrontal")
+                    viewModel.onTextChange(NameImages.ImageFrontal.image)
                     viewModel.onChangeView()
                 }
                 Spacer(modifier = Modifier.height(30.dp))
-                VerifyIdButton(title = R.string.verifyIdButton2, true) {
-                    viewModel.onTextChange("imageTrasera")
+                VerifyIdButton(title = R.string.verifyIdButton2, validButtonIdTrasera) {
+                    viewModel.onTextChange(NameImages.ImageTrasera.image)
                     viewModel.onChangeView()
                 }
             }
@@ -141,12 +147,19 @@ fun VerifyIdContent(modifier: Modifier, viewModel: VerifyViewModel, navControlle
         visible = changeView, enter = scaleIn(), modifier = Modifier
             .fillMaxSize()
     ) {
-        TakeImage(viewModel = viewModel, screenWith, screenHeight)
+        TakeImage(viewModel = viewModel, screenWith, screenHeight, navController)
     }
-    if (previewImage.size > 0){
+    if (previewImage.isNotEmpty()) {
         val bitmapImage = BitmapFactory.decodeByteArray(previewImage, 0, previewImage.size, null)
         val painter = BitmapPainter(bitmapImage.asImageBitmap())
-        PreviewImage(painter = painter, screenHeight = screenHeight , screenWidth = screenWith, viewModel, navController)
+        PreviewImage(
+            painter = painter,
+            screenHeight = screenHeight,
+            screenWidth = screenWith,
+            viewModel,
+            navController,
+            changeView
+        )
     }
 }
 
@@ -182,7 +195,7 @@ fun VerifyIdText(text: Int) {
 }
 
 @Composable
-fun VerifyIdButton(title: Int, validButton : Boolean, verify: () -> Unit) {
+fun VerifyIdButton(title: Int, validButton: Boolean, verify: () -> Unit) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -207,7 +220,12 @@ fun VerifyIdButton(title: Int, validButton : Boolean, verify: () -> Unit) {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun TakeImage(viewModel: VerifyViewModel, screenWith: Dp, screenHeight: Dp) {
+fun TakeImage(
+    viewModel: VerifyViewModel,
+    screenWith: Dp,
+    screenHeight: Dp,
+    navController: NavHostController
+) {
 
     val permission = if (Build.VERSION.SDK_INT <= 28) {
         listOf(
@@ -240,7 +258,7 @@ fun TakeImage(viewModel: VerifyViewModel, screenWith: Dp, screenHeight: Dp) {
                 AndroidView(
                     factory = {
                         previewView = PreviewView(it)
-                        viewModel.showCameraPreview(previewView, lifecycleOwner)
+                        viewModel.showCameraPreview(previewView, lifecycleOwner, true)
                         previewView
                     },
                     modifier = Modifier
@@ -252,11 +270,14 @@ fun TakeImage(viewModel: VerifyViewModel, screenWith: Dp, screenHeight: Dp) {
                         .fillMaxSize()
                         .align(Alignment.Center)
                 ) {
-                    Column(modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Image(
-                            painter = painterResource(id = R.drawable.id) ,
-                            contentDescription = null, Modifier.size(screenWith * 0.8f, screenHeight * 0.8f),
+                            painter = painterResource(id = R.drawable.id),
+                            contentDescription = null,
+                            Modifier.size(screenWith * 0.8f, screenHeight * 0.8f),
                         )
                     }
                 }
@@ -264,8 +285,7 @@ fun TakeImage(viewModel: VerifyViewModel, screenWith: Dp, screenHeight: Dp) {
         }
         Box(
             modifier = Modifier
-                .height(screenHeight * 0.15f)
-                ,
+                .height(screenHeight * 0.15f),
             contentAlignment = Alignment.Center
         ) {
             IconButton(onClick = {
@@ -280,8 +300,10 @@ fun TakeImage(viewModel: VerifyViewModel, screenWith: Dp, screenHeight: Dp) {
                 }
             }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.baseline_motion_photos_on_24), contentDescription = null,
-                    modifier = Modifier.size(45.dp), tint = MaterialTheme.colors.onSurface
+                    painter = painterResource(id = R.drawable.baseline_motion_photos_on_24),
+                    contentDescription = null,
+                    modifier = Modifier.size(45.dp),
+                    tint = MaterialTheme.colors.onSurface
                 )
             }
         }
@@ -290,25 +312,38 @@ fun TakeImage(viewModel: VerifyViewModel, screenWith: Dp, screenHeight: Dp) {
 
 
 @Composable
-fun PreviewImage(painter: Painter, screenHeight : Dp, screenWidth : Dp, viewModel: VerifyViewModel, navController: NavHostController){
+fun PreviewImage(
+    painter: Painter,
+    screenHeight: Dp,
+    screenWidth: Dp,
+    viewModel: VerifyViewModel,
+    navController: NavHostController,
+    changeView: Boolean
+) {
     val context = LocalContext.current
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colors.background)) {
-        Image(painter = painter ,
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background)
+    ) {
+        Image(
+            painter = painter,
             contentDescription = null,
             Modifier.size(screenWidth, screenHeight * 0.85f)
         )
         Row(modifier = Modifier.fillMaxWidth()) {
-            Button(onClick = {
-                viewModel.onSaveImage(context)
-            }, modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .height(screenHeight * 0.15f)
-                .padding(start = 10.dp, end = 5.dp, bottom = 10.dp),
+            Button(
+                onClick = {
+                    viewModel.onCleanPreviewImage()
+                }, modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .height(screenHeight * 0.15f)
+                    .padding(start = 10.dp, end = 5.dp, bottom = 10.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.onSurface)) {
+                    backgroundColor = MaterialTheme.colors.onSurface
+                )
+            ) {
                 Text(
                     text = "Volver a tomar foto",
                     style = MaterialTheme.typography.subtitle1,
@@ -316,16 +351,18 @@ fun PreviewImage(painter: Painter, screenHeight : Dp, screenWidth : Dp, viewMode
                 )
             }
             Spacer(modifier = Modifier.width(10.dp))
-            Button(onClick = {
-
-                navController.popBackStack()
-            }, modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .height(screenHeight * 0.15f)
-                .padding(start = 5.dp, end = 10.dp, bottom = 10.dp),
+            Button(
+                onClick = {
+                    viewModel.onSaveImage(context, navController)
+                }, modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .height(screenHeight * 0.15f)
+                    .padding(start = 5.dp, end = 10.dp, bottom = 10.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.onSurface)) {
+                    backgroundColor = MaterialTheme.colors.onSurface
+                )
+            ) {
                 Text(
                     text = "Continuar",
                     style = MaterialTheme.typography.subtitle1,

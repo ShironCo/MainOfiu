@@ -21,5 +21,4 @@ class PreferencesManager @Inject constructor(@ApplicationContext context: Contex
         }
     }
 
-
 }

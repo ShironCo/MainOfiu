@@ -1,5 +1,8 @@
 package com.example.ofiu.usecases.users.workerUser.verifyId
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -26,7 +30,10 @@ import com.example.ofiu.usecases.navigation.AppScreens
 import com.example.ofiu.usecases.session.login.LoginViewModel
 
 @Composable
-fun VerifyWorkerApp(navHostController: NavHostController, viewModel: VerifyViewModel = hiltViewModel()) {
+fun VerifyWorkerApp(
+    navHostController: NavHostController,
+    viewModel: VerifyViewModel = hiltViewModel()
+) {
     Scaffold(
         topBar = { VerifyTopBar(navHostController) }
     ) { paddingValues ->
@@ -62,15 +69,27 @@ fun VerifyTopBar(navController: NavHostController) {
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun VerifyContent(modifier: Modifier, navController: NavHostController, viewModel: VerifyViewModel) {
+fun VerifyContent(
+    modifier: Modifier,
+    navController: NavHostController,
+    viewModel: VerifyViewModel
+) {
 
-    val image1 : String = viewModel.getDataPreference("imageFrontal")
-    val image2 : String = viewModel.getDataPreference("imageTrasera")
-    var validButtonId: Boolean = true
-    if (image1.isNotBlank() && image2.isNotBlank()){
+    val image1: String = viewModel.getDataPreference(NameImages.ImageFrontal.image)
+    val image2: String = viewModel.getDataPreference(NameImages.ImageTrasera.image)
+    val image3: String = viewModel.getDataPreference(NameImages.ImageFace.image)
+    var validButtonId = true
+    var validButtonFace = false
+    if (image1.isNotBlank() && image2.isNotBlank()) {
         validButtonId = false
+        validButtonFace = true
     }
+    if (image3.isNotBlank()) {
+        validButtonFace = false
+    }
+
 
     Column(
         modifier = Modifier
@@ -91,7 +110,7 @@ fun VerifyContent(modifier: Modifier, navController: NavHostController, viewMode
             sizeH = 50.dp,
             sizeW = 70.dp,
             validButtonId,
-        ){
+        ) {
             navController.navigate(AppScreens.VerifyId.route)
         }
         Spacer(modifier = Modifier.height(30.dp))
@@ -100,58 +119,132 @@ fun VerifyContent(modifier: Modifier, navController: NavHostController, viewMode
             image = R.drawable.verifyaccount,
             sizeH = 50.dp,
             sizeW = 50.dp,
-            true
-        ){
+            validButtonFace
+        ) {
             navController.navigate(AppScreens.VerifyFace.route)
         }
     }
 
+    if (!validButtonFace && !validButtonId){
+        SendImage(viewModel)
+    }
 }
 
 @Composable
-fun VerifyCard(title: Int, image: Int, sizeH: Dp, sizeW: Dp, validButton: Boolean, navigate: () -> Unit) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clickable(enabled = validButton) {
-                    navigate()
-                },
-            elevation = 9.dp,
-            shape = MaterialTheme.shapes.medium,
-            color = MaterialTheme.colors.onSurface,
+fun VerifyCard(
+    title: Int,
+    image: Int,
+    sizeH: Dp,
+    sizeW: Dp,
+    validButton: Boolean,
+    navigate: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .clickable(enabled = validButton) {
+                navigate()
+            },
+        elevation = 9.dp,
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colors.onSurface,
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp, 10.dp, 20.dp, 10.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.padding(20.dp, 10.dp, 20.dp, 10.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(image),
-                        null, Modifier.size(sizeW, sizeH),
-                        colorFilter =
-                        if(!validButton) {ColorFilter.colorMatrix(colorMatrix = ColorMatrix().apply { setToSaturation(0f) })}
-                        else { ColorFilter.colorMatrix(colorMatrix = ColorMatrix().apply { setToSaturation(1f) })}
-                    )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Text(
-                        text = stringResource(title),
-                        style = MaterialTheme.typography.subtitle1,
-                        color = MaterialTheme.colors.onSecondary,
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_arrow_forward_24),
-                        contentDescription = null,
-                        tint = if (validButton) {MaterialTheme.colors.background} else {Color.LightGray},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentWidth(Alignment.End)
-                    )
-                }
+                Image(
+                    painter = painterResource(image),
+                    null, Modifier.size(sizeW, sizeH),
+                    colorFilter =
+                    if (!validButton) {
+                        ColorFilter.colorMatrix(colorMatrix = ColorMatrix().apply {
+                            setToSaturation(
+                                0f
+                            )
+                        })
+                    } else {
+                        ColorFilter.colorMatrix(colorMatrix = ColorMatrix().apply {
+                            setToSaturation(
+                                1f
+                            )
+                        })
+                    }
+                )
+                Spacer(modifier = Modifier.width(20.dp))
+                Text(
+                    text = stringResource(title),
+                    style = MaterialTheme.typography.subtitle1,
+                    color = MaterialTheme.colors.onSecondary,
+                )
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_arrow_forward_24),
+                    contentDescription = null,
+                    tint = if (validButton) {
+                        MaterialTheme.colors.background
+                    } else {
+                        Color.LightGray
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.End)
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun SendImage(viewModel: VerifyViewModel){
+
+    val context = LocalContext.current
+
+    Row(
+        Modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.BottomCenter)) {
+        Button(
+            modifier = Modifier
+                .height(50.dp).weight(1f),
+            shape = MaterialTheme.shapes.small,
+            onClick = {
+                viewModel.CancelSend()
+            },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.colors.onError,
+            ),
+            enabled = true
+        ) {
+            Text(
+                text = "Cancelar",
+                style = MaterialTheme.typography.subtitle1,
+                color = MaterialTheme.colors.onSurface
+            )
+        }
+        Button(
+            modifier = Modifier
+                .height(50.dp).weight(1f),
+            shape = MaterialTheme.shapes.small,
+            onClick = {
+                viewModel.SendImages(context)
+            },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.colors.background,
+            ),
+            enabled = true
+        ) {
+            Text(
+                text = "Verificar Cuenta",
+                style = MaterialTheme.typography.h3,
+                color = MaterialTheme.colors.onSurface
+            )
         }
     }
 }

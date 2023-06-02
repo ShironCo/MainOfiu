@@ -39,7 +39,7 @@ object Module {
     fun provideRepository(
         api: OfiuApi,
         cameraProvider: ProcessCameraProvider,
-        selector: CameraSelector,
+     //   selector: CameraSelector,
         imageCapture: ImageCapture,
         imageAnalysis: ImageAnalysis,
         preview: Preview
@@ -47,22 +47,13 @@ object Module {
         return OfiuRepositoryImpl(
             api,
             cameraProvider,
-            selector,
+           // selector,
             preview,
             imageAnalysis,
             imageCapture
         )
     }
 
-    //Provides Camera
-
-    @Provides
-    @Singleton
-    fun provideCameraSelector(): CameraSelector {
-        return CameraSelector.Builder()
-            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-            .build()
-    }
 
     @Provides
     @Singleton

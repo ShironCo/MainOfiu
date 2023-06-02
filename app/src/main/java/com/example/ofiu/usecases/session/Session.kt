@@ -85,7 +85,9 @@ fun Entry(navController: NavController){
                         .height(50.dp)
                         .clip(MaterialTheme.shapes.small),
                         shape = MaterialTheme.shapes.small,
-                        onClick = {navController.navigate(AppScreens.Login.route)},
+                        onClick = {
+                            navController.navigate(AppScreens.Login.route)
+                                  },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colors.primaryVariant,
                         )
@@ -101,7 +103,9 @@ fun Entry(navController: NavController){
                         .clip(MaterialTheme.shapes.small),
                         shape = MaterialTheme.shapes.small,
                         border = BorderStroke(2.dp, MaterialTheme.colors.primaryVariant),
-                        onClick = {navController.navigate(AppScreens.Legal.route)},
+                        onClick = {
+                            navController.navigate(AppScreens.Legal.route)
+                                  },
                         colors = ButtonDefaults.outlinedButtonColors(
                             backgroundColor = MaterialTheme.colors.onPrimary,
                         )

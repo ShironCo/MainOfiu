@@ -68,7 +68,7 @@ fun AppNavigation(){
             VerifyIdApp(navController)
         }
         composable(AppScreens.VerifyFace.route){
-            VerifyFaceApp()
+            VerifyFaceApp(navController)
         }
     }
 }

@@ -42,10 +42,12 @@
     <string name="verifyId">Verificación de cedula </string>
     <string name="verifyFace">Verificación de rostro </string>
     <string name="verifyIdDesc">A continuacion te pediremos que uses la camara para escanear tu Cedula de Ciudadania.</string>
+    <string name="verifyFaceDesc">A continuacion te pediremos que uses la camara para tomarte una foto de la parte frontal de la cara.</string>
     <string name="verifyIdItem1">Busca un lugar con buena luz.</string>
     <string name="verifyIdItem2">Enfoca tu documento en el rectangulo.</string>
     <string name="verifyIdItem3">Asegurate de que se vean bien todos los datos.</string>
-    <string name="verifyIdButton1">Frontal</string>
-    <string name="verifyIdButton2">Trasera</string>
-
+    <string name="verifyIdButton1">Tomar foto delantera</string>
+    <string name="verifyIdButton2">Tomar foto trasera</string>
+    <string name="verifyFaceButton">Tomar foto</string>
+    <string name="verifyProcess">Queremos informarte que el proceso de verificación de tu cuenta puede tomar un máximo de 48 horas. Hacemos todo lo posible para completar este proceso de forma rápida y eficiente. Sin embargo, si después de este período aún no has recibido la confirmación de la verificación de tu cuenta, te rogamos que te pongas en contacto con nosotros. Estaremos encantados de ayudarte a resolver cualquier problema que puedas encontrar.</string>
 </resources>

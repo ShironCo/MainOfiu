@@ -14,21 +14,23 @@ import com.example.ofiu.remote.dto.LoginResponse
 import com.example.ofiu.remote.dto.LoginUserRequest
 import com.example.ofiu.remote.dto.RegisterUserRequest
 import com.example.ofiu.remote.dto.UserResponse
+import okhttp3.MultipartBody
+import okhttp3.MultipartBody.Part
 import javax.inject.Inject
 
 class OfiuRepositoryImpl @Inject constructor(
     private val api: OfiuApi,
     private val cameraProvider: ProcessCameraProvider,
-    private val selector: CameraSelector,
+    // private val selector: CameraSelector,
     private val preview: Preview,
     private val imageAnalysis: ImageAnalysis,
     private val imageCapture: ImageCapture
-): OfiuRepository {
+) : OfiuRepository {
     override suspend fun addUser(user: RegisterUserRequest): Result<UserResponse> {
         return try {
             val response = api.addUser(user)
             Result.success(response)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
@@ -37,10 +39,18 @@ class OfiuRepositoryImpl @Inject constructor(
         return try {
             val response = api.loginUser(user)
             Result.success(response)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    override suspend fun sendImage(image1: Part, image2: Part, image3: Part): Result<UserResponse> {
+        return try {
+            Result.success(api.sendImage(image1, image2, image3))
+        } catch (e: Exception) {
+            Result.success(UserResponse(e.toString()))
         }
+    }
 
 
     //Camera functions
@@ -51,19 +61,26 @@ class OfiuRepositoryImpl @Inject constructor(
 
     override suspend fun showCameraPreview(
         previewView: PreviewView,
-        lifecycleOwner: LifecycleOwner
+        lifecycleOwner: LifecycleOwner,
+        cameraFacing: Boolean
     ) {
         preview.setSurfaceProvider(previewView.surfaceProvider)
         try {
             cameraProvider.unbindAll()
             cameraProvider.bindToLifecycle(
                 lifecycleOwner,
-                selector,
+                CameraSelector.Builder().requireLensFacing(
+                    if (cameraFacing) {
+                        CameraSelector.LENS_FACING_BACK
+                    } else {
+                        CameraSelector.LENS_FACING_FRONT
+                    }
+                ).build(),
                 preview,
                 imageAnalysis,
                 imageCapture
             )
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
