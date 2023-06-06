@@ -8,18 +8,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.ofiu.Preferences.PreferencesManager
+import com.example.ofiu.Preferences.Variables
 import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.remote.dto.LoginResponse
 import com.example.ofiu.remote.dto.LoginUserRequest
 import com.example.ofiu.usecases.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: OfiuRepository
-): ViewModel() {
+    private val repository: OfiuRepository,
+    private val preferencesManager: PreferencesManager,
+) : ViewModel() {
 
     private val _response = MutableLiveData<LoginResponse>()
     val response: LiveData<LoginResponse> = _response
@@ -43,7 +48,6 @@ class LoginViewModel @Inject constructor(
     val buttonValid: LiveData<Boolean> = _buttonValid
 
 
-
     fun onTextLoginChange(email: String, password: String) {
         _email.value = email
         _password.value = password
@@ -54,11 +58,11 @@ class LoginViewModel @Inject constructor(
         return (email.isNotBlank() && password.isNotBlank())
     }
 
-    fun onBackEnable(){
+    fun onBackEnable() {
         _backEnable.value = false
     }
 
-    fun onVisibilityButton(){
+    fun onVisibilityButton() {
         _visibilityButton.value = _visibilityButton.value != true
     }
 
@@ -66,23 +70,42 @@ class LoginViewModel @Inject constructor(
         email: String,
         password: String,
         navController: NavHostController,
-        focusManager: FocusManager
+        focusManager: FocusManager,
+        context: Context
     ) {
         _isLoading.value = true
         viewModelScope.launch {
-                repository.loginUser(LoginUserRequest(email, password)).onSuccess {
-                    _response.value = it
-                    if (_response.value?.successful.contentEquals("true")) {
-                        _password.value = ""
-                        focusManager.clearFocus()
-                        navController.navigate(AppScreens.Menu.route)
-                        _response.value = LoginResponse(null, null, null, null, null, null)
-                        _buttonValid.value = false
-                    }
-                }.onFailure {
-                    _response.value = LoginResponse("Error $it", null, null, null, null, null)
+            repository.loginUser(LoginUserRequest(email, password)).onSuccess {
+                _response.value = it
+                if (_response.value?.successful.contentEquals("true")) {
+                    _password.value = ""
+                    focusManager.clearFocus()
+                    navController.navigate(AppScreens.Menu.route)
+                    preferencesManager.setDataProfile(
+                        Variables.IdUser.title,
+                        _response.value!!.id.toString()
+                    )
+                    preferencesManager.setDataProfile(
+                        Variables.NameUser.title,
+                        _response.value!!.name.toString()
+                    )
+                    preferencesManager.setDataProfile(
+                        Variables.EmailUser.title,
+                        _response.value!!.email.toString()
+                    )
+                    preferencesManager.setDataProfile(Variables.PasswordUser.title, password)
+                    preferencesManager.setDataProfile(
+                        Variables.PhoneUser.title,
+                        _response.value!!.phone.toString()
+                    )
+                    preferencesManager.setDataProfile(Variables.LoginActive.title, "true")
+                    _buttonValid.value = false
                 }
-                _isLoading.value = false
+            }.onFailure {
+                Toast.makeText(context, "Ha ocurrido un error", Toast.LENGTH_LONG).show()
+               // _response.value = LoginResponse("Error $it", null, null, null, null)
+            }
+            _isLoading.value = false
         }
     }
 

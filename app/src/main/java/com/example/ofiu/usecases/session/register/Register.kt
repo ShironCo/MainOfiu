@@ -191,7 +191,26 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
                         phone,
                         password
                     )
-                    Text(text = messageIndicator.response)
+                    if (messageIndicator.response == "true"){
+                        Text(
+                            text = "¡Usuario registrado!",
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.background
+                        )
+                    }else if (messageIndicator.response == "correo"){
+                        Text(
+                            text = "Correo no valido",
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.onError
+                        )
+                    }else {
+                        Text(
+                            text = "Ha ocurrido un error",
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.onError
+                        )
+                    }
+
                 }
             }
         }

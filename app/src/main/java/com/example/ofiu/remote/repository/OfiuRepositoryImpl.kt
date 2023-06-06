@@ -10,12 +10,10 @@ import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.remote.OfiuApi
-import com.example.ofiu.remote.dto.LoginResponse
-import com.example.ofiu.remote.dto.LoginUserRequest
-import com.example.ofiu.remote.dto.RegisterUserRequest
-import com.example.ofiu.remote.dto.UserResponse
+import com.example.ofiu.remote.dto.*
 import okhttp3.MultipartBody
 import okhttp3.MultipartBody.Part
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class OfiuRepositoryImpl @Inject constructor(
@@ -44,9 +42,25 @@ class OfiuRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun sendImage(image1: Part, image2: Part, image3: Part): Result<UserResponse> {
+    override suspend fun changeUser(user: UserRequest): Result<UserResponse> {
         return try {
-            Result.success(api.sendImage(image1, image2, image3))
+            val response = api.changeUser(user)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun sendImage(
+        image1: Part,
+        image2: Part,
+        image3: Part,
+        id: RequestBody
+    ): Result<UserResponse> {
+        return try {
+            Result.success(api.sendImage(
+                image1, image2, image3, id
+            ))
         } catch (e: Exception) {
             Result.success(UserResponse(e.toString()))
         }

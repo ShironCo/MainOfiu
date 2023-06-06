@@ -36,7 +36,7 @@
     <string name="updateSuccessful">Se actualizó correctamente la contraseña de su cuenta</string>
     <string name="client">Soy cliente</string>
     <string name="professional">Soy profesional</string>
-    <string name="rol">Elige un rol</string>
+    <string name="rol">Elige el rol a desempeñar hoy</string>
     <string name="verifyDescription">Con el fin de garantizar la seguridad tanto de nuestros clientes como la tuya, es imprescindible que verifiquemos tu identidad antes de proceder con la creación de tu perfil como profesional.</string>
     <string name="verifyAccount">Verificación de identidad </string>
     <string name="verifyId">Verificación de cedula </string>
@@ -49,5 +49,14 @@
     <string name="verifyIdButton1">Tomar foto delantera</string>
     <string name="verifyIdButton2">Tomar foto trasera</string>
     <string name="verifyFaceButton">Tomar foto</string>
-    <string name="verifyProcess">Queremos informarte que el proceso de verificación de tu cuenta puede tomar un máximo de 48 horas. Hacemos todo lo posible para completar este proceso de forma rápida y eficiente. Sin embargo, si después de este período aún no has recibido la confirmación de la verificación de tu cuenta, te rogamos que te pongas en contacto con nosotros. Estaremos encantados de ayudarte a resolver cualquier problema que puedas encontrar.</string>
+    <string name="verifyEndTitle">¿Seguro quieres cancelar la verificación?</string>
+    <string name="verifyProcess">La verificación de tu cuenta puede demorar hasta 48 horas. Si no recibes confirmación después de este tiempo, por favor contáctanos para resolver cualquier problema.</string>
+    <string name="verifySuccessful">¡Ya estas verificado!</string>
+    <string name="profileWorkerBasicTitle">Información basica</string>
+    <string name="profileWorkerContactTitle">Informacion de contacto</string>
+    <string name="profileWorkerBriefcaseTitle">Descripción profesional</string>
+    <string name="profileWorkerBriefcaseDesc">Crear descripción profesional</string>
+    <string name="profileWorkerGalleryTitle">Galeria</string>
+    <string name="profileWorkerGenerateDesc">¡Genera una descripción profesional con solo presionar un botón! Utiliza palabras clave para personalizar tu texto a tu medida. ¡Siente la libertad de ajustarlo según tus preferencias!</string>
+    <string name="profileWorkerGeneratePlace">Proporciona algunas palabras clave relacionadas con tu profesión...</string>
 </resources>

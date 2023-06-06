@@ -2,6 +2,7 @@ package com.example.ofiu.Preferences
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.ofiu.remote.dto.LoginResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

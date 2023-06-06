@@ -1,8 +1,6 @@
 package com.example.ofiu.usecases.users.workerUser.verifyId
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.scaleIn
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,84 +11,165 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.ofiu.R
 import com.example.ofiu.usecases.navigation.AppScreens
-import com.example.ofiu.usecases.session.login.LoginViewModel
 
 @Composable
 fun VerifyWorkerApp(
     navHostController: NavHostController,
     viewModel: VerifyViewModel = hiltViewModel()
 ) {
-    Scaffold(
-        topBar = { VerifyTopBar(navHostController) }
-    ) { paddingValues ->
-        VerifyContent(modifier = Modifier.padding(paddingValues), navHostController, viewModel)
+    val alertDialog: Int by viewModel.showAlertDialog.observeAsState(initial = 0)
+    val context = LocalContext.current
+    VerifyContent(navHostController, viewModel)
+    BackHandler(true) {
+        viewModel.onTextChange(null, 2)
+    }
+    if (viewModel.VerifySuccessful()){
+        DialogVerify(title = R.string.verifySuccessful){
+            navHostController.popBackStack()
+        }
+    }
+    if (alertDialog == 1) {
+        Dialog(onDismissRequest = {}
+        ) {
+            Card(
+                shape = MaterialTheme.shapes.medium,
+                backgroundColor = MaterialTheme.colors.onSurface,
+            )
+            {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.cheque),
+                        contentDescription = null,
+                        Modifier
+                            .size(140.dp)
+                            .padding(20.dp)
+                    )
+                    Text(
+                        text = stringResource(id = R.string.verifyProcess),
+                        style = MaterialTheme.typography.subtitle1,
+                        color = MaterialTheme.colors.secondaryVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(
+                            top = 0.dp,
+                            start = 20.dp,
+                            end = 20.dp,
+                            bottom = 20.dp
+                        )
+                    )
+                }
+            }
+        }
+    }
+    if (alertDialog == 2) {
+        Dialog(
+            onDismissRequest = { viewModel.onTextChange(null, 0)} ) {
+            Card(
+                shape = MaterialTheme.shapes.medium,
+                backgroundColor = MaterialTheme.colors.onSurface,
+            )
+            {
+                Column(
+                    modifier = Modifier.padding(30.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.verifyEndTitle),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Button(
+                            onClick = {
+                                viewModel.onCleanImages()
+                                navHostController.popBackStack()
+                            }, colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.onError
+                            )
+                        ) {
+                            Text(
+                                text = "Cancelar",
+                                style = MaterialTheme.typography.subtitle1,
+                                color = MaterialTheme.colors.onSurface
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(
+                            onClick = {
+                                viewModel.onSendImages(context, navHostController)
+                            }, colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.background
+                            )
+                        ) {
+                            Text(
+                                text = "Verificar",
+                                style = MaterialTheme.typography.subtitle1,
+                                color = MaterialTheme.colors.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun VerifyTopBar(navController: NavHostController) {
-    //  val backEnable: Boolean by viewModel.backEnable.observeAsState(initial = true)
-    TopAppBar(
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+fun DialogVerify(title: Int, dismiss: ()-> Unit){
+    Dialog(onDismissRequest = {
+        dismiss()
+    }
+    ) {
+        Card(
+            shape = MaterialTheme.shapes.medium,
+            backgroundColor = MaterialTheme.colors.onSurface,
+        )
+        {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }, enabled = true) {
-                    Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24), null)
-                }
-                Spacer(modifier = Modifier.width(5.dp))
                 Text(
-                    text = stringResource(id = R.string.verifyAccount),
-                    style = MaterialTheme.typography.h3,
-                    color = MaterialTheme.colors.onSurface
+                    text = stringResource(title),
+                    style = MaterialTheme.typography.h1,
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(20.dp)
                 )
             }
-        },
-        backgroundColor = MaterialTheme.colors.background,
-        elevation = 4.dp,
-    )
+        }
+    }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun VerifyContent(
-    modifier: Modifier,
     navController: NavHostController,
     viewModel: VerifyViewModel
 ) {
-
-    val image1: String = viewModel.getDataPreference(NameImages.ImageFrontal.image)
-    val image2: String = viewModel.getDataPreference(NameImages.ImageTrasera.image)
-    val image3: String = viewModel.getDataPreference(NameImages.ImageFace.image)
-    var validButtonId = true
-    var validButtonFace = false
-    if (image1.isNotBlank() && image2.isNotBlank()) {
-        validButtonId = false
-        validButtonFace = true
-    }
-    if (image3.isNotBlank()) {
-        validButtonFace = false
-    }
-
-
+    val validButtonId : Boolean by viewModel.validButtonId.observeAsState(initial = true)
+    val validButtonFace : Boolean by viewModel.validButtonFace.observeAsState(initial = false)
+    viewModel.onValidButtonFace()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -125,8 +204,8 @@ fun VerifyContent(
         }
     }
 
-    if (!validButtonFace && !validButtonId){
-        SendImage(viewModel)
+    if (!validButtonFace && !validButtonId) {
+        SendImage(viewModel, navController)
     }
 }
 
@@ -202,38 +281,22 @@ fun VerifyCard(
 
 
 @Composable
-fun SendImage(viewModel: VerifyViewModel){
+fun SendImage(viewModel: VerifyViewModel, navHostController: NavHostController) {
 
     val context = LocalContext.current
 
-    Row(
+    Box(
         Modifier
             .fillMaxSize()
-            .wrapContentSize(Alignment.BottomCenter)) {
+            .wrapContentSize(Alignment.BottomCenter)
+            .padding(20.dp)
+    ) {
         Button(
             modifier = Modifier
-                .height(50.dp).weight(1f),
+                .height(50.dp),
             shape = MaterialTheme.shapes.small,
             onClick = {
-                viewModel.CancelSend()
-            },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colors.onError,
-            ),
-            enabled = true
-        ) {
-            Text(
-                text = "Cancelar",
-                style = MaterialTheme.typography.subtitle1,
-                color = MaterialTheme.colors.onSurface
-            )
-        }
-        Button(
-            modifier = Modifier
-                .height(50.dp).weight(1f),
-            shape = MaterialTheme.shapes.small,
-            onClick = {
-                viewModel.SendImages(context)
+                viewModel.onSendImages(context, navHostController)
             },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.background,
@@ -242,7 +305,7 @@ fun SendImage(viewModel: VerifyViewModel){
         ) {
             Text(
                 text = "Verificar Cuenta",
-                style = MaterialTheme.typography.h3,
+                style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface
             )
         }

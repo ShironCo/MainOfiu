@@ -10,22 +10,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.ofiu.R
-import com.example.ofiu.usecases.navigation.AppScreens
-import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavHostController){
+fun SplashScreen(navController: NavHostController, viewModel: SplashViewModel = hiltViewModel()){
 
-    var starAnimation by remember {
-        mutableStateOf(false)
-    }
+    val context = LocalContext.current
+    val starAnimation : Boolean by viewModel.startAnimation.observeAsState(initial = false)
+
     val alphaAni = animateFloatAsState(
         targetValue = if(starAnimation) 1f else 0f,
         animationSpec = tween(
@@ -34,10 +35,8 @@ fun SplashScreen(navController: NavHostController){
     )
 
     LaunchedEffect(key1 = true){
-        starAnimation = true
-        delay(500)
-        navController.popBackStack()
-        navController.navigate(AppScreens.Session.route)
+        viewModel.setStartAnimation(true)
+        viewModel.setNav(navController, context)
     }
     Splash(Modifier.background(MaterialTheme.colors.background), alpha = alphaAni.value)
 }
@@ -53,9 +52,13 @@ fun Splash(modifier: Modifier = Modifier, alpha: Float){
     ) {
         Image(painter = painterResource(id = R.drawable.splashlogo),
             contentDescription = "Icon Ofiu",
-            Modifier.weight(1F).alpha(alpha = alpha))
+            Modifier
+                .weight(1F)
+                .alpha(alpha = alpha))
         Image(painter = painterResource(id = R.drawable.nombresplashlogo),
             contentDescription = "Name Ofiu",
-            Modifier.weight(1F).alpha(alpha = alpha))
+            Modifier
+                .weight(1F)
+                .alpha(alpha = alpha))
     }
 }

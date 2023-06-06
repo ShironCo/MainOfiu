@@ -2,7 +2,6 @@ package com.example.ofiu.usecases.users.workerUser.verifyId
 
 import android.Manifest
 import android.graphics.BitmapFactory
-import android.icu.text.ListFormatter.Width
 import android.os.Build
 import android.widget.Toast
 import androidx.camera.view.PreviewView
@@ -19,9 +18,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -33,65 +35,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.ofiu.Preferences.Variables
 import com.example.ofiu.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @Composable
 fun VerifyIdApp(navController: NavHostController, viewModel: VerifyViewModel = hiltViewModel()) {
-//    Scaffold(
-//        topBar = { VerifyIdTopBar(navController) }
-//    ) { paddingValues ->
-    VerifyIdContent(modifier = Modifier.padding(), viewModel, navController)
-    //  }
-}
 
-@Composable
-fun VerifyIdTopBar(navController: NavHostController) {
-    TopAppBar(
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }, enabled = true) {
-                    Image(painter = painterResource(id = R.drawable.baseline_arrow_back_24), null)
-                }
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(
-                    text = stringResource(id = R.string.verifyId),
-                    style = MaterialTheme.typography.h3,
-                    color = MaterialTheme.colors.onSurface
-                )
-            }
-        },
-        backgroundColor = MaterialTheme.colors.background,
-        elevation = 4.dp,
-    )
+    VerifyIdContent(viewModel, navController)
+
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun VerifyIdContent(
-    modifier: Modifier,
     viewModel: VerifyViewModel,
     navController: NavHostController
 ) {
+    val validButtonIdFrontal: Boolean by viewModel.validButtonId.observeAsState(initial = true)
+    val validButtonIdTrasera: Boolean by viewModel.validButtonFace.observeAsState(initial = false)
 
-    val image1: String = viewModel.getDataPreference("imageFrontal")
-    val image2: String = viewModel.getDataPreference("imageTrasera")
-    var validButtonIdFrontal = true
-    var validButtonIdTrasera = false
-    if (image1.isNotBlank()) {
-        validButtonIdFrontal = false
-        validButtonIdTrasera = true
-    }
-    if (image2.isNotBlank()) {
-        validButtonIdTrasera = false
-    }
+    viewModel.onValidButtonId()
 
     val changeView: Boolean by viewModel.changeView.observeAsState(initial = false)
     val previewImage: ByteArray by viewModel.previewView.observeAsState(initial = ByteArray(0))
@@ -132,12 +97,12 @@ fun VerifyIdContent(
                     .wrapContentHeight(Alignment.Bottom)
             ) {
                 VerifyIdButton(title = R.string.verifyIdButton1, validButtonIdFrontal) {
-                    viewModel.onTextChange(NameImages.ImageFrontal.image)
+                    viewModel.onTextChange(Variables.ImageFrontal.title, 0)
                     viewModel.onChangeView()
                 }
                 Spacer(modifier = Modifier.height(30.dp))
                 VerifyIdButton(title = R.string.verifyIdButton2, validButtonIdTrasera) {
-                    viewModel.onTextChange(NameImages.ImageTrasera.image)
+                    viewModel.onTextChange(Variables.ImageTrasera.title, 0)
                     viewModel.onChangeView()
                 }
             }
@@ -147,7 +112,7 @@ fun VerifyIdContent(
         visible = changeView, enter = scaleIn(), modifier = Modifier
             .fillMaxSize()
     ) {
-        TakeImage(viewModel = viewModel, screenWith, screenHeight, navController)
+        TakeImage(viewModel = viewModel, screenWith, screenHeight)
     }
     if (previewImage.isNotEmpty()) {
         val bitmapImage = BitmapFactory.decodeByteArray(previewImage, 0, previewImage.size, null)
@@ -157,8 +122,7 @@ fun VerifyIdContent(
             screenHeight = screenHeight,
             screenWidth = screenWith,
             viewModel,
-            navController,
-            changeView
+            navController
         )
     }
 }
@@ -224,7 +188,6 @@ fun TakeImage(
     viewModel: VerifyViewModel,
     screenWith: Dp,
     screenHeight: Dp,
-    navController: NavHostController
 ) {
 
     val permission = if (Build.VERSION.SDK_INT <= 28) {
@@ -232,9 +195,10 @@ fun TakeImage(
             Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
-    } else listOf(
-        Manifest.permission.CAMERA
-    )
+    } else {
+        viewModel.setSDK(true)
+        listOf(Manifest.permission.CAMERA)
+    }
     val permissionState = rememberMultiplePermissionsState(permissions = permission)
     if (!permissionState.allPermissionsGranted) {
         SideEffect {
@@ -318,27 +282,39 @@ fun PreviewImage(
     screenWidth: Dp,
     viewModel: VerifyViewModel,
     navController: NavHostController,
-    changeView: Boolean
 ) {
+    val sDKapp: Boolean by viewModel.sDK28.observeAsState(initial = false)
     val context = LocalContext.current
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
+            .fillMaxSize().background(MaterialTheme.colors.background)
     ) {
         Image(
             painter = painter,
             contentDescription = null,
-            Modifier.size(screenWidth, screenHeight * 0.85f)
+            contentScale = ContentScale.Inside,
+            modifier = Modifier
+                .rotate(
+                    if (sDKapp) {
+                        90f
+                    } else {
+                        0f
+                    }
+                )
+                .size(
+                    width = screenWidth,
+                    height = screenHeight * 0.9f
+                )
         )
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier
+            .fillMaxWidth() ){
             Button(
                 onClick = {
                     viewModel.onCleanPreviewImage()
                 }, modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .height(screenHeight * 0.15f)
+                    .height(screenHeight * 0.1f)
                     .padding(start = 10.dp, end = 5.dp, bottom = 10.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.onSurface
@@ -357,7 +333,7 @@ fun PreviewImage(
                 }, modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .height(screenHeight * 0.15f)
+                    .height(screenHeight * 0.1f)
                     .padding(start = 5.dp, end = 10.dp, bottom = 10.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.onSurface

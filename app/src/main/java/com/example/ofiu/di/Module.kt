@@ -6,6 +6,8 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.remote.OfiuApi
 import com.example.ofiu.remote.repository.OfiuRepositoryImpl
@@ -34,12 +36,12 @@ object Module {
             ).build().create(OfiuApi::class.java)
     }
 
+
     @Provides
     @Singleton
     fun provideRepository(
         api: OfiuApi,
         cameraProvider: ProcessCameraProvider,
-     //   selector: CameraSelector,
         imageCapture: ImageCapture,
         imageAnalysis: ImageAnalysis,
         preview: Preview
@@ -47,7 +49,6 @@ object Module {
         return OfiuRepositoryImpl(
             api,
             cameraProvider,
-           // selector,
             preview,
             imageAnalysis,
             imageCapture

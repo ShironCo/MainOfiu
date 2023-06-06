@@ -62,7 +62,7 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
     val response: LoginResponse by viewModel.response.observeAsState(initial = LoginResponse(
-        null, null, null, null, null, null
+        null, null, null, null, null
     ))
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val validButton: Boolean by viewModel.buttonValid.observeAsState(initial = false)
@@ -138,25 +138,25 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(30.dp))
-
-                    Text(
-                        stringResource(id = R.string.loginapp),
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.secondaryVariant
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row() {
-                        Image(
-                            painter = painterResource(id = R.drawable.google___original),
-                            contentDescription = "Logo de Google"
-                        )
-                        Spacer(modifier = Modifier.width(1.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.facebook___original),
-                            contentDescription = "Logo de Google"
-                        )
-                    }
+//                    Spacer(modifier = Modifier.height(30.dp))
+//
+//                    Text(
+//                        stringResource(id = R.string.loginapp),
+//                        style = MaterialTheme.typography.body1,
+//                        color = MaterialTheme.colors.secondaryVariant
+//                    )
+//                    Spacer(modifier = Modifier.height(20.dp))
+//                    Row() {
+//                        Image(
+//                            painter = painterResource(id = R.drawable.google___original),
+//                            contentDescription = "Logo de Google"
+//                        )
+//                        Spacer(modifier = Modifier.width(1.dp))
+//                        Image(
+//                            painter = painterResource(id = R.drawable.facebook___original),
+//                            contentDescription = "Logo de Google"
+//                        )
+//                    }
                 }
             }
         }
@@ -173,6 +173,7 @@ fun ButtonLogin(
     validButton: Boolean
 ) {
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -180,7 +181,7 @@ fun ButtonLogin(
             .clip(MaterialTheme.shapes.small),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            viewModel.onLoginSelected(email, password, navController, focusManager)
+            viewModel.onLoginSelected(email, password, navController, focusManager, context)
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,
