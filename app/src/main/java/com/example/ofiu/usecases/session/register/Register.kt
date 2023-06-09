@@ -28,8 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.ofiu.R
 import com.example.ofiu.remote.dto.UserResponse
+import com.example.ofiu.usecases.navigation.AppScreens
 
 
 @Composable
@@ -37,7 +39,7 @@ fun RegisterApp(navController: NavController, viewModel: RegisterViewModel = hil
     Scaffold(
         topBar = { RegisterTopBar(viewModel, navController) }
     ) { paddingValues ->
-        RegisterContent(Modifier.padding(paddingValues), viewModel)
+        RegisterContent(Modifier.padding(paddingValues), viewModel, navController)
     }
 }
 
@@ -59,7 +61,7 @@ fun RegisterTopBar(viewModel: RegisterViewModel, navController: NavController) {
 }
 
 @Composable
-fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
+fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel, navController: NavController) {
 
     val name: String by viewModel.name.observeAsState(initial = "")
     val lastName: String by viewModel.lastName.observeAsState(initial = "")
@@ -189,7 +191,8 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
                         lastName,
                         email,
                         phone,
-                        password
+                        password,
+                        navHostController = navController
                     )
                     if (messageIndicator.response == "true"){
                         Text(
@@ -203,6 +206,7 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
                             style = MaterialTheme.typography.body2,
                             color = MaterialTheme.colors.onError
                         )
+                    }else if (messageIndicator.response.isBlank()){
                     }else {
                         Text(
                             text = "Ha ocurrido un error",
@@ -210,7 +214,6 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel) {
                             color = MaterialTheme.colors.onError
                         )
                     }
-
                 }
             }
         }
@@ -438,9 +441,9 @@ fun ButtonRegister(
     lastName: String,
     email: String,
     phone: String,
-    password: String
+    password: String,
+    navHostController: NavController
 ) {
-    val context = LocalContext.current
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -448,8 +451,7 @@ fun ButtonRegister(
             .clip(MaterialTheme.shapes.small),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            Toast.makeText(context, "$name $lastName $email $phone $password", Toast.LENGTH_LONG).show()
-            viewModel.onButtonClick(name, lastName, email, phone, password)
+            viewModel.onButtonClick(name, lastName, email, phone, password, navHostController)
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,

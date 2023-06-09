@@ -35,7 +35,7 @@ fun VerifyWorkerApp(
     BackHandler(true) {
         viewModel.onTextChange(null, 2)
     }
-    if (viewModel.VerifySuccessful()){
+    if (viewModel.verifySuccessful()){
         DialogVerify(title = R.string.verifySuccessful){
             navHostController.popBackStack()
         }

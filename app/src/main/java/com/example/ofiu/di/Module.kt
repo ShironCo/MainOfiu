@@ -1,23 +1,25 @@
 package com.example.ofiu.di
 
 import android.app.Application
-import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.example.ofiu.domain.OfiuRepository
-import com.example.ofiu.remote.OfiuApi
+import com.example.ofiu.remote.apis.gpt.ChatGptApi
+import com.example.ofiu.remote.apis.gpt.ApiKeyInterceptor
+import com.example.ofiu.remote.apis.ofiu.OfiuApi
 import com.example.ofiu.remote.repository.OfiuRepositoryImpl
 import dagger.hilt.InstallIn
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.create
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -36,10 +38,24 @@ object Module {
             ).build().create(OfiuApi::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideApi(): ChatGptApi {
+        return Retrofit.Builder().baseUrl(ChatGptApi.BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create())
+            .client(OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .writeTimeout(20, TimeUnit.SECONDS)
+                .addInterceptor(HttpLoggingInterceptor()).addInterceptor(ApiKeyInterceptor())
+                .build()).build().create()
+    }
+
 
     @Provides
     @Singleton
     fun provideRepository(
+        gpt: ChatGptApi,
         api: OfiuApi,
         cameraProvider: ProcessCameraProvider,
         imageCapture: ImageCapture,
@@ -47,6 +63,7 @@ object Module {
         preview: Preview
     ): OfiuRepository {
         return OfiuRepositoryImpl(
+            gpt,
             api,
             cameraProvider,
             preview,

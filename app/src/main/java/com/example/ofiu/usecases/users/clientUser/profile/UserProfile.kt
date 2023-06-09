@@ -18,3 +18,8 @@ fun ProfileApp(){
         Text(text = "Esto es un perfil")
     }
 }
+
+@Composable
+fun ProfileContent(){
+
+}

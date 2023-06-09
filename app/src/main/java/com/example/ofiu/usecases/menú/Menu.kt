@@ -45,8 +45,6 @@ fun MenuContent(navController: NavHostController, viewModel: MenuViewModel) {
         }
         Spacer(modifier = Modifier.height(10.dp))
         MenuImage(img = R.drawable.worker, R.string.professional){
-            navController.popBackStack()
-            navController.navigate(AppScreens.DrawerScreen.route)
             viewModel.onChangeUser("1", context, navController)
         }
     }

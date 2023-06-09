@@ -8,8 +8,11 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
+import com.example.aprendiendoausargpt.screen.data.remote.dto.GptRequestDto
+import com.example.aprendiendoausargpt.screen.data.remote.dto.GptResponseDto
 import com.example.ofiu.domain.OfiuRepository
-import com.example.ofiu.remote.OfiuApi
+import com.example.ofiu.remote.apis.gpt.ChatGptApi
+import com.example.ofiu.remote.apis.ofiu.OfiuApi
 import com.example.ofiu.remote.dto.*
 import okhttp3.MultipartBody
 import okhttp3.MultipartBody.Part
@@ -17,9 +20,9 @@ import okhttp3.RequestBody
 import javax.inject.Inject
 
 class OfiuRepositoryImpl @Inject constructor(
+    private val gpt: ChatGptApi,
     private val api: OfiuApi,
     private val cameraProvider: ProcessCameraProvider,
-    // private val selector: CameraSelector,
     private val preview: Preview,
     private val imageAnalysis: ImageAnalysis,
     private val imageCapture: ImageCapture
@@ -66,6 +69,20 @@ class OfiuRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun sendImageGallery(
+        id: RequestBody,
+        images: Array<MultipartBody.Part>
+    ): Result<UserResponse> {
+        return try {
+            Result.success(api.sendImageGallery(
+                id,
+                images
+            ))
+        } catch (e: Exception) {
+            Result.success(UserResponse(e.toString()))
+        }
+    }
+
 
     //Camera functions
 
@@ -96,6 +113,15 @@ class OfiuRepositoryImpl @Inject constructor(
             )
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    override suspend fun promptGpt(prompt: String): Result<GptResponseDto> {
+        return try {
+            val text = gpt.getInformation(GptRequestDto(prompt = "Crea una descripcion profesional de minimo 25 palabras y maximo 30 palabras con las siguientes palabras clave: $prompt"))
+            Result.success(text)
+        }catch(e: Exception){
+            Result.failure(e)
         }
     }
 

@@ -23,8 +23,10 @@ import com.example.ofiu.remote.dto.UserResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
@@ -63,7 +65,7 @@ class VerifyViewModel @Inject constructor(
 
     private val _verifySuccessful = MutableLiveData<Boolean>()
 
-    fun VerifySuccessful(): Boolean{
+    fun verifySuccessful(): Boolean{
         val verify = preferencesManager.getDataProfile(Variables.Verify.title)
         return (verify == "verificado")
     }
@@ -187,7 +189,7 @@ class VerifyViewModel @Inject constructor(
         }
         CoroutineScope(Dispatchers.IO).launch {
             val id = preferencesManager.getDataProfile(Variables.IdUser.title)
-            val requestBody = RequestBody.create(MediaType.parse("text/plain"), id)
+            val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
             val result = repository.sendImage(_image1.value!!, _image2.value!!, _image3.value!!, requestBody)
             withContext(Dispatchers.Main) {
                 result.onSuccess {
@@ -220,14 +222,14 @@ class VerifyViewModel @Inject constructor(
             val byteArrayOutputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
             val byteArray = byteArrayOutputStream.toByteArray()
-            val requestBody = RequestBody.create(MediaType.parse("image/jpeg"), byteArray)
+            val requestBody =
+                byteArray.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0)
             val requestFile = MultipartBody.Part.createFormData(name, "image/jpeg", requestBody)
             Result.success(requestFile)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-
     private fun DeleteImage(path: String) {
         val file = File(preferencesManager.getDataProfile(path))
         file.delete()

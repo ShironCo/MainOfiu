@@ -1,4 +1,4 @@
-package com.example.ofiu.remote
+package com.example.ofiu.remote.apis.ofiu
 
 import com.example.ofiu.remote.dto.*
 import okhttp3.MultipartBody
@@ -36,4 +36,12 @@ interface OfiuApi {
         @Part image3: MultipartBody.Part,
         @Part ("id") id: RequestBody
     ): UserResponse
+
+    @Multipart
+    @POST("subir_galeria.php")
+    suspend fun sendImageGallery(
+        @Part ("id") id: RequestBody,
+        @Part photo : Array<MultipartBody.Part>
+    ): UserResponse
+
 }

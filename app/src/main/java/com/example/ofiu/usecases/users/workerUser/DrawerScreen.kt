@@ -1,5 +1,8 @@
 package com.example.ofiu.usecases.users.workerUser
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,11 +11,17 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.ofiu.R
@@ -24,7 +33,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun DrawerScreen(navControllerMain: NavController) {
+fun DrawerScreen(navControllerMain: NavController, viewModel: DrawerScreenViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     val screens = listOf(
         DrawerScreens.Profile,
@@ -34,6 +43,8 @@ fun DrawerScreen(navControllerMain: NavController) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     var title by remember{ mutableStateOf(DrawerScreens.Profile.title) }
+    val backHandler : Boolean by viewModel.backHandler.observeAsState(initial = false)
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -78,6 +89,70 @@ fun DrawerScreen(navControllerMain: NavController) {
         drawerShape = RoundedCornerShape(0.dp)
     ) { padding ->
         DrawerNavGraph(modifier = Modifier.padding(padding), navController = navController)
+    }
+    BackHandler(
+        true
+    ) {
+        viewModel.onBackHandler(true)
+    }
+    if (backHandler) {
+        Dialog(
+            onDismissRequest = { viewModel.onBackHandler(false)}) {
+            Card(
+                shape = MaterialTheme.shapes.medium,
+                backgroundColor = MaterialTheme.colors.onSurface,
+            )
+            {
+                Column(
+                    modifier = Modifier.padding(20.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.closeSession),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Button(
+                            onClick = {
+                                    viewModel.onBackHandler(false)
+                            }, colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.onError
+                            )) {
+                            Text(
+                                text = "Cancelar",
+                                style = MaterialTheme.typography.subtitle1.copy(
+                                    fontSize = 14.sp
+                                ),
+                                color = MaterialTheme.colors.onSurface
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(
+                            onClick = {
+                                viewModel.onCloseSession(navControllerMain)
+                            }, colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.background
+                            )
+                        ) {
+                            Text(
+                                text = "Cerrar sesión",
+                                style = MaterialTheme.typography.subtitle1.copy(
+                                    fontSize = 14.sp
+                                ),
+                                color = MaterialTheme.colors.onSurface,
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

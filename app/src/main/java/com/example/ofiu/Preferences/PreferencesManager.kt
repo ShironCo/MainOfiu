@@ -2,7 +2,7 @@ package com.example.ofiu.Preferences
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.ofiu.remote.dto.LoginResponse
+import com.squareup.moshi.Moshi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -21,5 +21,4 @@ class PreferencesManager @Inject constructor(@ApplicationContext context: Contex
             apply()
         }
     }
-
 }

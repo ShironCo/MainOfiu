@@ -80,6 +80,7 @@ class LoginViewModel @Inject constructor(
                 if (_response.value?.successful.contentEquals("true")) {
                     _password.value = ""
                     focusManager.clearFocus()
+                    navController.popBackStack()
                     navController.navigate(AppScreens.Menu.route)
                     preferencesManager.setDataProfile(
                         Variables.IdUser.title,

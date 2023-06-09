@@ -56,7 +56,8 @@
     <string name="profileWorkerContactTitle">Informacion de contacto</string>
     <string name="profileWorkerBriefcaseTitle">Descripción profesional</string>
     <string name="profileWorkerBriefcaseDesc">Crear descripción profesional</string>
-    <string name="profileWorkerGalleryTitle">Galeria</string>
+    <string name="profileWorkerGalleryTitle">Galeria de trabajos</string>
     <string name="profileWorkerGenerateDesc">¡Genera una descripción profesional con solo presionar un botón! Utiliza palabras clave para personalizar tu texto a tu medida. ¡Siente la libertad de ajustarlo según tus preferencias!</string>
     <string name="profileWorkerGeneratePlace">Proporciona algunas palabras clave relacionadas con tu profesión...</string>
+    <string name="closeSession">¿Seguro quiere cerrar sesión?</string>
 </resources>

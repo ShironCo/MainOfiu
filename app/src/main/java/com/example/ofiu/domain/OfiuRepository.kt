@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.camera.core.ImageCapture
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
+import com.example.aprendiendoausargpt.screen.data.remote.dto.GptResponseDto
 import com.example.ofiu.remote.dto.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -20,6 +21,11 @@ interface OfiuRepository {
         id: RequestBody
     ): Result<UserResponse>
 
+    suspend fun sendImageGallery(
+        id:RequestBody,
+        images: Array<MultipartBody.Part>
+    ): Result<UserResponse>
+
     //Repository Camera
     suspend fun captureImage(): ImageCapture
     suspend fun showCameraPreview(
@@ -27,5 +33,7 @@ interface OfiuRepository {
         lifecycleOwner: LifecycleOwner,
         cameraFacing: Boolean
     )
+
+    suspend fun promptGpt(prompt: String): Result<GptResponseDto>
 }
 

@@ -4,9 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.remote.dto.RegisterUserRequest
 import com.example.ofiu.remote.dto.UserResponse
+import com.example.ofiu.usecases.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -120,7 +123,8 @@ class RegisterViewModel @Inject constructor(
         lastName: String,
         email: String,
         phone: String,
-        password: String
+        password: String,
+        navHostController: NavController
     ) {
         _isLoading.value = true
         viewModelScope.launch {
@@ -129,6 +133,10 @@ class RegisterViewModel @Inject constructor(
             )
             repository.addUser(user).onSuccess {
                 _response.value = it
+                if (it.response == "true"){
+                    navHostController.popBackStack()
+                    navHostController.navigate(AppScreens.Session.route)
+                }
             }.onFailure {
                 _response.value = UserResponse("Es un error $it")
             }

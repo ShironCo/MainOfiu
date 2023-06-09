@@ -1,12 +1,18 @@
 package com.example.ofiu.usecases.users.workerUser.profile
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.content.Context
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -16,53 +22,77 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.ofiu.R
+import kotlin.contracts.contract
 
 @Composable
 fun ProfileWorkerApp(viewModel: UserProfileViewModel = hiltViewModel()) {
     val toggleDesc: Boolean by viewModel.toggleDesc.observeAsState(initial = false)
     val desc: String by viewModel.desc.observeAsState(initial = "")
-
-    ProfileWorkerContent(viewModel, toggleDesc)
+    val descDialog: String by viewModel.descDialog.observeAsState(initial = "")
+    val loading : Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val context = LocalContext.current
+    val response : String by viewModel.response.observeAsState(initial = "")
+    ProfileWorkerContent(viewModel, desc)
     if (toggleDesc) {
         DescProfileContent(
-            desc = desc,
+            response = response,
+            loading = loading,
+            desc = descDialog,
             changeDesc = {
                 viewModel.onTextChange(it)
             },
+            onGenerate = {
+                viewModel.onGenerateDesc(context)
+            },
             dismiss = {
                 viewModel.onSetToggleDesc(false)
-                viewModel.onTextChange("")
             }
         )
     }
 }
 
 @Composable
-fun ProfileWorkerContent(viewModel: UserProfileViewModel, toggleDesc: Boolean) {
+fun ProfileWorkerContent(viewModel: UserProfileViewModel, desc: String) {
+    val scrollBar = rememberScrollState()
+
     Column(
-        Modifier.background(MaterialTheme.colors.onPrimary)
+        Modifier
+            .background(MaterialTheme.colors.onPrimary)
+            .fillMaxSize()
+            .verticalScroll(scrollBar)
     ) {
-        ProfileBasicInformation()
-        ProfileContactInformation()
-        ProfileBriefcase(viewModel)
-        ProfileGallery()
+        ProfileBasicInformation(viewModel)
+        ProfileContactInformation(viewModel)
+        ProfileBriefcase(viewModel, desc)
+        ProfileGallery(viewModel)
     }
 }
 
 @Composable
-fun ProfileBasicInformation() {
+fun ProfileBasicInformation(viewModel: UserProfileViewModel) {
+    val name : String by viewModel.name.observeAsState(initial = "")
+
+    val image : Uri by viewModel.imageProfile.observeAsState(initial = Uri.EMPTY)
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()){
+        if (it != null){
+            viewModel.setImageProfile(it)
+        }
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -78,14 +108,23 @@ fun ProfileBasicInformation() {
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(30))
-                    .wrapContentSize()
+                    .size(70.dp)
                     .background(MaterialTheme.colors.onSurface)
             ) {
+                if (image.toString().isNotBlank()){
+                AsyncImage(model = image, contentDescription = null,
+                    contentScale = ContentScale.Crop, modifier = Modifier.clickable {
+                        launcher.launch("image/*")
+                    })}
+                else {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_person_24),
                     contentDescription = null, tint = MaterialTheme.colors.background,
-                    modifier = Modifier.size(70.dp)
-                )
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable {
+                            launcher.launch("image/*")
+                        })}
             }
             Column(
                 modifier = Modifier
@@ -94,7 +133,7 @@ fun ProfileBasicInformation() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Juan Pablo",
+                    text = name,
                     style = MaterialTheme.typography.h2.copy(
                         fontSize = 20.sp,
                         shadow = Shadow(
@@ -144,7 +183,9 @@ fun ProfileBasicInformation() {
 }
 
 @Composable
-fun ProfileContactInformation() {
+fun ProfileContactInformation(viewModel:UserProfileViewModel) {
+    val email : String by viewModel.email.observeAsState(initial = "")
+    val phone : String by viewModel.phone.observeAsState(initial = "")
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -178,7 +219,7 @@ fun ProfileContactInformation() {
                 modifier = Modifier.padding(end = 10.dp)
             )
             Text(
-                text = "3132126908",
+                text = phone,
                 style = MaterialTheme.typography.subtitle1.copy(
                     fontSize = 15.sp
                 ),
@@ -204,7 +245,7 @@ fun ProfileContactInformation() {
             modifier = Modifier.padding(top = 10.dp, bottom = 5.dp)
         )
         Text(
-            text = "juandafloo55@gmail.com",
+            text = email,
             style = MaterialTheme.typography.subtitle1.copy(
                 fontSize = 15.sp
             ),
@@ -222,7 +263,7 @@ fun ProfileContactInformation() {
 }
 
 @Composable
-fun ProfileBriefcase(viewModel: UserProfileViewModel) {
+fun ProfileBriefcase(viewModel: UserProfileViewModel, desc: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -237,12 +278,12 @@ fun ProfileBriefcase(viewModel: UserProfileViewModel) {
             modifier = Modifier.padding(bottom = 10.dp)
         )
         Text(
-            text = "",
+            text = desc,
             style = MaterialTheme.typography.subtitle1.copy(
                 fontSize = 14.sp
             ),
             color = MaterialTheme.colors.onBackground,
-            modifier = Modifier.padding(bottom = 10.dp)
+            modifier = Modifier.padding(bottom = 20.dp)
         )
         Card(
             modifier = Modifier
@@ -270,112 +311,106 @@ fun ProfileBriefcase(viewModel: UserProfileViewModel) {
 }
 
 @Composable
-fun ProfileGallery() {
-    Text(
-        text = stringResource(id = R.string.profileWorkerGalleryTitle),
-        style = MaterialTheme.typography.h2.copy(
-            fontSize = 17.sp
-        ),
-        color = MaterialTheme.colors.secondaryVariant,
-        modifier = Modifier.padding(bottom = 10.dp)
-    )
-}
-
-@Composable
 fun DescProfileContent(
+    response : String,
+    loading: Boolean,
     desc: String,
     changeDesc: (String) -> Unit,
+    onGenerate: () -> Unit,
     dismiss: () -> Unit
 ) {
-    Dialog(onDismissRequest = { dismiss() }) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            elevation = 8.dp,
-            shape = MaterialTheme.shapes.small,
-            color = MaterialTheme.colors.onSurface
-        ) {
-            Column(
+    val scrollBar = rememberScrollState()
+    Dialog(onDismissRequest = {
+        if (!loading){
+            dismiss()
+        }
+    }
+    ) {
+        if (!loading){
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
+                    .height(400.dp),
+                elevation = 8.dp,
+                shape = MaterialTheme.shapes.small,
+                color = MaterialTheme.colors.onSurface
             ) {
-                TextField(
-                    value = desc,
-                    onValueChange = {
-                        changeDesc(it)
-                    },
-                    placeholder ={
-                        Text(
-                            text = stringResource(id = R.string.profileWorkerGeneratePlace),
-                            style = MaterialTheme.typography.subtitle1.copy(
-                                fontSize = 12.sp
-                            ), color = MaterialTheme.colors.onBackground
-                        )
-                    },
+                Column(
                     modifier = Modifier
-                        .height(IntrinsicSize.Max)
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    textStyle = TextStyle.Default,
-                    maxLines = Int.MAX_VALUE,
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = MaterialTheme.colors.surface
-                    )
-                )
-                Text(
-                    text = stringResource(id = R.string.profileWorkerGenerateDesc),
-                    style = MaterialTheme.typography.subtitle1.copy(
-                        fontSize = 14.sp
-                    ),
-                    color = MaterialTheme.colors.onBackground,
-                    modifier = Modifier.padding(20.dp),
-                    textAlign = TextAlign.Justify
-                )
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Button(
+                    TextField(
+                        value = desc,
+                        onValueChange = {
+                            changeDesc(it)
+                        },
+                        placeholder = {
+                            Text(
+                                text = stringResource(id = R.string.profileWorkerGenerateDesc),
+                                style = MaterialTheme.typography.subtitle1.copy(
+                                    fontSize = 14.sp
+                                ), color = MaterialTheme.colors.onBackground
+                            )
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight()
-                            .weight(1f)
-                            .clip(MaterialTheme.shapes.small),
-                        shape = MaterialTheme.shapes.small,
-                        onClick = {
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.primaryVariant,
-                        ),
-                        enabled = true
+                            .padding(16.dp)
+                            .verticalScroll(scrollBar),
+                        textStyle = TextStyle.Default,
+                        maxLines = Int.MAX_VALUE,
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = MaterialTheme.colors.surface
+                        )
+                    )
+                    Text(text = response)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .weight(1f)
+                                .clip(MaterialTheme.shapes.small),
+                            border = BorderStroke(1.dp, MaterialTheme.colors.background),
+                            shape = MaterialTheme.shapes.small,
+                            onClick = {
+                                onGenerate()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.onSurface,
+                            ),
+                            enabled = true
+                        ) {
                             Text(
                                 text = "Generar",
                                 style = MaterialTheme.typography.subtitle1.copy(
                                     fontSize = 15.sp
                                 ),
-                                color = MaterialTheme.colors.secondary,
+                                color = MaterialTheme.colors.background,
                                 modifier = Modifier.padding(5.dp)
                             )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .weight(1f)
-                            .clip(MaterialTheme.shapes.small),
-                        shape = MaterialTheme.shapes.small,
-                        onClick = {
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.primaryVariant,
-                        ),
-                        enabled = true
-                    ) {
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .weight(1f)
+                                .clip(MaterialTheme.shapes.small),
+                            shape = MaterialTheme.shapes.small,
+                            onClick = {
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.primaryVariant,
+                            ),
+                            enabled = true
+                        ) {
                             Text(
                                 text = "Guardar",
                                 style = MaterialTheme.typography.subtitle1.copy(
@@ -384,8 +419,90 @@ fun DescProfileContent(
                                 color = MaterialTheme.colors.secondary,
                                 modifier = Modifier.padding(5.dp)
                             )
+                        }
                     }
                 }
+            }
+        }else{
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                CircularProgressIndicator(color = Color.White)
+
+            }
+        }
+    }
+}
+
+@Composable
+fun ProfileGallery(viewModel: UserProfileViewModel) {
+    val context = LocalContext.current
+    val images: List<Uri?> by viewModel.imageGallery.observeAsState(emptyList())
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetMultipleContents(),
+        onResult = { uris: List<Uri> ->
+            uris?.let {
+                viewModel.setImages(uris)
+                viewModel.onSendImage(context)
+            }
+
+        }
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 20.dp, horizontal = 20.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.profileWorkerGalleryTitle),
+                style = MaterialTheme.typography.h2.copy(
+                    fontSize = 17.sp
+                ),
+                color = MaterialTheme.colors.secondaryVariant,
+            )
+            Button(
+                onClick = {
+                    launcher.launch("image/*")
+                },
+                contentPadding = PaddingValues(5.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colors.onPrimary
+                )
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar imagen")
+            }
+        }
+        LazyRowItems(image = images)
+    }
+}
+
+
+@Composable
+fun LazyRowItems(image: List<Uri?>) {
+    LazyRow(
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        items(image) {
+            Card(
+                modifier = Modifier.fillMaxSize(),
+                elevation = 4.dp
+            ) {
+                AsyncImage(
+                    model = it,
+                    contentDescription = null,
+                    modifier = Modifier.size(200.dp),
+                    contentScale = ContentScale.Crop
+                )
             }
         }
     }

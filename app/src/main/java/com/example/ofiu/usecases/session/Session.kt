@@ -126,8 +126,3 @@ fun Entry(navController: NavController){
         }
     }
 }
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun SessionAppPreview(){
-    //Entry()
-}

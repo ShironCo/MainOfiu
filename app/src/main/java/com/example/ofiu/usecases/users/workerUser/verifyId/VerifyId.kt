@@ -296,7 +296,8 @@ fun PreviewImage(
             modifier = Modifier
                 .rotate(
                     if (sDKapp) {
-                        90f
+                      //  90f
+                        0f
                     } else {
                         0f
                     }

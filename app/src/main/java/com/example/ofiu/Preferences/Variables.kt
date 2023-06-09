@@ -1,5 +1,7 @@
 package com.example.ofiu.Preferences
 
+import android.net.Uri
+
 sealed class Variables(
     val title: String
 ){
@@ -13,4 +15,5 @@ sealed class Variables(
     object PhoneUser : Variables("phone")
     object LoginActive : Variables("active")
     object Verify : Variables("verify")
+    object DescriptionPro : Variables("descripcion")
 }
