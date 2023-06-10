@@ -1,6 +1,8 @@
 package com.example.ofiu.usecases.menú
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,6 +26,7 @@ class MenuViewModel @Inject constructor(
     private val repository: OfiuRepository,
     private val preferencesManager: PreferencesManager
 ): ViewModel() {
+
     fun onChangeUser(user : String, context: Context, navController: NavHostController){
         viewModelScope.launch {
             val id = preferencesManager.getDataProfile(Variables.IdUser.title, "")

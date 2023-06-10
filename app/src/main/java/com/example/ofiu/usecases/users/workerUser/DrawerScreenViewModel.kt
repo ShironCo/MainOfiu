@@ -25,7 +25,9 @@ class DrawerScreenViewModel @Inject constructor(
     fun onCloseSession(navController: NavController){
         preferencesManager.setDataProfile(Variables.EmailUser.title, "")
         preferencesManager.setDataProfile(Variables.PasswordUser.title, "")
+        preferencesManager.setDataProfile(Variables.LoginActive.title, "false")
         navController.popBackStack()
         navController.navigate(AppScreens.Session.route)
     }
+
 }

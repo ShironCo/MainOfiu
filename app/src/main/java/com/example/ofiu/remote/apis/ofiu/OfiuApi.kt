@@ -1,6 +1,7 @@
 package com.example.ofiu.remote.apis.ofiu
 
 import com.example.ofiu.remote.dto.*
+import com.example.ofiu.remote.dto.gpt.UserProRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -28,6 +29,8 @@ interface OfiuApi {
        @Body loginUser: LoginUserRequest
     ): LoginResponse
 
+    @POST("format_correo_reset.php")
+    suspend fun recoverPassword(@Body email: Request): UserResponse
     @Multipart
     @POST("verificado_usuario.php")
     suspend fun sendImage(
@@ -39,9 +42,16 @@ interface OfiuApi {
 
     @Multipart
     @POST("subir_galeria.php")
+   // @POST("subirImage.php")
     suspend fun sendImageGallery(
         @Part ("id") id: RequestBody,
         @Part photo : Array<MultipartBody.Part>
     ): UserResponse
+
+    @POST("img_com_est.php")
+    suspend fun receiveImagesPro(
+        @Body loginUser: UserProRequest
+    ): ImageProfileGallery
+
 
 }

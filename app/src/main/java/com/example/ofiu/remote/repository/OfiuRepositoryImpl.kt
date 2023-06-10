@@ -14,6 +14,7 @@ import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.remote.apis.gpt.ChatGptApi
 import com.example.ofiu.remote.apis.ofiu.OfiuApi
 import com.example.ofiu.remote.dto.*
+import com.example.ofiu.remote.dto.gpt.UserProRequest
 import okhttp3.MultipartBody
 import okhttp3.MultipartBody.Part
 import okhttp3.RequestBody
@@ -50,6 +51,23 @@ class OfiuRepositoryImpl @Inject constructor(
             val response = api.changeUser(user)
             Result.success(response)
         } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun receiveImagesPro(id: UserProRequest): Result<ImageProfileGallery> {
+        return try {
+            val response = api.receiveImagesPro(id)
+            Result.success(response)
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun recoverPassword(email: String): Result<UserResponse> {
+        return try{
+            Result.success(api.recoverPassword(Request(email)))
+        }catch (e: Exception){
             Result.failure(e)
         }
     }

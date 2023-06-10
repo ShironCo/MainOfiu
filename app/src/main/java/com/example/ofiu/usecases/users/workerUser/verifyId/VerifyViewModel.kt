@@ -176,32 +176,36 @@ class VerifyViewModel @Inject constructor(
 
     fun onSendImages(context: Context, navController: NavHostController) {
         _validButtonId.value = true
-        viewModelScope.launch {
-            ConvertImage(Variables.ImageFrontal.title).onSuccess {
-                _image1.value = it
-            }
-            ConvertImage(Variables.ImageTrasera.title).onSuccess {
-                _image2.value = it
-            }
-            ConvertImage(Variables.ImageFace.title).onSuccess {
-                _image3.value = it
-            }
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            val id = preferencesManager.getDataProfile(Variables.IdUser.title)
-            val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
-            val result = repository.sendImage(_image1.value!!, _image2.value!!, _image3.value!!, requestBody)
-            withContext(Dispatchers.Main) {
-                result.onSuccess {
-                    onCleanImages()
-                    _showAlertDialog.value = 1
-                    delay(4000)
-                    navController.popBackStack()
-                }.onFailure {
-                    Toast.makeText(context, "Error $it", Toast.LENGTH_LONG).show()
-                    _validButtonId.value = false
+        if (_image1.value.toString().isBlank()&&_image2.value.toString().isBlank()&&_image3.value.toString().isBlank()){
+            viewModelScope.launch {
+                ConvertImage(Variables.ImageFrontal.title).onSuccess {
+                    _image1.value = it
+                }
+                ConvertImage(Variables.ImageTrasera.title).onSuccess {
+                    _image2.value = it
+                }
+                ConvertImage(Variables.ImageFace.title).onSuccess {
+                    _image3.value = it
                 }
             }
+            CoroutineScope(Dispatchers.IO).launch {
+                val id = preferencesManager.getDataProfile(Variables.IdUser.title)
+                val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
+                val result = repository.sendImage(_image1.value!!, _image2.value!!, _image3.value!!, requestBody)
+                withContext(Dispatchers.Main) {
+                    result.onSuccess {
+                        onCleanImages()
+                        _showAlertDialog.value = 1
+                        delay(4000)
+                        navController.popBackStack()
+                    }.onFailure {
+                        Toast.makeText(context, "Error $it", Toast.LENGTH_LONG).show()
+                        _validButtonId.value = false
+                    }
+                }
+            }
+        }else{
+          onTextChange(null, 0)
         }
     }
 
@@ -234,4 +238,12 @@ class VerifyViewModel @Inject constructor(
         val file = File(preferencesManager.getDataProfile(path))
         file.delete()
         }
+
+     fun exit(){
+         viewModelScope.launch {
+             onCleanImages()
+             preferencesManager.setDataProfile(Variables.LoginActive.title, "false")
+         }
+     }
+
 }

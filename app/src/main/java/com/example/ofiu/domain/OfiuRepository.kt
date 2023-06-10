@@ -6,6 +6,7 @@ import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import com.example.aprendiendoausargpt.screen.data.remote.dto.GptResponseDto
 import com.example.ofiu.remote.dto.*
+import com.example.ofiu.remote.dto.gpt.UserProRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -13,6 +14,8 @@ interface OfiuRepository {
     suspend fun addUser(user: RegisterUserRequest): Result<UserResponse>
     suspend fun loginUser(user: LoginUserRequest): Result<LoginResponse>
     suspend fun changeUser(user: UserRequest): Result<UserResponse>
+    suspend fun receiveImagesPro(id: UserProRequest): Result<ImageProfileGallery>
+    suspend fun recoverPassword(email: String): Result<UserResponse>
 
     suspend fun sendImage(
         image1: MultipartBody.Part,

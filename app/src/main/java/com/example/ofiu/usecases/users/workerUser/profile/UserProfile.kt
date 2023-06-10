@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -40,27 +41,46 @@ import kotlin.contracts.contract
 @Composable
 fun ProfileWorkerApp(viewModel: UserProfileViewModel = hiltViewModel()) {
     val toggleDesc: Boolean by viewModel.toggleDesc.observeAsState(initial = false)
+    val imagePreviewToggle: Boolean by viewModel.imagePreviewToggle.observeAsState(initial = false)
+    val imagePreview: Uri by viewModel.imagePreview.observeAsState(initial = Uri.EMPTY)
     val desc: String by viewModel.desc.observeAsState(initial = "")
     val descDialog: String by viewModel.descDialog.observeAsState(initial = "")
-    val loading : Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val descEmpy: Boolean by viewModel.descEmpty.observeAsState(initial = false)
+    val loading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val loadingDesc: Boolean by viewModel.isLoadingDesc.observeAsState(initial = false)
     val context = LocalContext.current
-    val response : String by viewModel.response.observeAsState(initial = "")
     ProfileWorkerContent(viewModel, desc)
     if (toggleDesc) {
         DescProfileContent(
-            response = response,
-            loading = loading,
+            descEmpy = descEmpy,
+            loading = loadingDesc,
             desc = descDialog,
             changeDesc = {
-                viewModel.onTextChange(it)
+                viewModel.onTextChange(desc, it)
             },
             onGenerate = {
                 viewModel.onGenerateDesc(context)
             },
             dismiss = {
                 viewModel.onSetToggleDesc(false)
+                viewModel.onTextChange(desc, "")
             }
         )
+    }
+    if (loading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center)
+        ) {
+            CircularProgressIndicator(color = MaterialTheme.colors.background)
+        }
+    }
+
+    if (imagePreviewToggle){
+        imagePreview(imagePreview){
+            viewModel.setImagePreviewToggle(false)
+        }
     }
 }
 
@@ -83,12 +103,12 @@ fun ProfileWorkerContent(viewModel: UserProfileViewModel, desc: String) {
 
 @Composable
 fun ProfileBasicInformation(viewModel: UserProfileViewModel) {
-    val name : String by viewModel.name.observeAsState(initial = "")
-
-    val image : Uri by viewModel.imageProfile.observeAsState(initial = Uri.EMPTY)
+    val name: String by viewModel.name.observeAsState(initial = "")
+    val imageProfile: Uri by viewModel.imageProfile.observeAsState(initial = Uri.EMPTY)
     val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()){
-        if (it != null){
+        ActivityResultContracts.GetContent()
+    ) {
+        if (it != null) {
             viewModel.setImageProfile(it)
         }
     }
@@ -111,20 +131,21 @@ fun ProfileBasicInformation(viewModel: UserProfileViewModel) {
                     .size(70.dp)
                     .background(MaterialTheme.colors.onSurface)
             ) {
-                if (image.toString().isNotBlank()){
-                AsyncImage(model = image, contentDescription = null,
-                    contentScale = ContentScale.Crop, modifier = Modifier.clickable {
-                        launcher.launch("image/*")
-                    })}
-                else {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_person_24),
-                    contentDescription = null, tint = MaterialTheme.colors.background,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable {
+                if (imageProfile.toString().isNotBlank()) {
+                    AsyncImage(model = imageProfile, contentDescription = null,
+                        contentScale = ContentScale.Crop, modifier = Modifier.clickable {
                             launcher.launch("image/*")
-                        })}
+                        })
+                } else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_person_24),
+                        contentDescription = null, tint = MaterialTheme.colors.background,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable {
+                                launcher.launch("image/*")
+                            })
+                }
             }
             Column(
                 modifier = Modifier
@@ -183,12 +204,13 @@ fun ProfileBasicInformation(viewModel: UserProfileViewModel) {
 }
 
 @Composable
-fun ProfileContactInformation(viewModel:UserProfileViewModel) {
-    val email : String by viewModel.email.observeAsState(initial = "")
-    val phone : String by viewModel.phone.observeAsState(initial = "")
+fun ProfileContactInformation(viewModel: UserProfileViewModel) {
+    val email: String by viewModel.email.observeAsState(initial = "")
+    val phone: String by viewModel.phone.observeAsState(initial = "")
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight()
             .padding(vertical = 20.dp, horizontal = 20.dp),
     ) {
         Text(
@@ -221,7 +243,7 @@ fun ProfileContactInformation(viewModel:UserProfileViewModel) {
             Text(
                 text = phone,
                 style = MaterialTheme.typography.subtitle1.copy(
-                    fontSize = 15.sp
+                    fontSize = 16.sp
                 ),
                 color = MaterialTheme.colors.onBackground,
                 modifier = Modifier.padding(end = 10.dp)
@@ -230,7 +252,7 @@ fun ProfileContactInformation(viewModel:UserProfileViewModel) {
         Text(
             text = "Este es el numero de contacto, y otras notificaciones.",
             style = MaterialTheme.typography.subtitle1.copy(
-                fontSize = 12.sp
+                fontSize = 14.sp
             ),
             color = MaterialTheme.colors.onBackground,
         )
@@ -247,7 +269,7 @@ fun ProfileContactInformation(viewModel:UserProfileViewModel) {
         Text(
             text = email,
             style = MaterialTheme.typography.subtitle1.copy(
-                fontSize = 15.sp
+                fontSize = 16.sp
             ),
             color = MaterialTheme.colors.onBackground,
             modifier = Modifier.padding(end = 10.dp)
@@ -255,7 +277,7 @@ fun ProfileContactInformation(viewModel:UserProfileViewModel) {
         Text(
             text = "Es importante que verifiques tu email, para poder contactar de forma segura contigo.",
             style = MaterialTheme.typography.subtitle1.copy(
-                fontSize = 12.sp
+                fontSize = 14.sp
             ),
             color = MaterialTheme.colors.onBackground,
         )
@@ -312,7 +334,7 @@ fun ProfileBriefcase(viewModel: UserProfileViewModel, desc: String) {
 
 @Composable
 fun DescProfileContent(
-    response : String,
+    descEmpy: Boolean,
     loading: Boolean,
     desc: String,
     changeDesc: (String) -> Unit,
@@ -321,16 +343,16 @@ fun DescProfileContent(
 ) {
     val scrollBar = rememberScrollState()
     Dialog(onDismissRequest = {
-        if (!loading){
+        if (!loading) {
             dismiss()
         }
     }
     ) {
-        if (!loading){
+        if (!loading) {
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp),
+                    .height(500.dp),
                 elevation = 8.dp,
                 shape = MaterialTheme.shapes.small,
                 color = MaterialTheme.colors.onSurface
@@ -350,7 +372,7 @@ fun DescProfileContent(
                             Text(
                                 text = stringResource(id = R.string.profileWorkerGenerateDesc),
                                 style = MaterialTheme.typography.subtitle1.copy(
-                                    fontSize = 14.sp
+                                    fontSize = 15.sp
                                 ), color = MaterialTheme.colors.onBackground
                             )
                         },
@@ -358,13 +380,22 @@ fun DescProfileContent(
                             .fillMaxWidth()
                             .padding(16.dp)
                             .verticalScroll(scrollBar),
-                        textStyle = TextStyle.Default,
+                        textStyle = MaterialTheme.typography.subtitle1.copy(
+                            color = MaterialTheme.colors.secondaryVariant
+                        ),
                         maxLines = Int.MAX_VALUE,
                         colors = TextFieldDefaults.textFieldColors(
                             backgroundColor = MaterialTheme.colors.surface
                         )
                     )
-                    Text(text = response)
+                    if (!descEmpy) {
+                        Text(
+                            text = "¡Animate a escribir algo!",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.subtitle1,
+                        )
+                    }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -377,7 +408,12 @@ fun DescProfileContent(
                                 .wrapContentHeight()
                                 .weight(1f)
                                 .clip(MaterialTheme.shapes.small),
-                            border = BorderStroke(1.dp, MaterialTheme.colors.background),
+                            border =
+                            if (descEmpy) {
+                                BorderStroke(1.dp, MaterialTheme.colors.background)
+                            } else {
+                                BorderStroke(1.dp, MaterialTheme.colors.onSurface)
+                            },
                             shape = MaterialTheme.shapes.small,
                             onClick = {
                                 onGenerate()
@@ -385,14 +421,18 @@ fun DescProfileContent(
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = MaterialTheme.colors.onSurface,
                             ),
-                            enabled = true
+                            enabled = descEmpy
                         ) {
                             Text(
                                 text = "Generar",
                                 style = MaterialTheme.typography.subtitle1.copy(
                                     fontSize = 15.sp
                                 ),
-                                color = MaterialTheme.colors.background,
+                                color = if (descEmpy) {
+                                    MaterialTheme.colors.background
+                                } else {
+                                    MaterialTheme.colors.onSurface
+                                },
                                 modifier = Modifier.padding(5.dp)
                             )
                         }
@@ -409,28 +449,31 @@ fun DescProfileContent(
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = MaterialTheme.colors.primaryVariant,
                             ),
-                            enabled = true
+                            enabled = descEmpy
                         ) {
                             Text(
                                 text = "Guardar",
                                 style = MaterialTheme.typography.subtitle1.copy(
                                     fontSize = 15.sp
                                 ),
-                                color = MaterialTheme.colors.secondary,
+                                color = if (!descEmpy) {
+                                    MaterialTheme.colors.onSurface
+                                } else {
+                                    MaterialTheme.colors.secondary
+                                },
                                 modifier = Modifier.padding(5.dp)
                             )
                         }
                     }
                 }
             }
-        }else{
+        } else {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(Alignment.Center)
             ) {
                 CircularProgressIndicator(color = Color.White)
-
             }
         }
     }
@@ -445,7 +488,7 @@ fun ProfileGallery(viewModel: UserProfileViewModel) {
         onResult = { uris: List<Uri> ->
             uris?.let {
                 viewModel.setImages(uris)
-                viewModel.onSendImage(context)
+                viewModel.onSendImage(context, uris)
             }
 
         }
@@ -481,13 +524,19 @@ fun ProfileGallery(viewModel: UserProfileViewModel) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar imagen")
             }
         }
-        LazyRowItems(image = images)
+        LazyRowItems(image = images, deleteImage = {
+                viewModel.onDeleteImage(it)
+        }, imageUri = {
+            viewModel.setImagePreview(it)
+        }) {
+            viewModel.setImagePreviewToggle(true)
+        }
     }
 }
 
 
 @Composable
-fun LazyRowItems(image: List<Uri?>) {
+fun LazyRowItems(image: List<Uri?>, deleteImage: (Uri) -> Unit, imageUri: (Uri) -> Unit, imagePreview: () -> Unit) {
     LazyRow(
         modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -500,10 +549,43 @@ fun LazyRowItems(image: List<Uri?>) {
                 AsyncImage(
                     model = it,
                     contentDescription = null,
-                    modifier = Modifier.size(200.dp),
+                    modifier = Modifier
+                        .size(200.dp)
+                        .clickable {
+                            imagePreview()
+                            it?.let{imageUri(it)}
+                        },
                     contentScale = ContentScale.Crop
                 )
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onSurface,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable {
+                            it?.let{deleteImage(it)}
+                        }
+                )
+
             }
+        }
+    }
+}
+
+@Composable
+fun imagePreview(uri: Uri, dismiss: () -> Unit) {
+    Dialog(onDismissRequest = {
+        dismiss()
+    }
+    ) {
+        Box(
+            modifier = Modifier.wrapContentSize()
+        ) {
+            AsyncImage(
+                model = uri,
+                contentDescription = null,
+            )
         }
     }
 }

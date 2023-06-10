@@ -1,14 +1,27 @@
 package com.example.ofiu.usecases.session.login.forgotPassword
 
+import android.content.Context
 import android.util.Patterns
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.example.ofiu.domain.OfiuRepository
+import com.example.ofiu.usecases.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ForgotPasswordViewModel @Inject constructor(): ViewModel() {
+class ForgotPasswordViewModel @Inject constructor(
+    private val repository: OfiuRepository
+): ViewModel() {
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading : LiveData<Boolean> = _isLoading
+
     //Primer paso
     private val _email = MutableLiveData<String>()
     val email : LiveData<String> = _email
@@ -22,6 +35,26 @@ class ForgotPasswordViewModel @Inject constructor(): ViewModel() {
     }
 
     private fun isValidEmail(email: String): Boolean  = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+
+    fun onSendEmail(navController: NavController, email: String, context: Context){
+        _isLoading.value = true
+        _buttonValidation.value = false
+        viewModelScope.launch {
+            repository.recoverPassword(_email.value!!).onSuccess {
+                Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
+                navController.navigate(route = AppScreens.ForgotPasswordTwo.route + "/$email") {
+                    launchSingleTop = true
+                }
+            }.onFailure {
+                Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+            }
+            _isLoading.value = false
+            _buttonValidation.value = true
+        }
+    }
+
+
+
 
     //Segundo paso
     private val _code = MutableLiveData<String>()
@@ -68,4 +101,5 @@ class ForgotPasswordViewModel @Inject constructor(): ViewModel() {
     fun onVisibilityButton(){
         _visibilityButton.value = _visibilityButton.value != true
     }
+
 }

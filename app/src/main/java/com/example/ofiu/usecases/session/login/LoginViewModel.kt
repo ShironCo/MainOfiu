@@ -74,6 +74,7 @@ class LoginViewModel @Inject constructor(
         context: Context
     ) {
         _isLoading.value = true
+        _buttonValid.value = false
         viewModelScope.launch {
             repository.loginUser(LoginUserRequest(email, password)).onSuccess {
                 _response.value = it
@@ -107,6 +108,7 @@ class LoginViewModel @Inject constructor(
                // _response.value = LoginResponse("Error $it", null, null, null, null)
             }
             _isLoading.value = false
+            _buttonValid.value = true
         }
     }
 

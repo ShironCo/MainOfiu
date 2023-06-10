@@ -91,7 +91,7 @@ class RegisterViewModel @Inject constructor(
     }
 
     private fun isValidPassword(password: String): Boolean {
-        val pattern = "^(?=.*[!@#\$%^&*()-+])(?=.{8,})[a-zA-Z0-9!@#\$%^&*()-+]+$".toRegex()
+        val pattern = """^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$""".toRegex()
         return pattern.matches(password)
     }
 
@@ -126,6 +126,7 @@ class RegisterViewModel @Inject constructor(
         password: String,
         navHostController: NavController
     ) {
+        _validButton.value = false
         _isLoading.value = true
         viewModelScope.launch {
             val user = RegisterUserRequest(
@@ -141,6 +142,7 @@ class RegisterViewModel @Inject constructor(
                 _response.value = UserResponse("Es un error $it")
             }
             _isLoading.value = false
+            _validButton.value = true
         }
     }
 }
