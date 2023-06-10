@@ -40,7 +40,7 @@ class ForgotPasswordViewModel @Inject constructor(
         _isLoading.value = true
         _buttonValidation.value = false
         viewModelScope.launch {
-            repository.recoverPassword(_email.value!!).onSuccess {
+            repository.recoverPassword(email).onSuccess {
                 Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
                 navController.navigate(route = AppScreens.ForgotPasswordTwo.route + "/$email") {
                     launchSingleTop = true

@@ -1,4 +1,4 @@
-package com.example.ofiu.remote.dto
+package com.example.ofiu.remote.dto.ofiu
 
 
 import com.squareup.moshi.Json

@@ -13,8 +13,8 @@ import com.example.aprendiendoausargpt.screen.data.remote.dto.GptResponseDto
 import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.remote.apis.gpt.ChatGptApi
 import com.example.ofiu.remote.apis.ofiu.OfiuApi
-import com.example.ofiu.remote.dto.*
 import com.example.ofiu.remote.dto.gpt.UserProRequest
+import com.example.ofiu.remote.dto.ofiu.*
 import okhttp3.MultipartBody
 import okhttp3.MultipartBody.Part
 import okhttp3.RequestBody
@@ -71,6 +71,31 @@ class OfiuRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun deleteImageGallery(uri: String): Result<UserResponse> {
+        return try {
+            Result.success(api.deletePhotoGallery(Request(uri)))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun sendDescrPro(desc: UserRequest): Result<UserResponse> {
+        return try {
+            Result.success(api.sendDescrPro(desc))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updatePhotoProfile(id: RequestBody, image: Part): Result<UserResponse> {
+        return try {
+            Result.success(api.updatePhotoProfile(id, image))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
 
     override suspend fun sendImage(
         image1: Part,

@@ -19,13 +19,10 @@ import androidx.navigation.NavHostController
 import com.example.ofiu.Preferences.Variables
 import com.example.ofiu.Preferences.PreferencesManager
 import com.example.ofiu.domain.OfiuRepository
-import com.example.ofiu.remote.dto.UserResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -239,10 +236,10 @@ class VerifyViewModel @Inject constructor(
         file.delete()
         }
 
-     fun exit(){
+     fun exit(navController: NavHostController){
          viewModelScope.launch {
              onCleanImages()
-             preferencesManager.setDataProfile(Variables.LoginActive.title, "false")
+            navController.popBackStack()
          }
      }
 

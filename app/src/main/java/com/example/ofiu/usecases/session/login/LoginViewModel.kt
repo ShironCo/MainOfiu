@@ -11,13 +11,11 @@ import androidx.navigation.NavHostController
 import com.example.ofiu.Preferences.PreferencesManager
 import com.example.ofiu.Preferences.Variables
 import com.example.ofiu.domain.OfiuRepository
-import com.example.ofiu.remote.dto.LoginResponse
-import com.example.ofiu.remote.dto.LoginUserRequest
+import com.example.ofiu.remote.dto.ofiu.LoginResponse
+import com.example.ofiu.remote.dto.ofiu.LoginUserRequest
 import com.example.ofiu.usecases.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
-import okhttp3.RequestBody
 import javax.inject.Inject
 
 @HiltViewModel

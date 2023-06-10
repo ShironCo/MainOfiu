@@ -101,8 +101,7 @@ fun VerifyWorkerApp(
                     ) {
                         Button(
                             onClick = {
-                                viewModel.exit()
-                                navHostController.popBackStack()
+                                viewModel.exit(navHostController)
                             }, colors = ButtonDefaults.buttonColors(
                                 backgroundColor = MaterialTheme.colors.onError
                             )

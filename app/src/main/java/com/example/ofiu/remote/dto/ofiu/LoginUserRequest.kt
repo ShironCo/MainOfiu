@@ -1,4 +1,4 @@
-package com.example.ofiu.remote.dto
+package com.example.ofiu.remote.dto.ofiu
 
 data class LoginUserRequest(
     val login_correo: String,

@@ -1,9 +1,6 @@
 package com.example.ofiu.usecases.users.clientUser
 
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -46,8 +43,8 @@ fun BottomBar(navController: NavHostController) {
 
     BottomNavigation(
         modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp)
-            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
+            .padding(horizontal = 30.dp)
+            .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
         backgroundColor = MaterialTheme.colors.background,
         elevation = BottomNavigationDefaults.Elevation
     ) {
@@ -70,7 +67,7 @@ fun RowScope.AddItem(
     BottomNavigationItem(
         icon = {
             Icon(
-                modifier = Modifier.size(25.dp),
+                modifier = Modifier.size(20.dp),
                 painter = painterResource(screen.Icon),
                 contentDescription = "Navigation Icon",
             )
@@ -85,6 +82,6 @@ fun RowScope.AddItem(
                 popUpTo(navController.graph.findStartDestination().id)
                 launchSingleTop = true
             }
-        },
+        }
     )
 }

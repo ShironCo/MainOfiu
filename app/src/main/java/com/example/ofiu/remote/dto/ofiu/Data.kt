@@ -1,13 +1,13 @@
-package com.example.ofiu.remote.dto
+package com.example.ofiu.remote.dto.ofiu
 
 
 import com.squareup.moshi.Json
 
 data class Data(
     @field: Json(name = "comentarios")
-    val comentarios: String,
+    val comentarios: Int? = 0,
     @field: Json(name = "estrellas")
-    val estrellas: String,
+    val estrellas: Int? = 0,
     @field: Json(name = "id_profesional")
     val idProfesional: String
 )

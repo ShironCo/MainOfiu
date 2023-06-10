@@ -19,6 +19,7 @@ import com.example.ofiu.Preferences.PreferencesManager
 import com.example.ofiu.Preferences.Variables
 import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.remote.dto.gpt.UserProRequest
+import com.example.ofiu.remote.dto.ofiu.UserRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,6 +52,12 @@ class UserProfileViewModel @Inject constructor(
     private val _phone = MutableLiveData<String>()
     val phone: LiveData<String> = _phone
 
+    private val _comments = MutableLiveData<String>()
+    val comments: LiveData<String> = _comments
+
+    private val _starts = MutableLiveData<String>()
+    val starts: LiveData<String> = _starts
+
     private val _toggleDesc = MutableLiveData<Boolean>()
     val toggleDesc: LiveData<Boolean> = _toggleDesc
 
@@ -82,7 +89,7 @@ class UserProfileViewModel @Inject constructor(
     val imageProfile: LiveData<Uri> = _imageProfile
 
     private val _response = MutableLiveData<String>()
-    val response : LiveData<String> = _response
+    val response: LiveData<String> = _response
 
     init {
         _id.value = preferencesManager.getDataProfile(Variables.IdUser.title)
@@ -90,11 +97,14 @@ class UserProfileViewModel @Inject constructor(
         _email.value = preferencesManager.getDataProfile(Variables.EmailUser.title)
         _phone.value = preferencesManager.getDataProfile(Variables.PhoneUser.title)
         _desc.value = preferencesManager.getDataProfile(Variables.DescriptionPro.title)
-        if (_imageGallery.value.isNullOrEmpty()){
+
+        if (_imageGallery.value.isNullOrEmpty()) {
             viewModelScope.launch {
-                repository.receiveImagesPro(UserProRequest(_id.value!!)).onSuccess {it ->
+                repository.receiveImagesPro(UserProRequest(_id.value!!)).onSuccess {
+                    _comments.value = it.data.comentarios.toString()
+                    _starts.value = it.data.estrellas.toString()
                     val list = mutableListOf<Uri>()
-                    it.data1.forEach{uris ->
+                    it.data1.forEach { uris ->
                         list.add(uris.toUri())
                     }
                     _imageGallery.value = list
@@ -105,28 +115,30 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    fun setImagePreviewToggle(value: Boolean){
-        _imagePreviewToggle.value = value
-    }
-    fun setImagePreview(value: Uri){
-        _imagePreview.value = value
+    fun setImagePreviewToggle() {
+        _imagePreviewToggle.value = _imagePreviewToggle.value != true
     }
 
-    fun setImageProfile(image: Uri){
+    fun setImagePreview(value: Uri) {
+        _imagePreview.value = value
+        setImagePreviewToggle()
+    }
+
+    fun setImageProfile(image: Uri) {
         _imageProfile.value = image
     }
 
     fun setImages(image: List<Uri>) {
-        if (_imageGallery.value.isNullOrEmpty()){
+        if (_imageGallery.value.isNullOrEmpty()) {
             _imageGallery.value = image
-        }else{
+        } else {
             val list = mutableListOf<Uri>()
-           _imageGallery.value!!.forEach {
+            _imageGallery.value!!.forEach {
                 list.add(it)
-           }
+            }
             image.forEach {
                 list.add(it)
-           }
+            }
             _imageGallery.value = list
         }
     }
@@ -141,13 +153,9 @@ class UserProfileViewModel @Inject constructor(
         _toggleDesc.value = value
     }
 
-//    fun onSaveImages(uris: List<Uri>, context: Context) {
-//           val valor = "1"
-//            preferencesManager.setDataProfile("image1", uris.get(0).toString())
-//         preferencesManager.setDataProfile(Variables.ImageGalleryCant.title, uris.size.toString())
-//    }
-//De Uri a bitmap
-    suspend fun bitmapFromUri(uri: Uri, context: Context): Bitmap?{
+
+    //De Uri a bitmap
+    suspend fun bitmapFromUri(uri: Uri, context: Context): Bitmap? {
         return withContext(Dispatchers.IO) {
             val imageLoader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
@@ -158,7 +166,8 @@ class UserProfileViewModel @Inject constructor(
             bitmap
         }
     }
-//Convertor de URI a bytes
+
+    //Convertor de URI a bytes
     private suspend fun uriToBytes(uri: Uri, context: Context): ByteArray {
         return withContext(Dispatchers.IO) {
             val bitmap = bitmapFromUri(uri, context)
@@ -167,8 +176,9 @@ class UserProfileViewModel @Inject constructor(
             outputStream.toByteArray()
         }
     }
-//Funcion para identificar la extension
-    private  fun extensionFromUri(uri: Uri, context:Context): String? {
+
+    //Funcion para identificar la extension
+    private fun extensionFromUri(uri: Uri, context: Context): String? {
         return if (uri.scheme.equals(ContentResolver.SCHEME_CONTENT)) {
             MimeTypeMap.getSingleton()
                 .getExtensionFromMimeType(context.contentResolver.getType(uri))
@@ -179,7 +189,10 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    private suspend fun locationToMultipart(photos: List<Uri>, context: Context): List<MultipartBody.Part> {
+    private suspend fun locationToMultipart(
+        photos: List<Uri>,
+        context: Context
+    ): List<MultipartBody.Part> {
         return photos.mapIndexed { index, uri ->
             val extension = extensionFromUri(uri, context)
             val uriBytes = uriToBytes(uri, context)
@@ -192,16 +205,16 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    fun onSendImage(context: Context, uri: List<Uri>){
+    fun onSendImage(context: Context, uri: List<Uri>) {
         _isLoading.value = true
         viewModelScope.launch {
-            if (uri.isNotEmpty()){
+            if (uri.isNotEmpty()) {
                 val id = _id.value!!
                 val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
-                val list : List<MultipartBody.Part> = locationToMultipart(uri, context)
+                val list: List<MultipartBody.Part> = locationToMultipart(uri, context)
                 val array = list.toTypedArray()
-                repository.sendImageGallery(requestBody,array) .onSuccess {
-                    Toast.makeText(context, it.toString(), Toast.LENGTH_LONG).show()
+                repository.sendImageGallery(requestBody, array).onSuccess {
+                    // Toast.makeText(context, it.toString(), Toast.LENGTH_LONG).show()
                 }.onFailure {
                     Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
                 }
@@ -210,10 +223,10 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    fun onGenerateDesc(context: Context){
-        if (_descDialog.value.isNullOrBlank()){
-          //  _descDialog.value = ""
-        }else{
+    fun onGenerateDesc(context: Context) {
+        if (_descDialog.value.isNullOrBlank()) {
+            //  _descDialog.value = ""
+        } else {
             _isLoadingDesc.value = true
             viewModelScope.launch {
                 repository.promptGpt(_descDialog.value!!).onSuccess {
@@ -227,17 +240,56 @@ class UserProfileViewModel @Inject constructor(
     }
 
     fun onSaveDesc() {
-        if (_desc.value.isNullOrBlank()) {
-        } else {
-            preferencesManager.setDataProfile(Variables.DescriptionPro.title, _desc.value!!)
+        viewModelScope.launch {
+            val id = preferencesManager.getDataProfile(Variables.IdUser.title, "")
+            repository.sendDescrPro(UserRequest(id, _descDialog.value!!)).onSuccess {
+                if (it.response == "true") {
+                    preferencesManager.setDataProfile(
+                        Variables.DescriptionPro.title,
+                        _descDialog.value!!
+                    )
+                    _desc.value = _descDialog.value
+                    _toggleDesc.value = false
+                }
+            }
         }
     }
 
-    fun onDeleteImage(uri: Uri){
+    fun onDeleteImage(uri: Uri, context: Context) {
         viewModelScope.launch {
-            val currentList = _imageGallery.value?.toMutableList()
-            currentList?.remove(uri)
-            _imageGallery.postValue(currentList)
+            repository.deleteImageGallery("..${uri.path}").onSuccess {
+                if (it.response == "true") {
+                    val currentList = _imageGallery.value?.toMutableList()
+                    currentList?.remove(uri)
+                    _imageGallery.postValue(currentList)
+                } else {
+                    Toast.makeText(context, it.toString(), Toast.LENGTH_LONG).show()
+                }
+            }.onFailure {
+                Toast.makeText(context, "Ha ocurrido un error ${it.message}", Toast.LENGTH_LONG)
+                    .show()
+            }
         }
+    }
+
+     fun updatePhotoProfile(uri: Uri, context: Context){
+         viewModelScope.launch {
+        val id = preferencesManager.getDataProfile(Variables.IdUser.title, "")
+        val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
+        val uriToBytes = uriToBytes(uri, context)
+        val extension = extensionFromUri(uri, context)
+        val image = MultipartBody.Part.createFormData(
+            name = "photo",
+            filename = "photo.$extension",
+            uriToBytes.toRequestBody(contentType = "image/jpeg".toMediaTypeOrNull())
+        )
+            repository.updatePhotoProfile(requestBody, image).onSuccess {
+                Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
+            }.onFailure {
+                Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+                println(it)
+            }
+        }
+
     }
 }

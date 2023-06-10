@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.ofiu.R
-import com.example.ofiu.remote.dto.LoginResponse
+import com.example.ofiu.remote.dto.ofiu.LoginResponse
 import com.example.ofiu.usecases.navigation.AppScreens
 
 @Composable
@@ -63,7 +63,8 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
     val password: String by viewModel.password.observeAsState(initial = "")
     val response: LoginResponse by viewModel.response.observeAsState(initial = LoginResponse(
         null, null, null, null, null
-    ))
+    )
+    )
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val validButton: Boolean by viewModel.buttonValid.observeAsState(initial = false)
 
@@ -217,6 +218,14 @@ fun TextFieldLoginEmail(email: String, onTextLoginChange: (String) -> Unit) {
             imeAction = ImeAction.Next
         ),
         singleLine = true,
+        placeholder = {
+            Text(
+                text = stringResource(R.string.email),
+                color = MaterialTheme.colors.onBackground,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.body2
+            )
+        },
         leadingIcon = {
             Image(
                 painter = painterResource(id = R.drawable.baseline_person_24),
@@ -231,8 +240,6 @@ fun TextFieldLoginEmail(email: String, onTextLoginChange: (String) -> Unit) {
         shape = MaterialTheme.shapes.medium,
         textStyle = MaterialTheme.typography.subtitle2.copy(MaterialTheme.colors.onSecondary)
     )
-
-
 }
 
 @Composable
@@ -257,6 +264,14 @@ fun TextFieldLoginPassword(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done
         ),
+        placeholder = {
+            Text(
+                text = stringResource(R.string.password),
+                color = MaterialTheme.colors.onBackground,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.body2
+            )
+        },
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         leadingIcon = {
             Image(

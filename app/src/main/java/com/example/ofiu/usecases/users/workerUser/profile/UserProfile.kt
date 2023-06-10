@@ -1,6 +1,5 @@
 package com.example.ofiu.usecases.users.workerUser.profile
 
-import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -27,16 +26,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.ofiu.R
-import kotlin.contracts.contract
 
 @Composable
 fun ProfileWorkerApp(viewModel: UserProfileViewModel = hiltViewModel()) {
@@ -61,6 +57,9 @@ fun ProfileWorkerApp(viewModel: UserProfileViewModel = hiltViewModel()) {
             onGenerate = {
                 viewModel.onGenerateDesc(context)
             },
+            saveDesc = {
+                       viewModel.onSaveDesc()
+            },
             dismiss = {
                 viewModel.onSetToggleDesc(false)
                 viewModel.onTextChange(desc, "")
@@ -77,9 +76,9 @@ fun ProfileWorkerApp(viewModel: UserProfileViewModel = hiltViewModel()) {
         }
     }
 
-    if (imagePreviewToggle){
-        imagePreview(imagePreview){
-            viewModel.setImagePreviewToggle(false)
+    if (imagePreviewToggle) {
+        ImagePreview(imagePreview) {
+            viewModel.setImagePreviewToggle()
         }
     }
 }
@@ -103,13 +102,17 @@ fun ProfileWorkerContent(viewModel: UserProfileViewModel, desc: String) {
 
 @Composable
 fun ProfileBasicInformation(viewModel: UserProfileViewModel) {
+    val context = LocalContext.current
     val name: String by viewModel.name.observeAsState(initial = "")
+    val starts: String by viewModel.starts.observeAsState(initial = "")
+    val comments: String by viewModel.comments.observeAsState(initial = "")
     val imageProfile: Uri by viewModel.imageProfile.observeAsState(initial = Uri.EMPTY)
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) {
         if (it != null) {
             viewModel.setImageProfile(it)
+            viewModel.updatePhotoProfile(it, context)
         }
     }
 
@@ -176,7 +179,7 @@ fun ProfileBasicInformation(viewModel: UserProfileViewModel) {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "4.3",
+                            text = starts,
                             style = MaterialTheme.typography.subtitle1.copy(
                                 fontSize = 16.sp
                             ),
@@ -190,7 +193,7 @@ fun ProfileBasicInformation(viewModel: UserProfileViewModel) {
                     }
                     Spacer(modifier = Modifier.width(20.dp))
                     Text(
-                        text = "30 Comentarios",
+                        text = "$comments Comentarios",
                         style = MaterialTheme.typography.subtitle1.copy(
                             fontSize = 14.sp
                         ),
@@ -199,7 +202,6 @@ fun ProfileBasicInformation(viewModel: UserProfileViewModel) {
                 }
             }
         }
-
     }
 }
 
@@ -302,9 +304,10 @@ fun ProfileBriefcase(viewModel: UserProfileViewModel, desc: String) {
         Text(
             text = desc,
             style = MaterialTheme.typography.subtitle1.copy(
-                fontSize = 14.sp
+                fontSize = 16.sp
             ),
             color = MaterialTheme.colors.onBackground,
+            textAlign = TextAlign.Justify,
             modifier = Modifier.padding(bottom = 20.dp)
         )
         Card(
@@ -339,6 +342,7 @@ fun DescProfileContent(
     desc: String,
     changeDesc: (String) -> Unit,
     onGenerate: () -> Unit,
+    saveDesc: ()-> Unit,
     dismiss: () -> Unit
 ) {
     val scrollBar = rememberScrollState()
@@ -445,6 +449,7 @@ fun DescProfileContent(
                                 .clip(MaterialTheme.shapes.small),
                             shape = MaterialTheme.shapes.small,
                             onClick = {
+                                      saveDesc()
                             },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = MaterialTheme.colors.primaryVariant,
@@ -486,7 +491,7 @@ fun ProfileGallery(viewModel: UserProfileViewModel) {
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetMultipleContents(),
         onResult = { uris: List<Uri> ->
-            uris?.let {
+            uris.let {
                 viewModel.setImages(uris)
                 viewModel.onSendImage(context, uris)
             }
@@ -524,57 +529,56 @@ fun ProfileGallery(viewModel: UserProfileViewModel) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar imagen")
             }
         }
-        LazyRowItems(image = images, deleteImage = {
-                viewModel.onDeleteImage(it)
-        }, imageUri = {
-            viewModel.setImagePreview(it)
-        }) {
-            viewModel.setImagePreviewToggle(true)
-        }
+        LazyRowItems(image = images,
+            deleteImage = { viewModel.onDeleteImage(it, context) },
+            imageUri = {viewModel.setImagePreview(it)
+        })
     }
 }
 
 
 @Composable
-fun LazyRowItems(image: List<Uri?>, deleteImage: (Uri) -> Unit, imageUri: (Uri) -> Unit, imagePreview: () -> Unit) {
+fun LazyRowItems(
+    image: List<Uri?>,
+    deleteImage: (Uri) -> Unit,
+    imageUri: (Uri) -> Unit,
+) {
     LazyRow(
         modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(image) {
-            Card(
-                modifier = Modifier.fillMaxSize(),
-                elevation = 4.dp
-            ) {
-                AsyncImage(
-                    model = it,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(200.dp)
-                        .clickable {
-                            imagePreview()
-                            it?.let{imageUri(it)}
-                        },
-                    contentScale = ContentScale.Crop
-                )
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.onSurface,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clickable {
-                            it?.let{deleteImage(it)}
-                        }
-                )
-
+                Card(
+                    modifier = Modifier.fillMaxSize(),
+                    elevation = 4.dp
+                ) {
+                    AsyncImage(
+                        model = it,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clickable {
+                                it?.let { imageUri(it) }
+                            },
+                        contentScale = ContentScale.Crop
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.onSurface,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable {
+                                it?.let { deleteImage(it) }
+                            }
+                    )
+                }
             }
-        }
     }
 }
 
 @Composable
-fun imagePreview(uri: Uri, dismiss: () -> Unit) {
+fun ImagePreview(uri: Uri, dismiss: () -> Unit) {
     Dialog(onDismissRequest = {
         dismiss()
     }

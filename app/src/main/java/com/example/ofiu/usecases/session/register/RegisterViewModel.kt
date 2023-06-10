@@ -5,10 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.example.ofiu.domain.OfiuRepository
-import com.example.ofiu.remote.dto.RegisterUserRequest
-import com.example.ofiu.remote.dto.UserResponse
+import com.example.ofiu.remote.dto.ofiu.RegisterUserRequest
+import com.example.ofiu.remote.dto.ofiu.UserResponse
 import com.example.ofiu.usecases.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -111,7 +110,8 @@ class RegisterViewModel @Inject constructor(
         return (name.isNotBlank() && lastName.isNotBlank()
                 && email.isNotBlank() && phone.isNotBlank()
                 && password.isNotBlank()
-                && passwordRepeat.isNotBlank() && isValidPasswordRepeat(password, passwordRepeat))
+                && passwordRepeat.isNotBlank() && isValidPasswordRepeat(password, passwordRepeat)
+                && phone.length == 10)
     }
 
     fun onVisibility() {

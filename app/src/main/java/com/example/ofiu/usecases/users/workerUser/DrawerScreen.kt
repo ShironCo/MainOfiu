@@ -10,10 +10,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,11 +46,12 @@ fun DrawerScreen(navControllerMain: NavController, viewModel: DrawerScreenViewMo
     val scope = rememberCoroutineScope()
     var title by remember{ mutableStateOf(DrawerScreens.Profile.title) }
     val backHandler : Boolean by viewModel.backHandler.observeAsState(initial = false)
+    val moreVertToggle: Boolean by viewModel.moreVertToggle.observeAsState(initial = true)
 
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            TopDrawerBar(title = title) {
+            TopDrawerBar(navControllerMain = navControllerMain, viewModel = viewModel, title = title, moreVertToggle = moreVertToggle) {
                 scope.launch {
                     scaffoldState.drawerState.open()
                 }
@@ -59,6 +62,7 @@ fun DrawerScreen(navControllerMain: NavController, viewModel: DrawerScreenViewMo
             DrawerBody(items = screens, onItemClick = {
                 when (it.route) {
                     DrawerScreens.Profile.route -> {
+                        viewModel.setMoreVertToogle(true)
                         title = DrawerScreens.Profile.title
                         navController.popBackStack()
                         navController.navigate(DrawerScreens.Profile.route)
@@ -67,6 +71,7 @@ fun DrawerScreen(navControllerMain: NavController, viewModel: DrawerScreenViewMo
                         }
                     }
                     DrawerScreens.Chat.route -> {
+                        viewModel.setMoreVertToogle(false)
                         title = DrawerScreens.Chat.title
                         navController.popBackStack()
                         navController.navigate(DrawerScreens.Chat.route)
@@ -157,17 +162,64 @@ fun DrawerScreen(navControllerMain: NavController, viewModel: DrawerScreenViewMo
 }
 
 @Composable
-fun TopDrawerBar(title: String, onClickDrawe: () -> Unit) {
+fun TopDrawerBar(navControllerMain: NavController, viewModel: DrawerScreenViewModel, title: String, moreVertToggle: Boolean,onClickDrawer: () -> Unit) {
+    
+    val showVertMore: Boolean by viewModel.showVertMore.observeAsState(initial = false)
+
     TopAppBar(
         title = { Text(text = title) },
         backgroundColor = MaterialTheme.colors.background,
         contentColor = MaterialTheme.colors.onSurface,
         navigationIcon = {
-            IconButton(onClick = { onClickDrawe() }) {
+            IconButton(onClick = { onClickDrawer() }) {
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Menu"
                 )
+            }
+        },
+        actions = {
+            if (moreVertToggle) {
+                IconButton(onClick = {viewModel.setShowVertMore(true)}) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More vert"
+                    )
+                }
+                DropdownMenu(
+                    expanded = showVertMore,
+                    onDismissRequest = {viewModel.setShowVertMore(false)},
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.onSurface)
+                ) {
+                    DropdownMenuItem(
+                        onClick = { viewModel.onChangeAccount(navControllerMain) }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.MoreVertItemCam),
+                            style = MaterialTheme.typography.subtitle1,
+                            color = MaterialTheme.colors.secondaryVariant
+                        )
+                    }
+                    DropdownMenuItem(
+                        onClick = { /*TODO*/ }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.MoreVertItemTerm),
+                            style = MaterialTheme.typography.subtitle1,
+                            color = MaterialTheme.colors.secondaryVariant
+                        )
+                    }
+                    DropdownMenuItem(
+                        onClick = {viewModel.onCloseSession(navController = navControllerMain)},
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.MoreVertItemClose),
+                            style = MaterialTheme.typography.subtitle1,
+                            color = MaterialTheme.colors.onError
+                        )
+                    }
+                }
             }
         }
     )

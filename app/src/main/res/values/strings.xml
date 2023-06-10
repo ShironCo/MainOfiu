@@ -60,4 +60,8 @@
     <string name="profileWorkerGenerateDesc">¡Genera una descripción profesional con solo presionar un botón! Utiliza palabras clave para personalizar tu texto a tu medida. ¡Siente la libertad de ajustarlo según tus preferencias!</string>
     <string name="profileWorkerGeneratePlace">Proporciona algunas palabras clave relacionadas con tu profesión…</string>
     <string name="closeSession">¿Seguro quiere cerrar sesión?</string>
+    <string name="MoreVertItemClose">Cerrar sesión</string>
+    <string name="MoreVertItemTerm">Terminos y condiciones</string>
+    <string name="MoreVertItemCam">Cambiar cuenta</string>
+    <string name="UserHomeTopbarPlace">Buscar profesional</string>
 </resources>

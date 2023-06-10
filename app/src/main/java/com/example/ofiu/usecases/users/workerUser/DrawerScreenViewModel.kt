@@ -15,8 +15,21 @@ class DrawerScreenViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager
 ): ViewModel() {
 
+    private val _moreVertToggle = MutableLiveData<Boolean>()
+    val moreVertToggle: LiveData<Boolean> = _moreVertToggle
+
+    private val _showVertMore = MutableLiveData<Boolean>()
+    val showVertMore: LiveData<Boolean> = _showVertMore
+
     private val _backHandler = MutableLiveData<Boolean>()
     val backHandler: LiveData<Boolean> = _backHandler
+
+    fun setMoreVertToogle(value: Boolean){
+        _moreVertToggle.value = value
+    }
+    fun setShowVertMore(value: Boolean){
+        _showVertMore.value = value
+    }
 
     fun onBackHandler(value : Boolean){
         _backHandler.value = value
@@ -28,6 +41,11 @@ class DrawerScreenViewModel @Inject constructor(
         preferencesManager.setDataProfile(Variables.LoginActive.title, "false")
         navController.popBackStack()
         navController.navigate(AppScreens.Session.route)
+    }
+
+    fun onChangeAccount(navController: NavController){
+        navController.popBackStack()
+        navController.navigate(AppScreens.BottomBarScreen.route)
     }
 
 }
