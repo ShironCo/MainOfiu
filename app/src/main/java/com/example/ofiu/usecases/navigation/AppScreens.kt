@@ -14,4 +14,5 @@ sealed class AppScreens (val route: String){
     object Menu: AppScreens("menu")
     object VerifyId: AppScreens("verify_id")
     object VerifyFace: AppScreens("verify_face")
+    object DetailsPro: AppScreens("details_professional")
 }

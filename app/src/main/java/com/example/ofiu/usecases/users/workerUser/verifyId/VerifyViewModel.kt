@@ -173,7 +173,7 @@ class VerifyViewModel @Inject constructor(
 
     fun onSendImages(context: Context, navController: NavHostController) {
         _validButtonId.value = true
-        if (_image1.value.toString().isBlank()&&_image2.value.toString().isBlank()&&_image3.value.toString().isBlank()){
+        if (_image1.value.toString().isNotBlank()&&_image2.value.toString().isNotBlank()&&_image3.value.toString().isNotBlank()){
             viewModelScope.launch {
                 ConvertImage(Variables.ImageFrontal.title).onSuccess {
                     _image1.value = it
@@ -196,8 +196,8 @@ class VerifyViewModel @Inject constructor(
                         delay(4000)
                         navController.popBackStack()
                     }.onFailure {
-                        Toast.makeText(context, "Error $it", Toast.LENGTH_LONG).show()
                         _validButtonId.value = false
+                        println(it)
                     }
                 }
             }

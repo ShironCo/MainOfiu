@@ -101,6 +101,8 @@ class UserProfileViewModel @Inject constructor(
         if (_imageGallery.value.isNullOrEmpty()) {
             viewModelScope.launch {
                 repository.receiveImagesPro(UserProRequest(_id.value!!)).onSuccess {
+                    _desc.value = it.data.desc.substringBeforeLast("-")
+                    _imageProfile.value = it.data.image.toUri()
                     _comments.value = it.data.comentarios.toString()
                     _starts.value = it.data.estrellas.toString()
                     val list = mutableListOf<Uri>()
@@ -239,20 +241,37 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    fun onSaveDesc() {
-        viewModelScope.launch {
+    private suspend fun onSaveDescAndTags(context: Context) {
+        withContext(Dispatchers.IO) {
+            var tags: String? = null
             val id = preferencesManager.getDataProfile(Variables.IdUser.title, "")
-            repository.sendDescrPro(UserRequest(id, _descDialog.value!!)).onSuccess {
+            repository.getTags(_descDialog.value!!).onSuccess {
+                tags = it.choices.first().text.trimStart('\n').trimStart('\n')
+                println(tags)
+            }.onFailure {
+                tags = "No hay etiqueta"
+            }
+            repository.sendDescrPro(UserRequest(id, "${_descDialog.value!!}-${tags}")).onSuccess {
                 if (it.response == "true") {
                     preferencesManager.setDataProfile(
                         Variables.DescriptionPro.title,
                         _descDialog.value!!
                     )
-                    _desc.value = _descDialog.value
-                    _toggleDesc.value = false
+                    _desc.postValue(_descDialog.value)
+                    _toggleDesc.postValue(false)
                 }
+            }.onFailure {
+                Toast.makeText(context, "Ha ocurrido un error", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+     fun onClickButtonSave(context: Context){
+         _isLoadingDesc.value = true
+         viewModelScope.launch {
+             onSaveDescAndTags(context)
+             _isLoadingDesc.value = false
+         }
     }
 
     fun onDeleteImage(uri: Uri, context: Context) {
@@ -272,17 +291,17 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-     fun updatePhotoProfile(uri: Uri, context: Context){
-         viewModelScope.launch {
-        val id = preferencesManager.getDataProfile(Variables.IdUser.title, "")
-        val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
-        val uriToBytes = uriToBytes(uri, context)
-        val extension = extensionFromUri(uri, context)
-        val image = MultipartBody.Part.createFormData(
-            name = "photo",
-            filename = "photo.$extension",
-            uriToBytes.toRequestBody(contentType = "image/jpeg".toMediaTypeOrNull())
-        )
+    fun updatePhotoProfile(uri: Uri, context: Context) {
+        viewModelScope.launch {
+            val id = preferencesManager.getDataProfile(Variables.IdUser.title, "")
+            val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
+            val uriToBytes = uriToBytes(uri, context)
+            val extension = extensionFromUri(uri, context)
+            val image = MultipartBody.Part.createFormData(
+                name = "photo",
+                filename = "photo.$extension",
+                uriToBytes.toRequestBody(contentType = "image/jpeg".toMediaTypeOrNull())
+            )
             repository.updatePhotoProfile(requestBody, image).onSuccess {
                 Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
             }.onFailure {
@@ -290,6 +309,5 @@ class UserProfileViewModel @Inject constructor(
                 println(it)
             }
         }
-
     }
 }

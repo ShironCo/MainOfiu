@@ -15,6 +15,7 @@ import com.example.ofiu.remote.apis.gpt.ChatGptApi
 import com.example.ofiu.remote.apis.ofiu.OfiuApi
 import com.example.ofiu.remote.dto.gpt.UserProRequest
 import com.example.ofiu.remote.dto.ofiu.*
+import com.example.ofiu.remote.dto.ofiu.professionals.DataRecycleView
 import okhttp3.MultipartBody
 import okhttp3.MultipartBody.Part
 import okhttp3.RequestBody
@@ -83,6 +84,14 @@ class OfiuRepositoryImpl @Inject constructor(
     override suspend fun sendDescrPro(desc: UserRequest): Result<UserResponse> {
         return try {
             Result.success(api.sendDescrPro(desc))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getUsersPro(id: String, search: String): Result<DataRecycleView> {
+        return try {
+            Result.success(api.getUsersPro(UserRequest(id, search)))
         }catch (e: Exception){
             Result.failure(e)
         }
@@ -168,6 +177,14 @@ class OfiuRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getTags(prompt: String): Result<GptResponseDto> {
+        return try {
+            val text = gpt.getInformation(GptRequestDto(prompt = "Crea una sola etiqueta que mejor identifique la siguiente descripcion profesional, tiene que tener como maximo una frase de 4 palabras completas, no escribas \"Etiqueta:\" : $prompt"))
+            Result.success(text)
+        }catch(e: Exception){
+            Result.failure(e)
+        }
+    }
 }
 
 

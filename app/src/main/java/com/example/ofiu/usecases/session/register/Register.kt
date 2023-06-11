@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.ofiu.R
@@ -196,6 +197,40 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel, navControl
                             style = MaterialTheme.typography.body2,
                             color = MaterialTheme.colors.background
                         )
+                        Dialog(onDismissRequest = { /*TODO*/ }) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(350.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                                    .background(MaterialTheme.colors.onSurface)
+                                    .padding(20.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.SpaceAround
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.verifyemail),
+                                        contentDescription = "Ilustracion", Modifier.size(200.dp)
+                                    )
+                                    Column() {
+                                        Text(
+                                            text = "Revisa tu inbox",
+                                            style = MaterialTheme.typography.h2,
+                                            color = MaterialTheme.colors.primaryVariant
+                                        )
+                                        Text(text = "Enviamos un link de verificacion de email, " +
+                                                "clickea en el link para proceder.",
+                                            style = MaterialTheme.typography.subtitle1,
+                                            color = MaterialTheme.colors.onBackground,
+                                            textAlign = TextAlign.Justify
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }else if (messageIndicator.response == "correo"){
                         Text(
                             text = "Correo no valido",
@@ -205,7 +240,7 @@ fun RegisterContent(modifier: Modifier, viewModel: RegisterViewModel, navControl
                     }else if (messageIndicator.response.isBlank()){
                     }else {
                         Text(
-                            text = "Ha ocurrido un error",
+                            text = messageIndicator.response,
                             style = MaterialTheme.typography.body2,
                             color = MaterialTheme.colors.onError
                         )

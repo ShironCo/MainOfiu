@@ -202,7 +202,6 @@ fun VerifyContent(
             navController.navigate(AppScreens.VerifyFace.route)
         }
     }
-
     if (!validButtonFace && !validButtonId) {
         SendImage(viewModel, navController)
     }
@@ -281,9 +280,7 @@ fun VerifyCard(
 
 @Composable
 fun SendImage(viewModel: VerifyViewModel, navHostController: NavHostController) {
-
     val context = LocalContext.current
-
     Box(
         Modifier
             .fillMaxSize()

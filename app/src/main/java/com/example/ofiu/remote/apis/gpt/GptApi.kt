@@ -14,4 +14,5 @@ interface ChatGptApi {
     @POST("completions")
     suspend fun getInformation(@Body body: GptRequestDto):
             GptResponseDto
+
 }

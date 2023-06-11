@@ -22,12 +22,13 @@ import com.example.ofiu.usecases.navigation.BottomNavGraph
 
 @Composable
 fun BottomScreen(
+    navMainController: NavHostController
 ) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomBar(navController) }
     ) { padding ->
-        BottomNavGraph(Modifier.padding(padding), navController = navController)
+        BottomNavGraph(Modifier.padding(padding), navController = navController, navMainController = navMainController)
     }
 }
 
@@ -43,7 +44,6 @@ fun BottomBar(navController: NavHostController) {
 
     BottomNavigation(
         modifier = Modifier
-            .padding(horizontal = 30.dp)
             .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
         backgroundColor = MaterialTheme.colors.background,
         elevation = BottomNavigationDefaults.Elevation

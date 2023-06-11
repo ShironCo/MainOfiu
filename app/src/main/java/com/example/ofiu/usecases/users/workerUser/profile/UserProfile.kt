@@ -1,7 +1,6 @@
 package com.example.ofiu.usecases.users.workerUser.profile
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -13,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -58,7 +58,7 @@ fun ProfileWorkerApp(viewModel: UserProfileViewModel = hiltViewModel()) {
                 viewModel.onGenerateDesc(context)
             },
             saveDesc = {
-                       viewModel.onSaveDesc()
+                       viewModel.onClickButtonSave(context)
             },
             dismiss = {
                 viewModel.onSetToggleDesc(false)
@@ -134,14 +134,14 @@ fun ProfileBasicInformation(viewModel: UserProfileViewModel) {
                     .size(70.dp)
                     .background(MaterialTheme.colors.onSurface)
             ) {
-                if (imageProfile.toString().isNotBlank()) {
+                if (imageProfile.toString() != "0") {
                     AsyncImage(model = imageProfile, contentDescription = null,
                         contentScale = ContentScale.Crop, modifier = Modifier.clickable {
                             launcher.launch("image/*")
                         })
                 } else {
                     Icon(
-                        painter = painterResource(id = R.drawable.baseline_person_24),
+                        imageVector = Icons.Default.Person,
                         contentDescription = null, tint = MaterialTheme.colors.background,
                         modifier = Modifier
                             .fillMaxSize()

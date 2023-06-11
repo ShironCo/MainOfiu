@@ -61,9 +61,10 @@ fun LoginTolBar(navController: NavHostController, viewModel: LoginViewModel) {
 fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: NavHostController) {
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
-    val response: LoginResponse by viewModel.response.observeAsState(initial = LoginResponse(
-        null, null, null, null, null
-    )
+    val response: LoginResponse by viewModel.response.observeAsState(
+        initial = LoginResponse(
+            null, null, null, null, null
+        )
     )
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val validButton: Boolean by viewModel.buttonValid.observeAsState(initial = false)
@@ -117,14 +118,12 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
                         { viewModel.onTextLoginChange(email, it) },
                         viewModel
                     )
-                    if ((response.successful).equals("false")) {
-                        TextIndicator(info = "Email o contraseña incorrectos.")
-                    }else if(response.successful.equals("true")){
-                    }else if(response.successful.equals(null)){
-                    }else{
-                        TextIndicator(info = "Ha ocurrido un error")
+                    response.successful?.let {
+                        if (response.successful != "true")
+                            TextIndicator(info = it)
                     }
-                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     ButtonLogin(navController, viewModel, email, password, isLoading, validButton)
 
@@ -138,26 +137,6 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
                             textAlign = TextAlign.End
                         )
                     }
-
-//                    Spacer(modifier = Modifier.height(30.dp))
-//
-//                    Text(
-//                        stringResource(id = R.string.loginapp),
-//                        style = MaterialTheme.typography.body1,
-//                        color = MaterialTheme.colors.secondaryVariant
-//                    )
-//                    Spacer(modifier = Modifier.height(20.dp))
-//                    Row() {
-//                        Image(
-//                            painter = painterResource(id = R.drawable.google___original),
-//                            contentDescription = "Logo de Google"
-//                        )
-//                        Spacer(modifier = Modifier.width(1.dp))
-//                        Image(
-//                            painter = painterResource(id = R.drawable.facebook___original),
-//                            contentDescription = "Logo de Google"
-//                        )
-//                    }
                 }
             }
         }

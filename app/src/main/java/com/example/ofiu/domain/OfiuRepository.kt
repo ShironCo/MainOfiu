@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.example.aprendiendoausargpt.screen.data.remote.dto.GptResponseDto
 import com.example.ofiu.remote.dto.gpt.UserProRequest
 import com.example.ofiu.remote.dto.ofiu.*
+import com.example.ofiu.remote.dto.ofiu.professionals.DataRecycleView
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -17,6 +18,7 @@ interface OfiuRepository {
     suspend fun recoverPassword(email: String): Result<UserResponse>
     suspend fun deleteImageGallery(uri: String): Result<UserResponse>
     suspend fun sendDescrPro(desc: UserRequest): Result<UserResponse>
+    suspend fun getUsersPro(id: String, search: String): Result<DataRecycleView>
     suspend fun updatePhotoProfile(
         id: RequestBody,
         image: MultipartBody.Part
@@ -43,5 +45,6 @@ interface OfiuRepository {
     )
 
     suspend fun promptGpt(prompt: String): Result<GptResponseDto>
+    suspend fun getTags(prompt: String): Result<GptResponseDto>
 }
 

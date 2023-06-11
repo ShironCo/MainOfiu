@@ -14,6 +14,10 @@ import com.example.ofiu.usecases.session.login.LoginApp
 import com.example.ofiu.usecases.session.register.LegalApp
 import com.example.ofiu.usecases.session.register.RegisterApp
 import com.example.ofiu.usecases.users.clientUser.BottomScreen
+import com.example.ofiu.usecases.users.clientUser.home.HomeApp
+import com.example.ofiu.usecases.users.clientUser.home.HomeContentApp
+import com.example.ofiu.usecases.users.clientUser.home.details.DetailsProfile
+import com.example.ofiu.usecases.users.clientUser.home.details.DetailsUserApp
 import com.example.ofiu.usecases.users.workerUser.DrawerScreen
 import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyFaceApp
 import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyIdApp
@@ -55,11 +59,12 @@ fun AppNavigation(){
             MenuApp(navController)
         }
         composable(AppScreens.BottomBarScreen.route){
-            BottomScreen()
+            BottomScreen(navController)
         }
         composable(AppScreens.DrawerScreen.route){
             DrawerScreen(navController)
         }
+
         //Verify
         composable(DrawerScreens.VerifyId.route){
             VerifyWorkerApp(navController)
@@ -69,6 +74,14 @@ fun AppNavigation(){
         }
         composable(AppScreens.VerifyFace.route){
             VerifyFaceApp(navController)
+        }
+
+        //ClientMenu
+        composable(AppScreens.DetailsPro.route+"/{id}"){
+            val id = it.arguments?.getString("id")
+            id?.let {
+                DetailsUserApp(id, navController)
+            }
         }
     }
 }

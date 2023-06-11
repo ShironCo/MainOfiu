@@ -10,14 +10,14 @@ import com.example.ofiu.usecases.users.clientUser.home.HomeApp
 import com.example.ofiu.usecases.users.clientUser.profile.ProfileApp
 
 @Composable
-fun BottomNavGraph(modifier: Modifier, navController: NavHostController) {
+fun BottomNavGraph(modifier: Modifier, navController: NavHostController, navMainController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = BottomBarScreen.Home.route
     ) {
 
         composable(BottomBarScreen.Home.route){
-            HomeApp()
+            HomeApp(navMainController)
         }
         composable(BottomBarScreen.Chat.route){
             ChatApp()

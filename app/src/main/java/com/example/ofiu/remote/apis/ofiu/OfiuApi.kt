@@ -3,6 +3,7 @@ package com.example.ofiu.remote.apis.ofiu
 import com.example.ofiu.remote.dto.*
 import com.example.ofiu.remote.dto.gpt.UserProRequest
 import com.example.ofiu.remote.dto.ofiu.*
+import com.example.ofiu.remote.dto.ofiu.professionals.DataRecycleView
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -68,6 +69,9 @@ interface OfiuApi {
     suspend fun receiveImagesPro(
         @Body loginUser: UserProRequest
     ): ImageProfileGallery
-
+    @POST("pag_prueba.php")
+    suspend fun getUsersPro(
+        @Body ids: UserRequest
+    ): DataRecycleView
 
 }

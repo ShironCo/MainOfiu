@@ -10,6 +10,7 @@ import com.example.ofiu.remote.dto.ofiu.RegisterUserRequest
 import com.example.ofiu.remote.dto.ofiu.UserResponse
 import com.example.ofiu.usecases.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -135,6 +136,7 @@ class RegisterViewModel @Inject constructor(
             repository.addUser(user).onSuccess {
                 _response.value = it
                 if (it.response == "true"){
+                    delay(4000)
                     navHostController.popBackStack()
                     navHostController.navigate(AppScreens.Session.route)
                 }
