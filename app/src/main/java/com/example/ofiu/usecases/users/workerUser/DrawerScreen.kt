@@ -1,7 +1,11 @@
 package com.example.ofiu.usecases.users.workerUser
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,7 +51,6 @@ fun DrawerScreen(navControllerMain: NavController, viewModel: DrawerScreenViewMo
     var title by remember{ mutableStateOf(DrawerScreens.Profile.title) }
     val backHandler : Boolean by viewModel.backHandler.observeAsState(initial = false)
     val moreVertToggle: Boolean by viewModel.moreVertToggle.observeAsState(initial = true)
-
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -60,35 +63,35 @@ fun DrawerScreen(navControllerMain: NavController, viewModel: DrawerScreenViewMo
         drawerContent = {
             DrawerHeader()
             DrawerBody(items = screens, onItemClick = {
-                when (it.route) {
-                    DrawerScreens.Profile.route -> {
-                        viewModel.setMoreVertToogle(true)
-                        title = DrawerScreens.Profile.title
-                        navController.popBackStack()
-                        navController.navigate(DrawerScreens.Profile.route)
-                        scope.launch {
-                            scaffoldState.drawerState.close()
+                    when (it.route) {
+                        DrawerScreens.Profile.route -> {
+                            viewModel.setMoreVertToogle(true)
+                            title = DrawerScreens.Profile.title
+                            navController.popBackStack()
+                            navController.navigate(DrawerScreens.Profile.route)
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
                         }
-                    }
-                    DrawerScreens.Chat.route -> {
-                        viewModel.setMoreVertToogle(false)
-                        title = DrawerScreens.Chat.title
-                        navController.popBackStack()
-                        navController.navigate(DrawerScreens.Chat.route)
-                        scope.launch {
-                            scaffoldState.drawerState.close()
+                        DrawerScreens.Chat.route -> {
+                            viewModel.setMoreVertToogle(false)
+                            title = DrawerScreens.Chat.title
+                            navController.popBackStack()
+                            navController.navigate(DrawerScreens.Chat.route)
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
                         }
-                    }
-                    DrawerScreens.VerifyId.route -> {
-                        title = DrawerScreens.VerifyId.title
-                        navController.popBackStack()
-                        navControllerMain.navigate(DrawerScreens.VerifyId.route)
-                        scope.launch {
-                            scaffoldState.drawerState.close()
+                        DrawerScreens.VerifyId.route -> {
+                            title = DrawerScreens.VerifyId.title
+                            navController.popBackStack()
+                            navControllerMain.navigate(DrawerScreens.VerifyId.route)
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
                         }
+                        else -> {}
                     }
-                    else -> {}
-                }
             })
         },
         drawerShape = RoundedCornerShape(0.dp)
@@ -163,9 +166,10 @@ fun DrawerScreen(navControllerMain: NavController, viewModel: DrawerScreenViewMo
 
 @Composable
 fun TopDrawerBar(navControllerMain: NavController, viewModel: DrawerScreenViewModel, title: String, moreVertToggle: Boolean,onClickDrawer: () -> Unit) {
-    
+    val openLink = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ){}
     val showVertMore: Boolean by viewModel.showVertMore.observeAsState(initial = false)
-
     TopAppBar(
         title = { Text(text = title) },
         backgroundColor = MaterialTheme.colors.background,
@@ -202,7 +206,13 @@ fun TopDrawerBar(navControllerMain: NavController, viewModel: DrawerScreenViewMo
                         )
                     }
                     DropdownMenuItem(
-                        onClick = { /*TODO*/ }
+                        onClick = {
+                            val url = "https://ofiu.online/Politicas/TérminosycondicionesdeUso.pdf"
+                            val intent = Intent(Intent.ACTION_VIEW).apply {
+                                data = Uri.parse(url)
+                            }
+                            openLink.launch(intent)
+                        }
                     ) {
                         Text(
                             text = stringResource(id = R.string.MoreVertItemTerm),

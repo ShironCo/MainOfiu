@@ -164,7 +164,7 @@ fun LazyColumnPro(
   onClickViewPerfil: (String)-> Unit
 ) {
     LazyColumn(
-        modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
+        modifier = Modifier.padding(horizontal = 5.dp).padding(bottom = 40.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(users) {

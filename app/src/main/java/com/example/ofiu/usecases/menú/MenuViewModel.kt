@@ -10,6 +10,7 @@ import com.example.ofiu.Preferences.Variables
 import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.remote.dto.ofiu.UserRequest
 import com.example.ofiu.usecases.navigation.AppScreens
+import com.example.ofiu.usecases.navigation.DrawerScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

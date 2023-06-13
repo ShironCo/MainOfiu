@@ -23,7 +23,7 @@ fun BottomNavGraph(modifier: Modifier, navController: NavHostController, navMain
             ChatApp()
         }
         composable(BottomBarScreen.Profile.route){
-            ProfileApp()
+            ProfileApp(navMainController)
         }
     }
 }

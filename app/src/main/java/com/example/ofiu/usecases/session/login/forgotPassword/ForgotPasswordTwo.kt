@@ -64,7 +64,8 @@ fun ForgotPasswordContentTwo(
 
     val button: Boolean by viewModel.buttonValidation.observeAsState(initial = false)
     val code: String by viewModel.code.observeAsState(initial = "")
-
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -113,7 +114,11 @@ fun ForgotPasswordContentTwo(
                     Spacer(modifier = Modifier.height(30.dp))
                     EmailTextFieldTwo(viewModel, code)
                     Spacer(modifier = Modifier.height(30.dp))
-                    ForgotPasswordButtonTwo(email, button, navController)
+                    ForgotPasswordButtonTwo(button, isLoading){
+                        if (email != null) {
+                            viewModel.onSendCode(email,code,navController, context )
+                        }
+                    }
                 }
             }
         }
@@ -149,8 +154,7 @@ fun EmailTextFieldTwo(viewModel: ForgotPasswordViewModel, code: String) {
 }
 
 @Composable
-fun ForgotPasswordButtonTwo(email: String?, button: Boolean, navController: NavController) {
-    val context = LocalContext.current
+fun ForgotPasswordButtonTwo(button: Boolean, loading: Boolean, onClickButton: ()->Unit) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -158,16 +162,26 @@ fun ForgotPasswordButtonTwo(email: String?, button: Boolean, navController: NavC
             .clip(MaterialTheme.shapes.small),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            navController.navigate(AppScreens.ForgotPasswordThree.route + "/$email")
+            onClickButton()
         },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primaryVariant,
         ), enabled = button
     ) {
-        Text(
-            stringResource(id = R.string.recover),
-            style = MaterialTheme.typography.h3,
-            color = MaterialTheme.colors.secondary
-        )
+        if (loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                CircularProgressIndicator(color = MaterialTheme.colors.background)
+            }
+        } else {
+            Text(
+                stringResource(id = R.string.recover),
+                style = MaterialTheme.typography.h3,
+                color = MaterialTheme.colors.secondary
+            )
+        }
     }
 }

@@ -16,6 +16,9 @@ import com.example.ofiu.remote.apis.ofiu.OfiuApi
 import com.example.ofiu.remote.dto.gpt.UserProRequest
 import com.example.ofiu.remote.dto.ofiu.*
 import com.example.ofiu.remote.dto.ofiu.professionals.DataRecycleView
+import com.example.ofiu.remote.dto.ofiu.professionals.details.DetailsPro
+import com.example.ofiu.remote.dto.ofiu.professionals.details.comments.Comments
+import com.example.ofiu.remote.dto.ofiu.professionals.details.comments.RequestComment
 import okhttp3.MultipartBody
 import okhttp3.MultipartBody.Part
 import okhttp3.RequestBody
@@ -92,6 +95,61 @@ class OfiuRepositoryImpl @Inject constructor(
     override suspend fun getUsersPro(id: String, search: String): Result<DataRecycleView> {
         return try {
             Result.success(api.getUsersPro(UserRequest(id, search)))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getDetailsPro(id: String): Result<DetailsPro> {
+        return try {
+            Result.success(api.getDetailsPro(Request(id)))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getCommentsPro(id: String): Result<Comments> {
+        return try {
+            Result.success(api.getCommentsPro(Request(id)))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun setCommentsPro(
+        idPro: String,
+        idUser: String,
+        desc: String,
+        starts: String
+    ): Result<UserResponse> {
+        return try {
+            Result.success(api.setCommentsPro(RequestComment(idPro, idUser, desc, starts)))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updatePassword(
+        email: String,
+        password: String,
+        passwordRepeat: String
+    ): Result<UserResponse> {
+        return try {
+            Result.success(api.updatePassword(
+                 ChangePassword(
+                     email,
+                     password,
+                     passwordRepeat
+                 )
+            ))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun sendCode(email: String, code: String): Result<UserResponse> {
+        return try {
+            Result.success(api.sendCode(UserRequest(email, code)))
         }catch (e: Exception){
             Result.failure(e)
         }

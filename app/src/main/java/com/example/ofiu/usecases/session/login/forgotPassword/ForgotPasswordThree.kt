@@ -146,7 +146,7 @@ fun StepFourth(email: String?, navController: NavController) {
             color = MaterialTheme.colors.secondaryVariant
         )
         Spacer(modifier = Modifier.height(30.dp))
-        ForgotPasswordButtonThree(R.string.login, true) {
+        ForgotPasswordButtonThree(R.string.login, true, isLoading = false) {
             navController.navigate(AppScreens.Login.route)
         }
     }
@@ -162,6 +162,8 @@ fun StepThree(
     email: String?,
     visibilityButton: Boolean
 ) {
+    val isLoading : Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val context = LocalContext.current
     Column() {
         Text(
             text = stringResource(id = R.string.updatePassword) + " $email",
@@ -177,8 +179,8 @@ fun StepThree(
         viewModel.onVisibilityButton()
     }
     Spacer(modifier = Modifier.height(30.dp))
-    ForgotPasswordButtonThree(R.string.change, button) {
-        viewModel.onStepChange()
+    ForgotPasswordButtonThree(R.string.change, button, isLoading = isLoading) {
+        viewModel.onSendNewPassword(email!!, password, passwordRepeat, context)
     }
 }
 
@@ -227,7 +229,7 @@ fun PasswordTextFieldThree(
 }
 
 @Composable
-fun ForgotPasswordButtonThree(text: Int, button: Boolean, onFunction: () -> Unit) {
+fun ForgotPasswordButtonThree(text: Int, button: Boolean, isLoading : Boolean,onFunction: () -> Unit) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -241,10 +243,21 @@ fun ForgotPasswordButtonThree(text: Int, button: Boolean, onFunction: () -> Unit
             backgroundColor = MaterialTheme.colors.primaryVariant,
         ), enabled = button
     ) {
-        Text(
-            stringResource(text),
-            style = MaterialTheme.typography.h3,
-            color = MaterialTheme.colors.secondary
-        )
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                CircularProgressIndicator(color = Color.White)
+
+            }
+        } else {
+            Text(
+                text = stringResource(id = text),
+                style = MaterialTheme.typography.h3,
+                color = MaterialTheme.colors.secondary
+            )
+        }
     }
 }

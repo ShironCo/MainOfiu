@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.usecases.navigation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,9 +42,12 @@ class ForgotPasswordViewModel @Inject constructor(
         _buttonValidation.value = false
         viewModelScope.launch {
             repository.recoverPassword(email).onSuccess {
-                Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
-                navController.navigate(route = AppScreens.ForgotPasswordTwo.route + "/$email") {
-                    launchSingleTop = true
+                if (it.response == "true"){
+                    navController.navigate(route = AppScreens.ForgotPasswordTwo.route + "/$email") {
+                        launchSingleTop = true
+                    }
+                }else{
+                    Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
                 }
             }.onFailure {
                 Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
@@ -100,6 +104,42 @@ class ForgotPasswordViewModel @Inject constructor(
     }
     fun onVisibilityButton(){
         _visibilityButton.value = _visibilityButton.value != true
+    }
+
+    fun onSendCode(email:String, code: String, navController: NavController, context: Context){
+        _isLoading.value = true
+        viewModelScope.launch {
+            repository.sendCode(email, code).onSuccess {
+                if (it.response == "true"){
+                    navController.navigate(AppScreens.ForgotPasswordThree.route + "/$email")
+                }else{
+                    Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
+                }
+            }.onFailure {
+                Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+            }
+        }
+        _isLoading.value = false
+    }
+
+    fun onSendNewPassword(email: String, password: String, passwordRepeat: String, context: Context){
+        _isLoading.value = true
+        viewModelScope.launch {
+            repository.updatePassword(
+                email,
+                password,
+                passwordRepeat
+            ).onSuccess {
+                if (it.response == "true"){
+                    onStepChange()
+                }else{
+                    Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
+                }
+            }.onFailure {
+                Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+            }
+        }
+        _isLoading.value = false
     }
 
 }

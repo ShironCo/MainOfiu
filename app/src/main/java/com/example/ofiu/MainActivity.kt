@@ -11,6 +11,7 @@ import com.example.ofiu.ui.theme.OfiuTheme
 import com.example.ofiu.usecases.navigation.AppNavigation
 import com.example.ofiu.usecases.users.clientUser.home.HomeApp
 import com.example.ofiu.usecases.users.clientUser.home.details.DetailsUserApp
+import com.example.ofiu.usecases.users.clientUser.home.details.DialogComment
 import com.example.ofiu.usecases.users.clientUser.profile.ProfileApp
 import com.example.ofiu.usecases.users.workerUser.profile.ProfileWorkerApp
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,9 +31,12 @@ class MainActivity : ComponentActivity() {
                     AppNavigation()
                     //ProfileApp()
                     //HomeApp()
-                  //  DetailsUserApp()
+                 // DetailsUserApp("ha")
+                   // DialogComment(ratint = 0, onRatingChanged = {}, value = "31" , onValueChange = {}) {
+
+                    }
                 }
             }
         }
     }
-}
+

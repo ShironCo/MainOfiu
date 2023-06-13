@@ -4,6 +4,9 @@ import com.example.ofiu.remote.dto.*
 import com.example.ofiu.remote.dto.gpt.UserProRequest
 import com.example.ofiu.remote.dto.ofiu.*
 import com.example.ofiu.remote.dto.ofiu.professionals.DataRecycleView
+import com.example.ofiu.remote.dto.ofiu.professionals.details.DetailsPro
+import com.example.ofiu.remote.dto.ofiu.professionals.details.comments.Comments
+import com.example.ofiu.remote.dto.ofiu.professionals.details.comments.RequestComment
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -73,5 +76,26 @@ interface OfiuApi {
     suspend fun getUsersPro(
         @Body ids: UserRequest
     ): DataRecycleView
+
+    @POST("select_ver_perfil.php")
+    suspend fun getDetailsPro(
+        @Body id: Request
+    ): DetailsPro
+    @POST("select_comen_prof.php")
+    suspend fun getCommentsPro(
+        @Body id: Request
+    ): Comments
+      @POST("insert_coment_prof.php")
+    suspend fun setCommentsPro(
+        @Body id: RequestComment
+    ): UserResponse
+    @POST("cambiar_contraseña_reset.php")
+    suspend fun updatePassword(
+        @Body newsPasswords: ChangePassword
+    ): UserResponse
+  @POST("verificar_codigo_reset.php")
+    suspend fun sendCode(
+        @Body sendCode: UserRequest
+    ): UserResponse
 
 }

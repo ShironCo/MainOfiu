@@ -1,5 +1,9 @@
 package com.example.ofiu.usecases.session.register
 
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -63,6 +68,10 @@ fun LegalTopBar(navController: NavController, viewModel: RegisterViewModel){
 @Composable
 fun LegalContent(modifier:Modifier = Modifier, viewModel: RegisterViewModel, navController: NavController){
     val buttonLegal : Boolean by viewModel.buttonLegal.observeAsState(initial = false)
+    val openLink = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ){}
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -77,9 +86,21 @@ fun LegalContent(modifier:Modifier = Modifier, viewModel: RegisterViewModel, nav
                 color = MaterialTheme.colors.secondaryVariant
                 )
             Spacer(modifier = Modifier.height(20.dp))
-            LegalCard(R.string.termAndConditions, R.string.termAndConditionsDesc)
+            LegalCard(R.string.termAndConditions, R.string.termAndConditionsDesc){
+                val url = "https://ofiu.online/Politicas/TérminosycondicionesdeUso.pdf"
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(url)
+                }
+                openLink.launch(intent)
+            }
             Spacer(modifier = Modifier.height(16.dp))
-            LegalCard(R.string.noticePrivacity, R.string.noticePrivacityDesc)
+            LegalCard(R.string.noticePrivacity, R.string.noticePrivacityDesc){
+                val url = "https://ofiu.online/Politicas/PolíticadePrivacidad.pdf"
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(url)
+                }
+                openLink.launch(intent)
+            }
             Spacer(modifier = Modifier.height(16.dp))
             ButtonLegal(buttonLegal, viewModel)
             Spacer(modifier = Modifier.height(16.dp))
@@ -96,7 +117,11 @@ fun LegalContent(modifier:Modifier = Modifier, viewModel: RegisterViewModel, nav
 }
 
 @Composable
-fun LegalCard(title:Int, desc:Int){
+fun LegalCard(
+    title:Int,
+    desc:Int,
+    onClick: ()-> Unit
+){
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,7 +154,7 @@ fun LegalCard(title:Int, desc:Int){
                     .fillMaxWidth()
                     .padding(top = 10.dp)
             )
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { onClick() }) {
                 Text(text = stringResource(R.string.readDocument),
                     style = MaterialTheme.typography.body2,
                     color = MaterialTheme.colors.secondary,

@@ -7,6 +7,9 @@ import com.example.aprendiendoausargpt.screen.data.remote.dto.GptResponseDto
 import com.example.ofiu.remote.dto.gpt.UserProRequest
 import com.example.ofiu.remote.dto.ofiu.*
 import com.example.ofiu.remote.dto.ofiu.professionals.DataRecycleView
+import com.example.ofiu.remote.dto.ofiu.professionals.User
+import com.example.ofiu.remote.dto.ofiu.professionals.details.DetailsPro
+import com.example.ofiu.remote.dto.ofiu.professionals.details.comments.Comments
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -19,6 +22,11 @@ interface OfiuRepository {
     suspend fun deleteImageGallery(uri: String): Result<UserResponse>
     suspend fun sendDescrPro(desc: UserRequest): Result<UserResponse>
     suspend fun getUsersPro(id: String, search: String): Result<DataRecycleView>
+    suspend fun getDetailsPro(id: String): Result<DetailsPro>
+    suspend fun getCommentsPro(id: String): Result<Comments>
+    suspend fun setCommentsPro(idPro: String, idUser: String, desc: String, starts: String): Result<UserResponse>
+    suspend fun updatePassword(email: String, password: String, passwordRepeat: String): Result<UserResponse>
+    suspend fun sendCode(email: String, code: String): Result<UserResponse>
     suspend fun updatePhotoProfile(
         id: RequestBody,
         image: MultipartBody.Part

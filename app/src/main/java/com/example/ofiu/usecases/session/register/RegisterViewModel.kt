@@ -96,8 +96,7 @@ class RegisterViewModel @Inject constructor(
     }
 
     private fun isValidPasswordRepeat(password: String, passwordRepeat: String): Boolean {
-        val pasVal = (password == passwordRepeat)
-        return pasVal
+        return (password == passwordRepeat)
     }
 
     private fun isValidData(
@@ -111,7 +110,7 @@ class RegisterViewModel @Inject constructor(
         return (name.isNotBlank() && lastName.isNotBlank()
                 && email.isNotBlank() && phone.isNotBlank()
                 && password.isNotBlank()
-                && passwordRepeat.isNotBlank() && isValidPasswordRepeat(password, passwordRepeat)
+                && passwordRepeat.isNotBlank() && isValidPassword(password)
                 && phone.length == 10)
     }
 

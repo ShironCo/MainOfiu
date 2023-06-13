@@ -60,7 +60,6 @@ class VerifyViewModel @Inject constructor(
     private val _validButtonId = MutableLiveData<Boolean>()
     val validButtonId: LiveData<Boolean> = _validButtonId
 
-    private val _verifySuccessful = MutableLiveData<Boolean>()
 
     fun verifySuccessful(): Boolean{
         val verify = preferencesManager.getDataProfile(Variables.Verify.title)
@@ -173,7 +172,9 @@ class VerifyViewModel @Inject constructor(
 
     fun onSendImages(context: Context, navController: NavHostController) {
         _validButtonId.value = true
-        if (_image1.value.toString().isNotBlank()&&_image2.value.toString().isNotBlank()&&_image3.value.toString().isNotBlank()){
+        if (_image1.value == null || _image2.value == null || _image3.value == null){
+            onTextChange(null, 0)
+        }else{
             viewModelScope.launch {
                 ConvertImage(Variables.ImageFrontal.title).onSuccess {
                     _image1.value = it
@@ -185,6 +186,9 @@ class VerifyViewModel @Inject constructor(
                     _image3.value = it
                 }
             }
+            println(_image1.value)
+            println(_image2.value)
+            println(_image3.value)
             CoroutineScope(Dispatchers.IO).launch {
                 val id = preferencesManager.getDataProfile(Variables.IdUser.title)
                 val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
@@ -201,8 +205,6 @@ class VerifyViewModel @Inject constructor(
                     }
                 }
             }
-        }else{
-          onTextChange(null, 0)
         }
     }
 
