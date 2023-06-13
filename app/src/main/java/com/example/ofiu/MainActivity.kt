@@ -9,6 +9,8 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import com.example.ofiu.ui.theme.OfiuTheme
 import com.example.ofiu.usecases.navigation.AppNavigation
+import com.example.ofiu.usecases.users.clientUser.chat.ChatApp
+import com.example.ofiu.usecases.users.clientUser.chat.messages.MessageApp
 import com.example.ofiu.usecases.users.clientUser.home.HomeApp
 import com.example.ofiu.usecases.users.clientUser.home.details.DetailsUserApp
 import com.example.ofiu.usecases.users.clientUser.home.details.DialogComment
@@ -28,12 +30,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    AppNavigation()
+                   // AppNavigation()
                     //ProfileApp()
                     //HomeApp()
                  // DetailsUserApp("ha")
                    // DialogComment(ratint = 0, onRatingChanged = {}, value = "31" , onValueChange = {}) {
-
+                    //ChatApp()
+                    MessageApp()
                     }
                 }
             }

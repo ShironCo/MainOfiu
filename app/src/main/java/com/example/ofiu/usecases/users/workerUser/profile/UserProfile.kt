@@ -276,13 +276,13 @@ fun ProfileContactInformation(viewModel: UserProfileViewModel) {
             color = MaterialTheme.colors.onBackground,
             modifier = Modifier.padding(end = 10.dp)
         )
-        Text(
-            text = "Es importante que verifiques tu email, para poder contactar de forma segura contigo.",
-            style = MaterialTheme.typography.subtitle1.copy(
-                fontSize = 14.sp
-            ),
-            color = MaterialTheme.colors.onBackground,
-        )
+//        Text(
+//            text = "Es importante que verifiques tu email, para poder contactar de forma segura contigo.",
+//            style = MaterialTheme.typography.subtitle1.copy(
+//                fontSize = 14.sp
+//            ),
+//            color = MaterialTheme.colors.onBackground,
+//        )
     }
 }
 

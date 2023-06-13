@@ -250,7 +250,6 @@ fun ForgotPasswordButtonThree(text: Int, button: Boolean, isLoading : Boolean,on
                     .wrapContentSize(Alignment.Center)
             ) {
                 CircularProgressIndicator(color = Color.White)
-
             }
         } else {
             Text(
