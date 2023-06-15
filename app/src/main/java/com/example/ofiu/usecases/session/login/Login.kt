@@ -63,8 +63,7 @@ fun LoginContent(modifier: Modifier, viewModel: LoginViewModel, navController: N
     val password: String by viewModel.password.observeAsState(initial = "")
     val response: LoginResponse by viewModel.response.observeAsState(
         initial = LoginResponse(
-            null, null, null, null, null
-        )
+            null, null, null, null, null,null)
     )
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val validButton: Boolean by viewModel.buttonValid.observeAsState(initial = false)

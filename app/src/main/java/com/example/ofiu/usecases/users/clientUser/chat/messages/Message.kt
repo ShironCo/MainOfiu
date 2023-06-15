@@ -40,17 +40,19 @@ fun MessageApp(
     idPro: String?,
     name: String?,
     image: String?,
+    idSender: String?,
     viewModel: MessageViewModel = hiltViewModel()
 ) {
     val message: String by viewModel.message.observeAsState(initial = "")
-    val current = LocalFocusManager.current
     val messageList: List<MessageChat> by viewModel.listMessages.observeAsState(initial = emptyList())
     val imageProfile = image?.replace("-","/")
-    println(imageProfile)
-    println(idPro)
-    if (idPro != null && imageProfile != null) {
+
+    if (idPro != null && imageProfile != null && idUser != null) {
         viewModel.setIdUser(idPro, imageProfile)
-        viewModel.newChats(idPro)
+        viewModel.newChats(
+            idPro = idPro,
+            idUser = idUser
+        )
     } else {
         navHostController.popBackStack()
     }
@@ -70,9 +72,9 @@ fun MessageApp(
                     name = name!!,
                     message = message,
                     idUser = idUser!!,
-                    idPro = idPro!!
+                    idPro = idPro!!,
+                    idSender = idSender!!
                 )
-                current.clearFocus()
             }) {
                 viewModel.onMessageChange(it)
             }
@@ -85,7 +87,7 @@ fun MessageApp(
         )
         MessageAppContent(
             modifier = Modifier.padding(it),
-            messageList = messageList, idUser = idUser)
+            messageList = messageList, idSender = idSender)
     }
 
 }
@@ -165,7 +167,7 @@ fun MessageBottomBar(message: String, onClickSend: () -> Unit, onMessageChange: 
                         color = MaterialTheme.colors.onBackground
                     )
                 },
-                textStyle = MaterialTheme.typography.subtitle1
+                textStyle = MaterialTheme.typography.subtitle1,
             )
         }
         IconButton(
@@ -174,11 +176,12 @@ fun MessageBottomBar(message: String, onClickSend: () -> Unit, onMessageChange: 
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f),
+            enabled = message.isNotBlank(),
         ) {
             Icon(
                 imageVector = Icons.Default.Send, contentDescription = null,
-                tint = MaterialTheme.colors.background
+                tint = if (message.isNotEmpty()) MaterialTheme.colors.background else MaterialTheme.colors.onPrimary
             )
         }
     }
@@ -187,19 +190,19 @@ fun MessageBottomBar(message: String, onClickSend: () -> Unit, onMessageChange: 
 
 @Composable
 fun MessageAppContent(
-    idUser: String?,
+    idSender: String?,
     modifier: Modifier,
     messageList: List<MessageChat>,
 ) {
     Box(modifier = Modifier
         .fillMaxSize()) {
-        LazyColumnMessage(messageList = messageList, idUser = idUser)
+        LazyColumnMessage(messageList = messageList, idSender = idSender)
     }
 }
 
 @Composable
 fun LazyColumnMessage(
-    idUser: String?,
+    idSender: String?,
     messageList: List<MessageChat>,
 ) {
     LazyColumn(
@@ -211,17 +214,26 @@ fun LazyColumnMessage(
         items(messageList) {
             Column(
                 modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.End
+                horizontalAlignment = if(idSender == it.sender) Alignment.End else{Alignment.Start}
             ) {
                 Card(
                     elevation = 0.dp,
-                    backgroundColor = if(idUser == it.sender) MaterialTheme.colors.onPrimary else{MaterialTheme.colors.onPrimary},
-                    shape = RoundedCornerShape(
-                        topStartPercent = 20,
-                        topEndPercent = 0,
-                        bottomStartPercent = 20,
-                        bottomEndPercent = 20
-                    ),
+                    backgroundColor = if(idSender == it.sender) MaterialTheme.colors.onPrimary else{MaterialTheme.colors.background},
+                    shape = if(idSender == it.sender){
+                        RoundedCornerShape(
+                            topStartPercent = 20,
+                            topEndPercent = 0,
+                            bottomStartPercent = 20,
+                            bottomEndPercent = 20
+                        )
+                    }else{
+                        RoundedCornerShape(
+                            topStartPercent = 0,
+                            topEndPercent = 20,
+                            bottomStartPercent = 20,
+                            bottomEndPercent = 20
+                        )
+                    },
                     modifier = Modifier
                         .padding(horizontal = 5.dp, vertical = 5.dp)
                         .widthIn(min = 0.dp, max = 350.dp)
@@ -237,7 +249,7 @@ fun LazyColumnMessage(
                             style = MaterialTheme.typography.subtitle1.copy(
                                 fontSize = 15.sp
                             ),
-                            color = MaterialTheme.colors.secondaryVariant,
+                            color = if(idSender == it.sender) MaterialTheme.colors.secondaryVariant else{MaterialTheme.colors.onSurface},
                             textAlign = TextAlign.Start
                         )
                         Text(

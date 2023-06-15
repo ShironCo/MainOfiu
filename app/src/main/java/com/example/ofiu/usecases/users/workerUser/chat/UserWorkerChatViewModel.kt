@@ -9,6 +9,7 @@ import com.example.ofiu.Preferences.PreferencesManager
 import com.example.ofiu.Preferences.Variables
 import com.example.ofiu.usecases.navigation.AppScreens
 import com.example.ofiu.usecases.users.clientUser.chat.dto.Chats
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +21,10 @@ import javax.inject.Inject
 class UserWorkerChatViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager
 ): ViewModel() {
-
     private val db = Firebase.firestore
 
-    private val _idPro = preferencesManager.getDataProfile(Variables.IdUser.title)
-    private val _idUser = MutableLiveData<String>()
+    private val _idRecibe = preferencesManager.getDataProfile(Variables.IdPro.title)
+    private val _idEnvia = MutableLiveData<String>()
     private val _name = MutableLiveData<String>()
 
     private val _chats = MutableLiveData<List<Chats>>()
@@ -33,7 +33,8 @@ class UserWorkerChatViewModel @Inject constructor(
     val chats: LiveData<List<Chats>> = _chats
 
 
-    private val chatCollectionsRefInfor = db.collection(_idPro)
+    private val chatCollectionsRefInfor = db.collection(_idRecibe).orderBy("lastMinute", Query.Direction.DESCENDING)
+
 
     init {
         val chatQuery = chatCollectionsRefInfor
@@ -46,7 +47,8 @@ class UserWorkerChatViewModel @Inject constructor(
                 val name = it.getString("name")
                 val previewMessage = it.getString("previewMessage")
                 val imageProfile = it.getString("imageProfile")
-                val id = it.getString("id")
+                val idRecibe = it.getString("idRecibe")
+                val idEnvia = it.getString("idEnvia")
                 val lastMinute = it.getTimestamp("lastMinute")
                 val fecha = if (lastMinute != null) {
                     val milliseconds = lastMinute.toDate().time
@@ -61,18 +63,22 @@ class UserWorkerChatViewModel @Inject constructor(
                 } else {
                     ""
                 }
-                if (name != null && previewMessage != null && imageProfile != null && id != null) {
-                    _idUser.value = id
+                if (name != null
+                    && previewMessage != null
+                    && imageProfile != null
+                    && idRecibe != null
+                    && idEnvia != null
+                ) {
+                    _idEnvia.value = idEnvia
                     _name.value = name
                     _imageProfile.value = imageProfile
-                    println("No se $imageProfile")
-                    println(lastMinute)
                     Chats(
                         imageProfile = imageProfile,
                         name = name,
                         previewMessage = previewMessage,
                         lastMinute = fecha,
-                        id = id
+                        idEnvia = idEnvia,
+                        idRecibe = idRecibe
                     )
                 } else {
                     null
@@ -84,14 +90,13 @@ class UserWorkerChatViewModel @Inject constructor(
 
     fun onClickChat(
         navHostController: NavHostController,
-        idUser: String,
+        idPro: String,
         name: String,
         imageProfile: String
     ) {
-        val idPro = _idPro
-        println(imageProfile)
+        val idUser = _idEnvia.value
         val image = imageProfile.replace("/", "-")
-        println(idUser)
-        navHostController.navigate(AppScreens.Messages.route + "/$idPro/$idUser/$name/$image")
+        navHostController.navigate(AppScreens.Messages.route + "/$idPro/$idUser/$name/$image/$idUser")
     }
+
 }

@@ -1,4 +1,4 @@
-package com.example.ofiu.usecases.session.register
+package com.example.ofiu.usecases.session.register.legal
 
 import android.content.Intent
 import android.net.Uri
@@ -12,15 +12,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,7 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.ofiu.R
 import com.example.ofiu.usecases.navigation.AppScreens
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.example.ofiu.usecases.session.register.RegisterViewModel
 
 @Composable
 fun LegalApp(navController: NavController, viewModel: RegisterViewModel = hiltViewModel()){
@@ -66,7 +63,9 @@ fun LegalTopBar(navController: NavController, viewModel: RegisterViewModel){
 }
 
 @Composable
-fun LegalContent(modifier:Modifier = Modifier, viewModel: RegisterViewModel, navController: NavController){
+fun LegalContent(modifier:Modifier = Modifier,
+                 viewModel: RegisterViewModel,
+                 navController: NavController){
     val buttonLegal : Boolean by viewModel.buttonLegal.observeAsState(initial = false)
     val openLink = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -87,7 +86,8 @@ fun LegalContent(modifier:Modifier = Modifier, viewModel: RegisterViewModel, nav
                 )
             Spacer(modifier = Modifier.height(20.dp))
             LegalCard(R.string.termAndConditions, R.string.termAndConditionsDesc){
-                val url = "https://ofiu.online/Politicas/TérminosycondicionesdeUso.pdf"
+             //   navController.navigate(AppScreens.Term.route)
+                            val url = "https://ofiu.online/Politicas/TérminosycondicionesdeUso.pdf"
                 val intent = Intent(Intent.ACTION_VIEW).apply {
                     data = Uri.parse(url)
                 }

@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -36,11 +37,35 @@ class UserClientProfileViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager
 ): ViewModel() {
 
+    private val _emailText = MutableLiveData<String>()
+    val emailText : LiveData<String> = _emailText
+
+    private val _nameText = MutableLiveData<String>()
+    val nameText : LiveData<String> = _nameText
+
+    private val _phoneText = MutableLiveData<String>()
+    val phoneText : LiveData<String> = _phoneText
+
     private val _expandMenu = MutableLiveData<Boolean>()
     val expandMenu : LiveData<Boolean> = _expandMenu
 
+    private val _openDialog = MutableLiveData<Boolean>()
+    val openDialog : LiveData<Boolean> = _openDialog
+
     private val _imageProfile = MutableLiveData<Uri>()
     val imageProfile: LiveData<Uri> = _imageProfile
+
+    init {
+        _nameText.value = preferencesManager.getDataProfile(Variables.NameUser.title)
+        _emailText.value = preferencesManager.getDataProfile(Variables.EmailUser.title)
+        _phoneText.value = preferencesManager.getDataProfile(Variables.PhoneUser.title)
+        _imageProfile.value = preferencesManager.getDataProfile(Variables.ImageUser.title).toUri()
+    }
+
+    fun onOpenDialog(){
+        _openDialog.value = _openDialog.value != true
+    }
+
     fun onExpandMenu(){
         _expandMenu.value = _expandMenu.value != true
     }
@@ -106,6 +131,9 @@ class UserClientProfileViewModel @Inject constructor(
         preferencesManager.setDataProfile(Variables.PasswordUser.title, "")
         preferencesManager.setDataProfile(Variables.LoginActive.title, "false")
         preferencesManager.setDataProfile(Variables.DescriptionPro.title, "")
+        preferencesManager.setDataProfile(Variables.ImageUser.title, "")
+        preferencesManager.setDataProfile(Variables.PhoneUser.title, "")
+        preferencesManager.setDataProfile(Variables.EmailUser.title, "")
         navController.popBackStack()
         navController.navigate(AppScreens.Session.route)
     }

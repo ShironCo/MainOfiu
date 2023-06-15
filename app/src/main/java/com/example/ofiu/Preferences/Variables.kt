@@ -14,8 +14,8 @@ sealed class Variables(
     object EmailUser : Variables("email")
     object PasswordUser : Variables("password")
     object PhoneUser : Variables("phone")
+    object ImageUser : Variables("imageUser")
     object LoginActive : Variables("active")
     object Verify : Variables("verify")
     object DescriptionPro : Variables("descripcion")
-    object ImageProfile : Variables("imgProfilePro")
 }

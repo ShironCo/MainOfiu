@@ -12,6 +12,7 @@ import com.example.ofiu.remote.dto.ofiu.professionals.details.DetailsPro
 import com.example.ofiu.remote.dto.ofiu.professionals.details.comments.Comments
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.http.Part
 
 interface OfiuRepository {
     suspend fun addUser(user: RegisterUserRequest): Result<UserResponse>
@@ -27,16 +28,15 @@ interface OfiuRepository {
     suspend fun setCommentsPro(idPro: String, idUser: String, desc: String, starts: String): Result<UserResponse>
     suspend fun updatePassword(email: String, password: String, passwordRepeat: String): Result<UserResponse>
     suspend fun sendCode(email: String, code: String): Result<UserResponse>
+    suspend fun reportUser(idprof: String, iduser: String, deta:String): Result<UserResponse>
     suspend fun updatePhotoProfile(
         id: RequestBody,
         image: MultipartBody.Part
     ): Result<UserResponse>
 
     suspend fun sendImage(
-        image1: MultipartBody.Part,
-        image2: MultipartBody.Part,
-        image3: MultipartBody.Part,
-        id: RequestBody
+        id: RequestBody,
+        photo : Array<MultipartBody.Part>
     ): Result<UserResponse>
 
     suspend fun sendImageGallery(

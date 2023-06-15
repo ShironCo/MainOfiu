@@ -140,8 +140,8 @@ fun DialogVerify(title: Int, dismiss: ()-> Unit){
     }
     ) {
         Card(
-            shape = MaterialTheme.shapes.medium,
-            backgroundColor = MaterialTheme.colors.onSurface,
+            shape = MaterialTheme.shapes.small,
+            backgroundColor = MaterialTheme.colors.background,
         )
         {
             Column(
@@ -151,7 +151,7 @@ fun DialogVerify(title: Int, dismiss: ()-> Unit){
                 Text(
                     text = stringResource(title),
                     style = MaterialTheme.typography.h1,
-                    color = MaterialTheme.colors.background,
+                    color = MaterialTheme.colors.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(20.dp)
                 )
@@ -291,7 +291,7 @@ fun SendImage(viewModel: VerifyViewModel, navHostController: NavHostController) 
                 .height(50.dp),
             shape = MaterialTheme.shapes.small,
             onClick = {
-                viewModel.onSendImages(navHostController)
+                viewModel.onSendImages(navHostController, context)
             },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.background,

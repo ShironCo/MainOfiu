@@ -155,6 +155,20 @@ class OfiuRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun reportUser(
+        idprof: String,
+        iduser: String,
+        deta: String
+    ): Result<UserResponse> {
+        return try {
+            Result.success(api.reportUser(ReportUser(
+                idprof, iduser, deta
+            )))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
     override suspend fun updatePhotoProfile(id: RequestBody, image: Part): Result<UserResponse> {
         return try {
             Result.success(api.updatePhotoProfile(id, image))
@@ -163,21 +177,17 @@ class OfiuRepositoryImpl @Inject constructor(
         }
     }
 
-
-    override suspend fun sendImage(
-        image1: Part,
-        image2: Part,
-        image3: Part,
-        id: RequestBody
-    ): Result<UserResponse> {
+    override suspend fun sendImage(id: RequestBody, photo: Array<Part>): Result<UserResponse> {
         return try {
             Result.success(api.sendImage(
-                image1, image2, image3, id
+                id,
+                photo
             ))
         } catch (e: Exception) {
             Result.success(UserResponse(e.toString()))
         }
     }
+
 
     override suspend fun sendImageGallery(
         id: RequestBody,

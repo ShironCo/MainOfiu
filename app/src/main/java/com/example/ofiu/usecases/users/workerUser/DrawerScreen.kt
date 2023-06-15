@@ -243,15 +243,20 @@ fun DrawerHeader() {
         Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.background)
-            .padding(vertical = 24.dp)
+            .padding(vertical = 24.dp).wrapContentSize(Alignment.Center)
     ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.h1,
-            color = MaterialTheme.colors.onSurface,
-            textAlign = TextAlign.Center
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.size(200.dp, 200.dp)
+        ) {
+            Image(painter = painterResource(id = R.drawable.splashlogo), contentDescription = null,
+            modifier = Modifier.weight(1F)
+                )
+
+            Image(painter = painterResource(id = R.drawable.nombresplashlogo), contentDescription = null,
+                modifier = Modifier.weight(1F)
+                )
+        }
     }
 }
 

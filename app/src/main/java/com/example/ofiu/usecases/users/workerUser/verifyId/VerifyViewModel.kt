@@ -3,18 +3,25 @@ package com.example.ofiu.usecases.users.workerUser.verifyId
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.example.ofiu.Preferences.Variables
 import com.example.ofiu.Preferences.PreferencesManager
 import com.example.ofiu.domain.OfiuRepository
@@ -35,12 +42,8 @@ class VerifyViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
-    private val _image1 = MutableLiveData<MultipartBody.Part>()
-    private val _image2 = MutableLiveData<MultipartBody.Part>()
-    private val _image3 = MutableLiveData<MultipartBody.Part>()
-
     private val _sDK28 = MutableLiveData<Boolean>()
-    val sDK28 : LiveData<Boolean> = _sDK28
+    val sDK28: LiveData<Boolean> = _sDK28
 
     private val _changeView = MutableLiveData<Boolean>()
     val changeView: LiveData<Boolean> = _changeView
@@ -60,11 +63,12 @@ class VerifyViewModel @Inject constructor(
     val validButtonId: LiveData<Boolean> = _validButtonId
 
 
-    fun verifySuccessful(): Boolean{
+    fun verifySuccessful(): Boolean {
         val verify = preferencesManager.getDataProfile(Variables.Verify.title)
         return (verify == "verificado")
     }
-    fun setSDK(value: Boolean){
+
+    fun setSDK(value: Boolean) {
         _sDK28.value = value
     }
 
@@ -115,30 +119,32 @@ class VerifyViewModel @Inject constructor(
             )
         }
     }
-    fun onValidButtonId(){
+
+    fun onValidButtonId() {
         val image1: String = preferencesManager.getDataProfile(Variables.ImageFrontal.title)
         val image2: String = preferencesManager.getDataProfile(Variables.ImageTrasera.title)
-        if (image1.isNotBlank()){
+        if (image1.isNotBlank()) {
             _validButtonId.value = false
             _validButtonFace.value = true
         }
-        if (image2.isNotBlank()){
+        if (image2.isNotBlank()) {
             _validButtonFace.value = false
         }
     }
 
-    fun onValidButtonFace(){
+    fun onValidButtonFace() {
         val image1: String = preferencesManager.getDataProfile(Variables.ImageFrontal.title)
         val image2: String = preferencesManager.getDataProfile(Variables.ImageTrasera.title)
         val image3: String = preferencesManager.getDataProfile(Variables.ImageFace.title)
-        if (image1.isNotBlank() && image2.isNotBlank()){
+        if (image1.isNotBlank() && image2.isNotBlank()) {
             _validButtonId.value = false
             _validButtonFace.value = image3.isBlank()
-        }else{
+        } else {
             _validButtonId.value = true
             _validButtonFace.value = image3.isNotBlank()
         }
     }
+
     fun onSaveImage(context: Context, navController: NavHostController) {
         CoroutineScope(Dispatchers.IO).launch {
             val bitmapImage = BitmapFactory.decodeByteArray(
@@ -161,7 +167,7 @@ class VerifyViewModel @Inject constructor(
                 onChangeView()
                 if (_nameImage.value!! == Variables.ImageTrasera.title) {
                     navController.popBackStack()
-                }else if (_nameImage.value!! == Variables.ImageFace.title){
+                } else if (_nameImage.value!! == Variables.ImageFace.title) {
                     navController.popBackStack()
                     _validButtonFace.value = false
                 }
@@ -169,76 +175,94 @@ class VerifyViewModel @Inject constructor(
         }
     }
 
-    fun onSendImages(navController: NavHostController) {
-        _validButtonId.value = true
-        val image1 = preferencesManager.getDataProfile(Variables.ImageFrontal.title)
-        val image2 = preferencesManager.getDataProfile(Variables.ImageTrasera.title)
-        val image3 = preferencesManager.getDataProfile(Variables.ImageFace.title)
-        viewModelScope.launch {
-            ConvertImage(image1).onSuccess {
-                _image1.value = it
-            }
-            ConvertImage(image2).onSuccess {
-                _image2.value = it
-            }
-            ConvertImage(image3).onSuccess {
-                _image3.value = it
-            }
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            val id = preferencesManager.getDataProfile(Variables.IdUser.title)
-            val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
-            val result = repository.sendImage(_image1.value!!, _image2.value!!, _image3.value!!, requestBody)
-            println(id)
-            withContext(Dispatchers.Main) {
-                result.onSuccess {
-                    println(it)
-                    onCleanImages()
-                    _showAlertDialog.value = 1
-                    delay(4000)
-                    navController.popBackStack()
-                }.onFailure {
-                    _validButtonId.value = false
-                    println(it)
-                }
-            }
+    suspend fun bitmapFromUri(uri: Uri, context: Context): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            val imageLoader = ImageLoader(context)
+            val request = ImageRequest.Builder(context)
+                .data(uri)
+                .build()
+            val result = (imageLoader.execute(request) as SuccessResult).drawable
+            val bitmap = (result as BitmapDrawable).bitmap
+            bitmap
         }
     }
 
-    fun onCleanImages(){
-        DeleteImage(Variables.ImageFrontal.title)
+    //Convertor de URI a bytes
+    private suspend fun uriToBytes(uri: Uri, context: Context): ByteArray {
+        return withContext(Dispatchers.IO) {
+            val bitmap = bitmapFromUri(uri, context)
+            val outputStream = ByteArrayOutputStream()
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+            outputStream.toByteArray()
+        }
+    }
+
+    private suspend fun locationToMultipart(
+        photos: List<Uri>,
+        context: Context
+    ): List<MultipartBody.Part> {
+        return photos.mapIndexed { index, uri ->
+            val uriBytes = uriToBytes(uri, context)
+            MultipartBody.Part.createFormData(
+                "photo$index", //Yo le pongo un nombre a cada foto para identificarla. Fijate que es lo que te pide la API
+//                "image/jpeg",
+                filename = "photos", //Nombre de la imagen mas su extension
+                uriBytes.toRequestBody(contentType = "image/jpeg".toMediaTypeOrNull()) //El requestBody
+            )
+        }
+    }
+
+    fun onSendImages(navController: NavHostController, context: Context) {
+        _validButtonId.value = true
+        val uri : List<Uri> = listOf(
+            preferencesManager.getDataProfile(Variables.ImageFrontal.title).toUri(),
+            preferencesManager.getDataProfile(Variables.ImageTrasera.title).toUri(),
+            preferencesManager.getDataProfile(Variables.ImageFace.title).toUri(),
+        )
+        viewModelScope.launch {
+                val id = preferencesManager.getDataProfile(Variables.IdUser.title)
+                val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
+                val list: List<MultipartBody.Part> = locationToMultipart(uri, context)
+                val array = list.toTypedArray()
+                repository.sendImage(requestBody, array).onSuccess {
+                    if (it.response == "Fotos subidas" ){
+                        onCleanImages()
+                        _showAlertDialog.value = 1
+                        delay(4000)
+                        navController.popBackStack()
+                        println(it.response)
+                    }else if (it.response == "Tu verificación ya se encuentra en proceso."){
+                        Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
+                        onCleanImages()
+                        navController.popBackStack()
+                        println(it.response)
+                    }
+                }.onFailure {
+                    Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+                }
+        }
+    }
+
+    private fun onCleanImages() {
+        deleteImage(Variables.ImageFrontal.title)
         preferencesManager.setDataProfile(Variables.ImageFrontal.title, "")
-        DeleteImage(Variables.ImageTrasera.title)
+        deleteImage(Variables.ImageTrasera.title)
         preferencesManager.setDataProfile(Variables.ImageTrasera.title, "")
-        DeleteImage(Variables.ImageFace.title)
+        deleteImage(Variables.ImageFace.title)
         preferencesManager.setDataProfile(Variables.ImageFace.title, "")
     }
 
-    private fun ConvertImage(name: String): Result<MultipartBody.Part> {
-        return try {
-            val file = File(name)
-            val bitmap: Bitmap = BitmapFactory.decodeFile(file.absolutePath)
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
-            val byteArray = byteArrayOutputStream.toByteArray()
-            val requestBody =
-                byteArray.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0)
-            val requestFile = MultipartBody.Part.createFormData(name, "image/jpeg", requestBody)
-            Result.success(requestFile)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-    private fun DeleteImage(path: String) {
+
+    private fun deleteImage(path: String) {
         val file = File(preferencesManager.getDataProfile(path))
         file.delete()
-        }
+    }
 
-     fun exit(navController: NavHostController){
-         viewModelScope.launch {
-             onCleanImages()
+    fun exit(navController: NavHostController) {
+        viewModelScope.launch {
+            onCleanImages()
             navController.popBackStack()
-         }
-     }
+        }
+    }
 
 }

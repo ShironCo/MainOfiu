@@ -34,6 +34,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.ofiu.R
 import com.example.ofiu.remote.dto.ofiu.professionals.details.comments.Comentario
+import com.example.ofiu.usecases.navigation.AppScreens
 
 
 @Composable
@@ -50,7 +51,7 @@ fun DetailsUserApp(
     val commentToggle: Boolean by viewModel.commentToggle.observeAsState(initial = false)
     val rating: Int by viewModel.rating.observeAsState(initial = 0)
     val opinion: String by viewModel.opinion.observeAsState(initial = " ")
-    val imageProfile: Uri by viewModel.imageProfile.observeAsState(initial = Uri.EMPTY)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -62,7 +63,8 @@ fun DetailsUserApp(
                     navController = navController,
                     viewModel,
                     expandMenu,
-                    imagePreview
+                    imagePreview,
+                    id
                 )
             },
             floatingActionButton = {
@@ -141,9 +143,9 @@ fun FloatingActionButton(
 fun DetailsTopBar(
     navController: NavHostController, viewModel: DetailsUserViewModel,
     expandMenu: Boolean,
-    imagePreview: Uri
+    imagePreview: Uri,
+    id:String
 ) {
-
     TopAppBar(
         backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp,
@@ -178,7 +180,9 @@ fun DetailsTopBar(
                     onDismissRequest = { viewModel.setData(false, imagePreview = imagePreview) },
                     modifier = Modifier.background(MaterialTheme.colors.onPrimary)
                 ) {
-                    DropdownMenuItem(onClick = { /*TODO*/ }) {
+                    DropdownMenuItem(onClick = {
+                       navController.navigate(AppScreens.Report.route+"/$id")
+                    }) {
                         Text(
                             text = "Reportar perfil",
                             style = MaterialTheme.typography.body2,
@@ -198,16 +202,17 @@ fun DetailsUserContent(
     expandMenu: Boolean,
     viewModel: DetailsUserViewModel
 ) {
-    val scrollState = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    ) {
-        DetailsProfile(viewModel)
-        DetailsGallery(expandMenu, viewModel)
-        DetailsComments(viewModel)
-    }
+
+        val scrollState = rememberScrollState()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+        ) {
+            DetailsProfile(viewModel)
+            DetailsGallery(expandMenu, viewModel)
+            DetailsComments(viewModel)
+        }
 }
 
 @Composable

@@ -11,12 +11,14 @@ import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPassword
 import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPasswordThree
 import com.example.ofiu.usecases.session.login.forgotPassword.ForgotPasswordTwo
 import com.example.ofiu.usecases.session.login.LoginApp
-import com.example.ofiu.usecases.session.register.LegalApp
+import com.example.ofiu.usecases.session.register.legal.LegalApp
 import com.example.ofiu.usecases.session.register.RegisterApp
+import com.example.ofiu.usecases.session.register.legal.TermAndConditionsApp
 import com.example.ofiu.usecases.users.clientUser.BottomScreen
 import com.example.ofiu.usecases.users.clientUser.chat.ChatApp
 import com.example.ofiu.usecases.users.clientUser.chat.messages.MessageApp
 import com.example.ofiu.usecases.users.clientUser.home.details.DetailsUserApp
+import com.example.ofiu.usecases.users.clientUser.home.details.reporting.ReportApp
 import com.example.ofiu.usecases.users.workerUser.DrawerScreen
 import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyFaceApp
 import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyIdApp
@@ -38,6 +40,12 @@ fun AppNavigation(){
             LoginApp(navController)
         }
         composable(AppScreens.Legal.route){
+            LegalApp(navController)
+        }
+        composable(AppScreens.Term.route){
+            TermAndConditionsApp(navController)
+        }
+        composable(AppScreens.Policy.route){
             LegalApp(navController)
         }
         composable(AppScreens.Register.route){
@@ -83,17 +91,22 @@ fun AppNavigation(){
             }
         }
 
+        composable(AppScreens.Report.route+"/{id}"){
+            ReportApp(navController, it.arguments?.getString("id"))
+        }
+
         composable(AppScreens.Chat.route+"/{backtopbar}"){
             ChatApp(navController, it.arguments?.getString("backtopbar"))
         }
 
-        composable(AppScreens.Messages.route+"/{idUser}/{idPro}/{name}/{image}"){
+        composable(AppScreens.Messages.route+"/{idUser}/{idPro}/{name}/{image}/{idSender}"){
             MessageApp(
                 navController,
                 it.arguments?.getString("idUser"),
                 it.arguments?.getString("idPro"),
                 it.arguments?.getString("name"),
                 it.arguments?.getString("image"),
+                it.arguments?.getString("idSender"),
             )
         }
     }

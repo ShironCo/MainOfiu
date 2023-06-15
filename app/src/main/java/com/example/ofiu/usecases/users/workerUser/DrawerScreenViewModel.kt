@@ -43,6 +43,9 @@ class DrawerScreenViewModel @Inject constructor(
         preferencesManager.setDataProfile(Variables.ImageTrasera.title, "")
         preferencesManager.setDataProfile(Variables.ImageFrontal.title, "")
         preferencesManager.setDataProfile(Variables.ImageFace.title, "")
+        preferencesManager.setDataProfile(Variables.ImageUser.title, "")
+        preferencesManager.setDataProfile(Variables.PhoneUser.title, "")
+        preferencesManager.setDataProfile(Variables.EmailUser.title, "")
         navController.popBackStack()
         navController.navigate(AppScreens.Session.route)
     }

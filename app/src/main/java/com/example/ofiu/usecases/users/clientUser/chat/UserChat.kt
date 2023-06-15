@@ -1,8 +1,6 @@
 package com.example.ofiu.usecases.users.clientUser.chat
 
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,6 +9,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -28,9 +28,6 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.ofiu.usecases.users.clientUser.chat.dto.Chats
 import com.example.ofiu.R
-import com.example.ofiu.usecases.navigation.AppScreens
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 
 @Composable
@@ -38,7 +35,6 @@ fun ChatApp(navHostController: NavHostController,
             backTopBar: String?,
             viewModel: UserChatViewModel = hiltViewModel()
 ) {
-
     val chats: List<Chats> by viewModel.chats.observeAsState(initial = emptyList())
     Scaffold(
         topBar = {
@@ -50,7 +46,7 @@ fun ChatApp(navHostController: NavHostController,
         ChatAppContent(modifier = Modifier.padding(it), chats) {
             viewModel.onClickChat(
                 navHostController,
-                idPro = it.id,
+                idPro = it.idRecibe,
                 name = it.name,
                 imageProfile = it.imageProfile
             )
@@ -87,7 +83,7 @@ fun ChatAppTopbar(
 fun ChatAppContent(
     modifier: Modifier,
     chatLists: List<Chats>,
-    onClickChat: (Chats) -> Unit
+    onClickChat: (Chats) ->Unit
 ) {
     Box(
         modifier = Modifier
@@ -111,7 +107,7 @@ fun ChatAppContent(
                 color = MaterialTheme.colors.secondaryVariant
             )
             Text(
-                text = "Envia tu primer mensaje, Encontrarás todas tus conversaciones aquí",
+                text = "Encontrarás todas tus conversaciones aquí",
                 style = MaterialTheme.typography.subtitle1.copy(
                     fontSize = 16.sp
                 ),
@@ -144,13 +140,25 @@ fun LazyColumnChat(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier = Modifier.width(10.dp))
-                AsyncImage(
-                    model = it.imageProfile.toUri(), contentDescription = null,
+                Box(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .size(40.dp),
-                    contentScale = ContentScale.Crop
-                )
+                        .size(40.dp)
+                        .background(MaterialTheme.colors.onSurface)
+                ) {
+                    if (it.imageProfile != "0") {
+                        AsyncImage(
+                            model = it.imageProfile, contentDescription = null,
+                            contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null, tint = MaterialTheme.colors.background,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(
                     modifier = Modifier
@@ -166,7 +174,7 @@ fun LazyColumnChat(
                         color = MaterialTheme.colors.secondaryVariant
                     )
                     Text(
-                        text = it.previewMessage.ifEmpty { "Escribe un mensaje" },
+                        text = it.previewMessage.ifEmpty{"Escribe un mensaje"} ,
                         style = MaterialTheme.typography.subtitle1.copy(
                             fontSize = 14.sp
                         ),

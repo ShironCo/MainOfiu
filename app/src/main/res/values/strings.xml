@@ -51,7 +51,7 @@
     <string name="verifyFaceButton">Capturar foto</string>
     <string name="verifyEndTitle">¿Seguro quieres cancelar la verificación?</string>
     <string name="verifyProcess">La verificación de tu cuenta puede demorar hasta 48 horas. Si no recibes confirmación después de este tiempo, por favor contáctanos para resolver cualquier problema.</string>
-    <string name="verifySuccessful">¡Ya estas verificado!</string>
+    <string name="verifySuccessful">¡Ya te encuentras verificado!</string>
     <string name="profileWorkerBasicTitle">Información básica</string>
     <string name="profileWorkerContactTitle">Información de contacto</string>
     <string name="profileWorkerBriefcaseTitle">Descripción profesional</string>

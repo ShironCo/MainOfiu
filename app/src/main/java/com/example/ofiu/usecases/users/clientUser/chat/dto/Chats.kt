@@ -5,5 +5,6 @@ data class Chats(
     val name: String,
     val previewMessage: String,
     val lastMinute: String,
-    val id: String,
+    val idEnvia: String,
+    val idRecibe: String,
 )

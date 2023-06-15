@@ -23,8 +23,9 @@ class UserChatViewModel @Inject constructor(
 
     private val db = Firebase.firestore
 
-    private val _idUser = preferencesManager.getDataProfile(Variables.IdUser.title)
-    private val _idPro = MutableLiveData<String>()
+    private val _idRecibe = MutableLiveData<String>()
+    private val _idEnvia = preferencesManager.getDataProfile(Variables.IdUser.title)
+
     private val _name = MutableLiveData<String>()
 
     private val _chats = MutableLiveData<List<Chats>>()
@@ -33,7 +34,7 @@ class UserChatViewModel @Inject constructor(
     val chats: LiveData<List<Chats>> = _chats
 
 
-    private val chatCollectionsRefInfor = db.collection(_idUser)
+    private val chatCollectionsRefInfor = db.collection(_idEnvia)
 
     init {
         val chatQuery = chatCollectionsRefInfor
@@ -46,7 +47,8 @@ class UserChatViewModel @Inject constructor(
                 val name = it.getString("name")
                 val previewMessage = it.getString("previewMessage")
                 val imageProfile = it.getString("imageProfile")
-                val id = it.getString("id")
+                val idRecibe = it.getString("idRecibe")
+                val idEnvia = it.getString("idEnvia")
                 val lastMinute = it.getTimestamp("lastMinute")
                 val fecha = if (lastMinute != null) {
                     val milliseconds = lastMinute.toDate().time
@@ -61,8 +63,13 @@ class UserChatViewModel @Inject constructor(
                 } else {
                     ""
                 }
-                if (name != null && previewMessage != null && imageProfile != null && id != null) {
-                    _idPro.value = id
+                if (name != null
+                    && previewMessage != null
+                    && imageProfile != null
+                    && idRecibe != null
+                    && idEnvia != null
+                ) {
+                    _idRecibe.value = idRecibe
                     _name.value = name
                     _imageProfile.value = imageProfile
                     println("No se $imageProfile")
@@ -72,7 +79,8 @@ class UserChatViewModel @Inject constructor(
                         name = name,
                         previewMessage = previewMessage,
                         lastMinute = fecha,
-                        id = id
+                        idEnvia = idEnvia,
+                        idRecibe = idRecibe
                     )
                 } else {
                     null
@@ -88,11 +96,11 @@ class UserChatViewModel @Inject constructor(
         name: String,
         imageProfile: String
     ) {
-        val idUser = _idUser
+        val idUser = _idEnvia
         println(imageProfile)
         val image = imageProfile.replace("/", "-")
         println(idPro)
-        navHostController.navigate(AppScreens.Messages.route + "/$idUser/$idPro/$name/$image")
+        navHostController.navigate(AppScreens.Messages.route + "/$idUser/$idPro/$name/$image/$idUser")
     }
 
 }

@@ -25,7 +25,6 @@ class DetailsUserViewModel @Inject constructor(
     private val repository: OfiuRepository,
     private val preferencesManager: PreferencesManager
 ): ViewModel() {
-
     private val db = Firebase.firestore
 
     private val _isLoading = MutableLiveData<Boolean>()
@@ -69,8 +68,6 @@ class DetailsUserViewModel @Inject constructor(
     private val _opinion = MutableLiveData<String>()
     val opinion : LiveData <String> = _opinion
 
-    private val _publicar = MutableLiveData<Boolean>()
-    val publicar : LiveData <Boolean> = _publicar
 
     fun onTextChange(opinion: String){
         _opinion.value = opinion
@@ -155,7 +152,8 @@ class DetailsUserViewModel @Inject constructor(
             "name" to name,
             "previewMessage" to "" ,
             "lastMinute" to FieldValue.serverTimestamp(),
-            "id" to idPro
+            "idRecibe" to idPro,
+            "idEnvia" to idUser
         )
         idPro?.let {
             db.collection(idUser).document(it).set(chatUser)

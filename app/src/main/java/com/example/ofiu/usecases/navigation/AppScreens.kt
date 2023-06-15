@@ -6,6 +6,8 @@ sealed class AppScreens (val route: String){
     object Login: AppScreens("login")
     object Register: AppScreens("register")
     object Legal: AppScreens("legal")
+    object Term: AppScreens("term")
+    object Policy: AppScreens("policy")
     object ForgotPassword: AppScreens("forgot_password")
     object ForgotPasswordTwo: AppScreens("forgot_passwordTwo")
     object ForgotPasswordThree: AppScreens("forgot_passwordThree")
@@ -17,4 +19,5 @@ sealed class AppScreens (val route: String){
     object DetailsPro: AppScreens("details_professional")
     object Chat: AppScreens("chat")
     object Messages: AppScreens("messages")
+    object Report: AppScreens("report")
 }

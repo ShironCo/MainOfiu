@@ -53,12 +53,10 @@ interface OfiuApi {
     @POST("format_correo_reset.php")
     suspend fun recoverPassword(@Body email: Request): UserResponse
     @Multipart
-    @POST("verificado_usuario.php")
+    @POST("verficar_usuario1.php")
     suspend fun sendImage(
-        @Part image1: MultipartBody.Part,
-        @Part image2: MultipartBody.Part,
-        @Part image3: MultipartBody.Part,
-        @Part ("id") id: RequestBody
+        @Part ("id") id: RequestBody,
+        @Part photo : Array<MultipartBody.Part>
     ): UserResponse
 
     @Multipart
@@ -96,6 +94,10 @@ interface OfiuApi {
   @POST("verificar_codigo_reset.php")
     suspend fun sendCode(
         @Body sendCode: UserRequest
+    ): UserResponse
+  @POST("reportes_profe.php")
+    suspend fun reportUser(
+        @Body sendCode: ReportUser
     ): UserResponse
 
 }

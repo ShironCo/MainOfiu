@@ -166,7 +166,7 @@ fun LazyColumnPro(
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 5.dp)
-            .padding(bottom = 40.dp),
+            .padding(bottom = 60.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(users) {

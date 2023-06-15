@@ -98,6 +98,10 @@ class LoginViewModel @Inject constructor(
                         Variables.PhoneUser.title,
                         _response.value!!.phone.toString()
                     )
+                    preferencesManager.setDataProfile(
+                        Variables.ImageUser.title,
+                        _response.value!!.img.toString()
+                    )
                     preferencesManager.setDataProfile(Variables.LoginActive.title, "true")
                     _buttonValid.value = false
                 }
