@@ -101,6 +101,7 @@ class UserProfileViewModel @Inject constructor(
         if (_imageGallery.value.isNullOrEmpty()) {
             viewModelScope.launch {
                 repository.receiveImagesPro(UserProRequest(_id.value!!)).onSuccess {
+                    preferencesManager.setDataProfile(Variables.IdPro.title, it.data.idProfesional)
                     _desc.value = it.data.desc.substringBeforeLast("-")
                     _imageProfile.value = it.data.image.toUri()
                     _comments.value = it.data.comentarios.toString()

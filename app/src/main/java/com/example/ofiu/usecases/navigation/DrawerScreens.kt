@@ -14,7 +14,7 @@ sealed class DrawerScreens (
     )
     object Chat: DrawerScreens(
         route = "chat",
-        title = "Chat",
+        title = "Bandeja de entrada",
         img = R.drawable.baseline_chat_24
     )
     object VerifyId: DrawerScreens(

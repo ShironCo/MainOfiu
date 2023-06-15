@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.ofiu.R
 import com.example.ofiu.ui.theme.Shapes
@@ -39,7 +40,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun DrawerScreen(navControllerMain: NavController, viewModel: DrawerScreenViewModel = hiltViewModel()) {
+fun DrawerScreen(navControllerMain: NavHostController, viewModel: DrawerScreenViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     val screens = listOf(
         DrawerScreens.Profile,
@@ -96,7 +97,7 @@ fun DrawerScreen(navControllerMain: NavController, viewModel: DrawerScreenViewMo
         },
         drawerShape = RoundedCornerShape(0.dp)
     ) { padding ->
-        DrawerNavGraph(modifier = Modifier.padding(padding), navController = navController)
+        DrawerNavGraph(modifier = Modifier.padding(padding), navController = navController, navControllerMain = navControllerMain)
     }
     BackHandler(
         true

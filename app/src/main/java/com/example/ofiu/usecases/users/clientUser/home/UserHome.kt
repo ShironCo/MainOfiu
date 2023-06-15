@@ -3,7 +3,6 @@ package com.example.ofiu.usecases.users.clientUser.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,8 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -33,7 +30,10 @@ import com.example.ofiu.remote.dto.ofiu.professionals.User
 import com.example.ofiu.usecases.navigation.AppScreens
 
 @Composable
-fun HomeApp(navHostController: NavHostController, viewModel: UserHomeProfileViewModel = hiltViewModel()) {
+fun HomeApp(
+    navHostController: NavHostController,
+    viewModel: UserHomeProfileViewModel = hiltViewModel()
+) {
     val searchString: String by viewModel.searchString.observeAsState(initial = "")
     val focus = LocalFocusManager.current
     Scaffold(
@@ -50,7 +50,7 @@ fun HomeApp(navHostController: NavHostController, viewModel: UserHomeProfileView
             }
         }
     ) {
-        HomeContentApp(modifier = Modifier.padding(it), navHostController, viewModel = viewModel)
+        HomeContentApp(modifier = Modifier.padding(it), navHostController,viewModel = viewModel)
     }
 }
 
@@ -135,13 +135,13 @@ fun HomeContentApp(
     viewModel: UserHomeProfileViewModel
 ) {
     val users: List<User> by viewModel.users.observeAsState(initial = arrayListOf())
-    val isLoading : Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.onSurface)
     ) {
-        if (isLoading){
+        if (isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -150,21 +150,23 @@ fun HomeContentApp(
                 CircularProgressIndicator(color = MaterialTheme.colors.background)
 
             }
-        }else{
-          LazyColumnPro(users =  users){
-              navHostController.navigate(AppScreens.DetailsPro.route + "/${it}")
-          }
+        } else {
+            LazyColumnPro(users = users) {
+                navHostController.navigate(AppScreens.DetailsPro.route + "/${it}")
+            }
         }
     }
 }
 
 @Composable
 fun LazyColumnPro(
-  users: List<User>,
-  onClickViewPerfil: (String)-> Unit
+    users: List<User>,
+    onClickViewPerfil: (String) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier.padding(horizontal = 5.dp).padding(bottom = 40.dp),
+        modifier = Modifier
+            .padding(horizontal = 5.dp)
+            .padding(bottom = 40.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(users) {
@@ -184,13 +186,18 @@ fun LazyColumnPro(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (it.imgPerfil != "0"){
-                            AsyncImage(model = it.imgPerfil, contentDescription = "foto perfil",
+                        if (it.imgPerfil != "0") {
+                            AsyncImage(
+                                model = it.imgPerfil, contentDescription = "foto perfil",
                                 modifier = Modifier.size(50.dp),
-                            contentScale = ContentScale.Crop)
-                        }else{
-                            Icon(imageVector = Icons.Default.Person, contentDescription = "foto perfil",
-                                modifier = Modifier.size(50.dp))
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "foto perfil",
+                                modifier = Modifier.size(50.dp)
+                            )
                         }
                         Column(
                             modifier = Modifier.padding(10.dp),
@@ -247,7 +254,8 @@ fun LazyColumnPro(
                             ),
                             color = MaterialTheme.colors.primaryVariant
                         )
-                        Button(onClick = {onClickViewPerfil(it.idProfesional)},
+                        Button(
+                            onClick = { onClickViewPerfil(it.idProfesional) },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = MaterialTheme.colors.background
                             )

@@ -49,7 +49,7 @@ class DrawerScreenViewModel @Inject constructor(
 
     fun onChangeAccount(navController: NavController){
         navController.popBackStack()
-        navController.navigate(AppScreens.BottomBarScreen.route)
+        navController.navigate(AppScreens.Menu.route)
     }
 
 }

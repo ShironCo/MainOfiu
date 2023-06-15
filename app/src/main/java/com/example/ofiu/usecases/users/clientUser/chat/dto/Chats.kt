@@ -4,5 +4,6 @@ data class Chats(
     val imageProfile: String,
     val name: String,
     val previewMessage: String,
-    val lastMinute: String
+    val lastMinute: String,
+    val id: String,
 )

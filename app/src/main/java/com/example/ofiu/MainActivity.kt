@@ -30,13 +30,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                   // AppNavigation()
+                   AppNavigation()
                     //ProfileApp()
                     //HomeApp()
                  // DetailsUserApp("ha")
                    // DialogComment(ratint = 0, onRatingChanged = {}, value = "31" , onValueChange = {}) {
                     //ChatApp()
-                    MessageApp()
+                  //  MessageApp()
+
                     }
                 }
             }

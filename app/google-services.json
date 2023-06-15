@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "149617659665",
+    "project_id": "ofiu-be3f4",
+    "storage_bucket": "ofiu-be3f4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149617659665:android:41bc8685faddfa5053c6b0",
+        "android_client_info": {
+          "package_name": "com.example.ofiu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "149617659665-bfip9srptgge1pt93lhgoipb2vkiacqu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAM_fpQrbntchFBH9U8sASIpsZso8uCQ6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "149617659665-bfip9srptgge1pt93lhgoipb2vkiacqu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

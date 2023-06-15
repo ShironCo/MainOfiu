@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -49,6 +50,7 @@ fun DetailsUserApp(
     val commentToggle: Boolean by viewModel.commentToggle.observeAsState(initial = false)
     val rating: Int by viewModel.rating.observeAsState(initial = 0)
     val opinion: String by viewModel.opinion.observeAsState(initial = " ")
+    val imageProfile: Uri by viewModel.imageProfile.observeAsState(initial = Uri.EMPTY)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -62,7 +64,12 @@ fun DetailsUserApp(
                     expandMenu,
                     imagePreview
                 )
-            }
+            },
+            floatingActionButton = {
+                FloatingActionButton(){
+                viewModel.onClickChat(navController)
+            } },
+            floatingActionButtonPosition = FabPosition.Center
         ) {
             if (isLoading) {
                 Box(
@@ -104,6 +111,30 @@ fun DetailsUserApp(
             }
         }
     }
+}
+
+@Composable
+fun FloatingActionButton(
+    onClickChat: ()-> Unit
+){
+    Button(onClick = {onClickChat()},
+        shape = MaterialTheme.shapes.large,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.background
+        )
+        ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Chat",
+                style = MaterialTheme.typography.subtitle1.copy(
+                    fontSize = 12.sp
+                ),
+                color = MaterialTheme.colors.onPrimary
+            )
+        }
+        }
 }
 
 @Composable

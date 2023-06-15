@@ -30,7 +30,6 @@ fun VerifyWorkerApp(
     viewModel: VerifyViewModel = hiltViewModel()
 ) {
     val alertDialog: Int by viewModel.showAlertDialog.observeAsState(initial = 0)
-    val context = LocalContext.current
     VerifyContent(navHostController, viewModel)
     BackHandler(true) {
         viewModel.onTextChange(null, 2)
@@ -115,7 +114,7 @@ fun VerifyWorkerApp(
                         Spacer(modifier = Modifier.width(10.dp))
                         Button(
                             onClick = {
-                                viewModel.onSendImages(context, navHostController)
+                                viewModel.onTextChange(null, 0)
                             }, colors = ButtonDefaults.buttonColors(
                                 backgroundColor = MaterialTheme.colors.background
                             )
@@ -292,7 +291,7 @@ fun SendImage(viewModel: VerifyViewModel, navHostController: NavHostController) 
                 .height(50.dp),
             shape = MaterialTheme.shapes.small,
             onClick = {
-                viewModel.onSendImages(context, navHostController)
+                viewModel.onSendImages(navHostController)
             },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.background,

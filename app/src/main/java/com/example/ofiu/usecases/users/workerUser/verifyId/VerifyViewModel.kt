@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import android.widget.Toast
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
@@ -170,39 +169,37 @@ class VerifyViewModel @Inject constructor(
         }
     }
 
-    fun onSendImages(context: Context, navController: NavHostController) {
+    fun onSendImages(navController: NavHostController) {
         _validButtonId.value = true
-        if (_image1.value == null || _image2.value == null || _image3.value == null){
-            onTextChange(null, 0)
-        }else{
-            viewModelScope.launch {
-                ConvertImage(Variables.ImageFrontal.title).onSuccess {
-                    _image1.value = it
-                }
-                ConvertImage(Variables.ImageTrasera.title).onSuccess {
-                    _image2.value = it
-                }
-                ConvertImage(Variables.ImageFace.title).onSuccess {
-                    _image3.value = it
-                }
+        val image1 = preferencesManager.getDataProfile(Variables.ImageFrontal.title)
+        val image2 = preferencesManager.getDataProfile(Variables.ImageTrasera.title)
+        val image3 = preferencesManager.getDataProfile(Variables.ImageFace.title)
+        viewModelScope.launch {
+            ConvertImage(image1).onSuccess {
+                _image1.value = it
             }
-            println(_image1.value)
-            println(_image2.value)
-            println(_image3.value)
-            CoroutineScope(Dispatchers.IO).launch {
-                val id = preferencesManager.getDataProfile(Variables.IdUser.title)
-                val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
-                val result = repository.sendImage(_image1.value!!, _image2.value!!, _image3.value!!, requestBody)
-                withContext(Dispatchers.Main) {
-                    result.onSuccess {
-                        onCleanImages()
-                        _showAlertDialog.value = 1
-                        delay(4000)
-                        navController.popBackStack()
-                    }.onFailure {
-                        _validButtonId.value = false
-                        println(it)
-                    }
+            ConvertImage(image2).onSuccess {
+                _image2.value = it
+            }
+            ConvertImage(image3).onSuccess {
+                _image3.value = it
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            val id = preferencesManager.getDataProfile(Variables.IdUser.title)
+            val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
+            val result = repository.sendImage(_image1.value!!, _image2.value!!, _image3.value!!, requestBody)
+            println(id)
+            withContext(Dispatchers.Main) {
+                result.onSuccess {
+                    println(it)
+                    onCleanImages()
+                    _showAlertDialog.value = 1
+                    delay(4000)
+                    navController.popBackStack()
+                }.onFailure {
+                    _validButtonId.value = false
+                    println(it)
                 }
             }
         }
@@ -219,8 +216,7 @@ class VerifyViewModel @Inject constructor(
 
     private fun ConvertImage(name: String): Result<MultipartBody.Part> {
         return try {
-            val imageUrl = preferencesManager.getDataProfile(name, "")
-            val file = File(imageUrl)
+            val file = File(name)
             val bitmap: Bitmap = BitmapFactory.decodeFile(file.absolutePath)
             val byteArrayOutputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)

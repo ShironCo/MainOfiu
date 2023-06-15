@@ -111,7 +111,7 @@ class RegisterViewModel @Inject constructor(
                 && email.isNotBlank() && phone.isNotBlank()
                 && password.isNotBlank()
                 && passwordRepeat.isNotBlank() && isValidPassword(password)
-                && phone.length == 10)
+                && phone.length == 10 && isValidPasswordRepeat(password, passwordRepeat))
     }
 
     fun onVisibility() {

@@ -1,8 +1,9 @@
-package com.example.ofiu.usecases.users.clientUser.chat
+package com.example.ofiu.usecases.users.workerUser.chat
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.ofiu.Preferences.PreferencesManager
 import com.example.ofiu.Preferences.Variables
@@ -11,20 +12,19 @@ import com.example.ofiu.usecases.users.clientUser.chat.dto.Chats
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import android.text.format.DateFormat
 import java.util.*
 import javax.inject.Inject
 
 
 @HiltViewModel
-class UserChatViewModel @Inject constructor(
+class UserWorkerChatViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager
-) : ViewModel() {
+): ViewModel() {
 
     private val db = Firebase.firestore
 
-    private val _idUser = preferencesManager.getDataProfile(Variables.IdUser.title)
-    private val _idPro = MutableLiveData<String>()
+    private val _idPro = preferencesManager.getDataProfile(Variables.IdUser.title)
+    private val _idUser = MutableLiveData<String>()
     private val _name = MutableLiveData<String>()
 
     private val _chats = MutableLiveData<List<Chats>>()
@@ -33,7 +33,7 @@ class UserChatViewModel @Inject constructor(
     val chats: LiveData<List<Chats>> = _chats
 
 
-    private val chatCollectionsRefInfor = db.collection(_idUser)
+    private val chatCollectionsRefInfor = db.collection(_idPro)
 
     init {
         val chatQuery = chatCollectionsRefInfor
@@ -62,7 +62,7 @@ class UserChatViewModel @Inject constructor(
                     ""
                 }
                 if (name != null && previewMessage != null && imageProfile != null && id != null) {
-                    _idPro.value = id
+                    _idUser.value = id
                     _name.value = name
                     _imageProfile.value = imageProfile
                     println("No se $imageProfile")
@@ -84,15 +84,14 @@ class UserChatViewModel @Inject constructor(
 
     fun onClickChat(
         navHostController: NavHostController,
-        idPro: String,
+        idUser: String,
         name: String,
         imageProfile: String
     ) {
-        val idUser = _idUser
+        val idPro = _idPro
         println(imageProfile)
         val image = imageProfile.replace("/", "-")
-        println(idPro)
-        navHostController.navigate(AppScreens.Messages.route + "/$idUser/$idPro/$name/$image")
+        println(idUser)
+        navHostController.navigate(AppScreens.Messages.route + "/$idPro/$idUser/$name/$image")
     }
-
 }

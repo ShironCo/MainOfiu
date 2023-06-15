@@ -7,12 +7,11 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -130,26 +129,45 @@ fun ProfileBasicInformation(viewModel: UserProfileViewModel) {
         ) {
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(30))
-                    .size(70.dp)
-                    .background(MaterialTheme.colors.onSurface)
+                    .size(80.dp), contentAlignment = Alignment.Center
             ) {
-                if (imageProfile.toString() != "0") {
-                    AsyncImage(model = imageProfile, contentDescription = null,
-                        contentScale = ContentScale.Crop, modifier = Modifier.clickable {
-                            launcher.launch("image/*")
-                        })
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null, tint = MaterialTheme.colors.background,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clickable {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(30))
+                        .size(70.dp)
+                        .background(MaterialTheme.colors.onSurface)
+                ) {
+                    if (imageProfile.toString() != "0") {
+                        AsyncImage(model = imageProfile, contentDescription = null,
+                            contentScale = ContentScale.Crop, modifier = Modifier.clickable {
                                 launcher.launch("image/*")
                             })
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null, tint = MaterialTheme.colors.background,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clickable {
+                                    launcher.launch("image/*")
+                                })
+                        }
+                    }
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Box(
+                        modifier = Modifier.clip(CircleShape)
+                            .size(20.dp)
+                            .background(MaterialTheme.colors.background)
+                            .padding(3.dp)
+                    ) {
+                        Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = null,
+                            tint = MaterialTheme.colors.onPrimary)
+                    }
+                    }
                 }
-            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -6,10 +6,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.example.ofiu.Preferences.PreferencesManager
 import com.example.ofiu.Preferences.Variables
 import com.example.ofiu.domain.OfiuRepository
 import com.example.ofiu.remote.dto.ofiu.professionals.details.comments.Comentario
+import com.example.ofiu.usecases.navigation.AppScreens
+import com.google.errorprone.annotations.Var
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,6 +25,8 @@ class DetailsUserViewModel @Inject constructor(
     private val repository: OfiuRepository,
     private val preferencesManager: PreferencesManager
 ): ViewModel() {
+
+    private val db = Firebase.firestore
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading : LiveData<Boolean> = _isLoading
@@ -134,6 +142,29 @@ class DetailsUserViewModel @Inject constructor(
             }.onFailure {
                 println("error en el envio $it")
             }
+        }
+    }
+
+    fun onClickChat(navHostController: NavHostController){
+        val idUser = preferencesManager.getDataProfile(Variables.IdUser.title)
+        val idPro = _id.value
+        val name = _name.value
+        val imageProfile: String = _imageProfile.value.toString()
+        val chatUser = hashMapOf(
+            "imageProfile" to imageProfile,
+            "name" to name,
+            "previewMessage" to "" ,
+            "lastMinute" to FieldValue.serverTimestamp(),
+            "id" to idPro
+        )
+        idPro?.let {
+            db.collection(idUser).document(it).set(chatUser)
+                .addOnSuccessListener {
+                }.addOnFailureListener {
+                    println("Error al enviar el mensaje: $it")
+                }
+        }
+        navHostController.navigate(AppScreens.Chat.route+"/true"){
         }
     }
 }

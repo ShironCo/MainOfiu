@@ -6,23 +6,25 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -41,16 +43,16 @@ fun ProfileApp(navControllerMain: NavHostController, viewModel: UserClientProfil
 
     Scaffold(
         topBar = {
-            UserProileTopBar(navControllerMain = navControllerMain, expandMenu = expandMenu, viewModel = viewModel)
+            UserProfileTopBar(navControllerMain = navControllerMain, expandMenu = expandMenu, viewModel = viewModel)
         }
     ) {
-        ProfileContent(modifier = Modifier.padding(it))
+        ProfileContent(modifier = Modifier.padding(it), viewModel)
     }
 }
 
 
 @Composable
-fun UserProileTopBar(
+fun UserProfileTopBar(
     navControllerMain: NavHostController,
     expandMenu: Boolean,
     viewModel: UserClientProfileViewModel
@@ -129,53 +131,107 @@ fun UserProileTopBar(
 
 @Composable
 fun ProfileContent(
-    modifier: Modifier
+    modifier: Modifier,
+    viewModel: UserClientProfileViewModel
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.onSurface)
     ) {
-
+        ProfileData(viewModel = viewModel)
     }
 
 
 }
 
 @Composable
-fun ProfileData(){
+fun ProfileData(viewModel: UserClientProfileViewModel) {
+    val context = LocalContext.current
     val imageProfile: String = "0"
-
-    Surface(
-        modifier = Modifier
-            .wrapContentHeight()
-            .width(500.dp),
-        shape = RoundedCornerShape(bottomStartPercent = 50, bottomEndPercent = 50),
-        color = MaterialTheme.colors.background,
-        elevation = 4.dp
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
     ) {
-        Row() {
-            Box(
+        if (it != null) {
+            viewModel.setImageProfile(it)
+            viewModel.updatePhotoProfile(it, context)
+        }
+    }
+    Card(
+        backgroundColor = MaterialTheme.colors.onPrimary,
+        elevation = 4.dp,
+        modifier = Modifier.wrapContentSize()
+    ) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(30))
-                    .size(100.dp)
-                    .background(MaterialTheme.colors.background)
+                    .size(80.dp), contentAlignment = Alignment.Center
             ) {
-                if (imageProfile.toString() != "0") {
-                    AsyncImage(
-                        model = imageProfile, contentDescription = null,
-                        contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null, tint = MaterialTheme.colors.onSurface,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(30))
+                        .size(70.dp)
+                        .background(MaterialTheme.colors.background)
+                ) {
+                    if (imageProfile.toString() != "0") {
+                        AsyncImage(model = imageProfile, contentDescription = null,
+                            contentScale = ContentScale.Crop, modifier = Modifier.clickable {
+                                launcher.launch("image/*")
+                            })
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null, tint = MaterialTheme.colors.onSurface,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clickable {
+                                    launcher.launch("image/*")
+                                })
+                    }
+                }
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(20.dp)
+                            .background(MaterialTheme.colors.onPrimary)
+                            .padding(3.dp)
+                    ) {
+                        Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = null,
+                            tint = MaterialTheme.colors.background)
+                    }
                 }
             }
-            Text(text = "Juan Pablo Forero")
+                Spacer(modifier = Modifier.width(20.dp))
+                Text(
+                    text = "Juan Pablo",
+                    style = MaterialTheme.typography.h2.copy(
+                        fontSize = 20.sp,
+                        shadow = Shadow(
+                            MaterialTheme.colors.secondaryVariant,
+                            Offset(1f, 1f),
+                            blurRadius = 2f
+                        )
+                    )
+                )
+            }
+            Text(
+                text = stringResource(id = R.string.profileWorkerContactTitle),
+                style = MaterialTheme.typography.h2.copy(
+                    fontSize = 18.sp
+                ),
+                color = MaterialTheme.colors.secondaryVariant
+            )
         }
-
     }
 }
+
+

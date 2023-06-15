@@ -16,9 +16,7 @@ import com.example.ofiu.usecases.users.workerUser.profile.ProfileWorkerApp
 import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyWorkerApp
 
 @Composable
-fun DrawerNavGraph(modifier: Modifier,
-                   navController: NavHostController) {
-
+fun DrawerNavGraph(modifier: Modifier, navController: NavHostController, navControllerMain : NavHostController) {
 
     NavHost(
         navController = navController,
@@ -30,7 +28,7 @@ fun DrawerNavGraph(modifier: Modifier,
             ProfileWorkerApp()
         }
         composable(DrawerScreens.Chat.route){
-            ChatWorkerApp()
+            ChatWorkerApp(navControllerMain, "false")
         }
     }
 }

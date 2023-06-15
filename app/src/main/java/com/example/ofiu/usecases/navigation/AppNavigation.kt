@@ -14,9 +14,8 @@ import com.example.ofiu.usecases.session.login.LoginApp
 import com.example.ofiu.usecases.session.register.LegalApp
 import com.example.ofiu.usecases.session.register.RegisterApp
 import com.example.ofiu.usecases.users.clientUser.BottomScreen
-import com.example.ofiu.usecases.users.clientUser.home.HomeApp
-import com.example.ofiu.usecases.users.clientUser.home.HomeContentApp
-import com.example.ofiu.usecases.users.clientUser.home.details.DetailsProfile
+import com.example.ofiu.usecases.users.clientUser.chat.ChatApp
+import com.example.ofiu.usecases.users.clientUser.chat.messages.MessageApp
 import com.example.ofiu.usecases.users.clientUser.home.details.DetailsUserApp
 import com.example.ofiu.usecases.users.workerUser.DrawerScreen
 import com.example.ofiu.usecases.users.workerUser.verifyId.VerifyFaceApp
@@ -82,6 +81,20 @@ fun AppNavigation(){
             id?.let {
                 DetailsUserApp(id, navController)
             }
+        }
+
+        composable(AppScreens.Chat.route+"/{backtopbar}"){
+            ChatApp(navController, it.arguments?.getString("backtopbar"))
+        }
+
+        composable(AppScreens.Messages.route+"/{idUser}/{idPro}/{name}/{image}"){
+            MessageApp(
+                navController,
+                it.arguments?.getString("idUser"),
+                it.arguments?.getString("idPro"),
+                it.arguments?.getString("name"),
+                it.arguments?.getString("image"),
+            )
         }
     }
 }

@@ -9,6 +9,7 @@ sealed class Variables(
     object ImageTrasera : Variables("imageTrasera")
     object ImageFace : Variables("imageFace")
     object IdUser : Variables("id")
+    object IdPro : Variables("idPro")
     object NameUser : Variables("name")
     object EmailUser : Variables("email")
     object PasswordUser : Variables("password")
@@ -16,4 +17,5 @@ sealed class Variables(
     object LoginActive : Variables("active")
     object Verify : Variables("verify")
     object DescriptionPro : Variables("descripcion")
+    object ImageProfile : Variables("imgProfilePro")
 }
