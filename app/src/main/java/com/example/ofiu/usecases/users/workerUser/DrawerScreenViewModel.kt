@@ -35,6 +35,7 @@ class DrawerScreenViewModel @Inject constructor(
         _backHandler.value = value
     }
 
+    // Se eliminan los datos de sesión almacenados en preferencesManager
     fun onCloseSession(navController: NavController){
         preferencesManager.setDataProfile(Variables.EmailUser.title, "")
         preferencesManager.setDataProfile(Variables.PasswordUser.title, "")

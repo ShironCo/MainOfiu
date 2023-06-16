@@ -88,34 +88,43 @@ class ForgotPasswordViewModel @Inject constructor(
     private val _visibilityButton = MutableLiveData<Boolean>()
     val visibilityButton : LiveData<Boolean> = _visibilityButton
 
+    // Actualiza el valor de la contraseña y repetición de contraseña
     fun onTextChangeThree(password: String, passwordRepeat: String){
+
         _password.value = password
         _passwordRepeat.value = passwordRepeat
+        // Verifica si la contraseña es válida y coincide con la repetición de contraseña
         _buttonValidation.value = isValidPassword(password) && (password == passwordRepeat)
     }
 
     private fun isValidPassword(password: String): Boolean {
         val pattern = "^(?=.*[!@#\$%^&*()-+])(?=.{8,})[a-zA-Z0-9!@#\$%^&*()-+]+$".toRegex()
+        // Comprueba si la contraseña cumple con el patrón establecido
         return pattern.matches(password)
     }
 
-     fun onStepChange(){
+    fun onStepChange() {
+        // Invierte el valor actual de _changeStep
         _changeStep.value = _changeStep.value != true
     }
-    fun onVisibilityButton(){
+    fun onVisibilityButton() {
+        // Invierte el valor actual de _visibilityButton
         _visibilityButton.value = _visibilityButton.value != true
     }
-
     fun onSendCode(email:String, code: String, navController: NavController, context: Context){
         _isLoading.value = true
         viewModelScope.launch {
+            // Llama al repositorio para enviar el código de verificación
             repository.sendCode(email, code).onSuccess {
                 if (it.response == "true"){
+                    // Navega a la siguiente pantalla si la respuesta es "true"
                     navController.navigate(AppScreens.ForgotPasswordThree.route + "/$email")
                 }else{
+                    // Muestra un mensaje de error si la respuesta no es "true"
                     Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
                 }
             }.onFailure {
+                // Muestra un mensaje de error en caso de fallo
                 Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
             }
         }
@@ -125,17 +134,21 @@ class ForgotPasswordViewModel @Inject constructor(
     fun onSendNewPassword(email: String, password: String, passwordRepeat: String, context: Context){
         _isLoading.value = true
         viewModelScope.launch {
+            // Llama al repositorio para actualizar la contraseña
             repository.updatePassword(
                 email,
                 password,
                 passwordRepeat
             ).onSuccess {
                 if (it.response == "true"){
+                    // Invoca onStepChange() para cambiar de paso si la respuesta es "true"
                     onStepChange()
                 }else{
+                    // Muestra un mensaje de error si la respuesta no es "true"
                     Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
                 }
             }.onFailure {
+                // Muestra un mensaje de error en caso de fallo
                 Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
             }
         }

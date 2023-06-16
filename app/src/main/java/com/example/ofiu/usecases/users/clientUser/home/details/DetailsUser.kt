@@ -354,20 +354,22 @@ fun LazyRowItems(
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(image) {
-            Card(
-                modifier = Modifier.fillMaxSize(),
-                elevation = 4.dp
-            ) {
-                AsyncImage(
-                    model = it,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(200.dp)
-                        .clickable {
-                            it?.let { imageUri(it) }
-                        },
-                    contentScale = ContentScale.Crop
-                )
+            if (it.toString() != "0") {
+                Card(
+                    modifier = Modifier.fillMaxSize(),
+                    elevation = 4.dp
+                ) {
+                    AsyncImage(
+                        model = it,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clickable {
+                                it?.let { imageUri(it) }
+                            },
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
         }
     }

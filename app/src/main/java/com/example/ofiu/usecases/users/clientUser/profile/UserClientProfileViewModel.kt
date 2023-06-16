@@ -56,6 +56,7 @@ class UserClientProfileViewModel @Inject constructor(
     val imageProfile: LiveData<Uri> = _imageProfile
 
     init {
+        // Se obtienen los datos del perfil desde las preferencias y se asignan a las variables correspondientes
         _nameText.value = preferencesManager.getDataProfile(Variables.NameUser.title)
         _emailText.value = preferencesManager.getDataProfile(Variables.EmailUser.title)
         _phoneText.value = preferencesManager.getDataProfile(Variables.PhoneUser.title)
@@ -63,17 +64,25 @@ class UserClientProfileViewModel @Inject constructor(
     }
 
     fun onOpenDialog(){
+        // Se invierte el valor de la variable _openDialog para mostrar/ocultar un diálogo
         _openDialog.value = _openDialog.value != true
     }
 
     fun onExpandMenu(){
+        // Se invierte el valor de la variable _expandMenu para expandir/contraer un menú
         _expandMenu.value = _expandMenu.value != true
     }
 
     fun setImageProfile(image: Uri) {
+        // Se asigna la imagen de perfil seleccionada a la variable _imageProfile
         _imageProfile.value = image
     }
+
+    // Esta función convierte una Uri en un Bitmap utilizando corutinas para realizar la operación de manera asíncrona
+    // Se utiliza el ImageLoader de Android para cargar la imagen desde la Uri y convertirla en un Bitmap
+    // El resultado se retorna como un objeto Bitmap
     suspend fun bitmapFromUri(uri: Uri, context: Context): Bitmap? {
+
         return withContext(Dispatchers.IO) {
             val imageLoader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
@@ -85,7 +94,10 @@ class UserClientProfileViewModel @Inject constructor(
         }
     }
 
-    //Convertor de URI a bytes
+    // Esta función convierte una Uri en un array de bytes (ByteArray) utilizando corutinas para realizar la operación de manera asíncrona
+    // Primero se obtiene un Bitmap a partir de la Uri utilizando la función bitmapFromUri
+    // Luego se comprime el Bitmap en formato JPEG y se guarda en un OutputStream
+    // Finalmente, se obtienen los bytes del OutputStream y se retornan como un ByteArray
     private suspend fun uriToBytes(uri: Uri, context: Context): ByteArray {
         return withContext(Dispatchers.IO) {
             val bitmap = bitmapFromUri(uri, context)
@@ -95,8 +107,11 @@ class UserClientProfileViewModel @Inject constructor(
         }
     }
 
-    //Funcion para identificar la extension
+    // Esta función obtiene la extensión de un archivo a partir de una Uri utilizando el ContentResolver de Android
+    // Si la Uri tiene el esquema "content", se utiliza el ContentResolver para obtener el tipo MIME y luego se obtiene la extensión correspondiente
+    // Si la Uri tiene otro esquema, se obtiene la extensión a partir de la ruta
     private fun extensionFromUri(uri: Uri, context: Context): String? {
+
         return if (uri.scheme.equals(ContentResolver.SCHEME_CONTENT)) {
             MimeTypeMap.getSingleton()
                 .getExtensionFromMimeType(context.contentResolver.getType(uri))
@@ -106,6 +121,14 @@ class UserClientProfileViewModel @Inject constructor(
             }
         }
     }
+
+    // Esta función actualiza la foto de perfil del usuario
+    // Se obtiene el ID del usuario desde las preferencias y se crea un RequestBody a partir del ID
+    // Se convierte la Uri en un ByteArray utilizando la función uriToBytes
+    // Se obtiene la extensión de la imagen utilizando la función extensionFromUri
+    // Se crea un MultipartBody.Part con el ByteArray convertido y la extensión, representando la imagen
+    // Luego se realiza la llamada al repositorio para actualizar la foto de perfil
+    // Si la operación tiene éxito, se muestra un mensaje de éxito, de lo contrario se muestra un mensaje de error
     fun updatePhotoProfile(uri: Uri, context: Context) {
         viewModelScope.launch {
             val id = preferencesManager.getDataProfile(Variables.IdUser.title, "")
@@ -126,6 +149,10 @@ class UserClientProfileViewModel @Inject constructor(
         }
     }
 
+
+    // Esta función cierra la sesión del usuario
+    // Se borran los datos del perfil de las preferencias
+    // Se navega de regreso a la pantalla de inicio de sesión
     fun onCloseSession(navController: NavController){
         preferencesManager.setDataProfile(Variables.EmailUser.title, "")
         preferencesManager.setDataProfile(Variables.PasswordUser.title, "")
@@ -138,6 +165,7 @@ class UserClientProfileViewModel @Inject constructor(
         navController.navigate(AppScreens.Session.route)
     }
 
+    // Esta función navega a la pantalla de cambio de cuenta
     fun onChangeAccount(navController: NavController){
         navController.popBackStack()
         navController.navigate(AppScreens.Menu.route)

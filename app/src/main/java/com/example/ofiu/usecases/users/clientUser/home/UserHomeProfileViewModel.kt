@@ -28,9 +28,11 @@ class UserHomeProfileViewModel @Inject constructor(
     val isLoading: LiveData<Boolean> = _isLoading
 
     init {
+        // Se obtiene el ID del usuario desde las preferencias
         val id = preferencesManager.getDataProfile(Variables.IdUser.title, "")
         _isLoading.value = true
         viewModelScope.launch {
+            // Se obtienen los usuarios profesionales y se asignan a la lista de usuarios
             repository.getUsersPro(id, "").onSuccess {
                 _users.value = it.users
             }.onFailure {
@@ -41,10 +43,12 @@ class UserHomeProfileViewModel @Inject constructor(
     }
 
     fun onSearchButton(search: String) {
+        // Se obtiene el ID del usuario desde las preferencias
         val id = preferencesManager.getDataProfile(Variables.IdUser.title, "")
         _isLoading.value = true
         search.let {
                 viewModelScope.launch {
+                    // Se obtienen los usuarios profesionales según el término de búsqueda y se asignan a la lista de usuarios
                     repository.getUsersPro(id, it).onSuccess {
                         _users.postValue(it.users)
                         println(it.users)
@@ -57,6 +61,7 @@ class UserHomeProfileViewModel @Inject constructor(
     }
 
     fun onTextChange(searchString: String) {
+        // Se actualiza el valor de búsqueda cuando se cambia el texto en el campo de búsqueda
         _searchString.value = searchString
     }
 }

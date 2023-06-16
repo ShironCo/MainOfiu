@@ -109,18 +109,6 @@ fun Entry(navController: NavController){
                             style = MaterialTheme.typography.h3,
                             color = MaterialTheme.colors.primaryVariant)
                     }
-//                    Spacer(modifier = Modifier.height(40.dp))
-//                    Text(stringResource(id = R.string.loginapp),
-//                        style = MaterialTheme.typography.body1,
-//                        color = MaterialTheme.colors.secondaryVariant)
-//                    Spacer(modifier = Modifier.height(20.dp))
-//                    Row() {
-//                        Image(painter = painterResource(id = R.drawable.google___original),
-//                          contentDescription = "Logo de Google")
-//                        Spacer(modifier = Modifier.width(1.dp))
-//                        Image(painter = painterResource(id = R.drawable.facebook___original),
-//                            contentDescription = "Logo de Google")
-//                    }
                 }
             }
         }

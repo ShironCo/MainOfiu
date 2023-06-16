@@ -24,17 +24,30 @@ class MenuViewModel @Inject constructor(
 
     fun onChangeUser(user : String, context: Context, navController: NavHostController){
         viewModelScope.launch {
+
+            // Obtener el ID de usuario almacenado en las preferencias compartidas
             val id = preferencesManager.getDataProfile(Variables.IdUser.title, "")
+
+            // Llamar a la función changeUser del repositorio para cambiar el usuario
             repository.changeUser(user = UserRequest(id, user)).onSuccess {
+
+                // El tipo de respuesta es "cliente", navegar a la pantalla BottomBarScreen
+                // usando el NavController
                 if (it.response == "cliente"){
+                    // El tipo de respuesta no es "cliente", navegar a la pantalla DrawerScreen
+                    // usando el NavController
                     navController.popBackStack()
                     navController.navigate(AppScreens.BottomBarScreen.route)
                 }else{
+
+                    // Guardar el valor de respuesta en las preferencias compartidas
                     navController.popBackStack()
                     navController.navigate(AppScreens.DrawerScreen.route)
                 }
                 preferencesManager.setDataProfile(Variables.Verify.title, it.response)
             }.onFailure {
+                // Ocurrió un error, mostrar un mensaje de error utilizando un Toast
+
                 Toast.makeText(context, "Ha ocurrido un error", Toast.LENGTH_LONG).show()
             }
         }

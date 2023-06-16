@@ -35,27 +35,33 @@ class SplashViewModel @Inject constructor(
 
 
     fun setStartAnimation(value : Boolean){
+        // Establece el valor de _startAnimation
         _startAnimation.value = value
     }
 
     fun setNav (navController: NavHostController, context: Context) {
+        // Obtiene el correo electrónico, la contraseña y el estado del inicio de sesión almacenados en las preferencias
         val email = preferencesManager.getDataProfile(Variables.EmailUser.title)
         val password = preferencesManager.getDataProfile(Variables.PasswordUser.title)
         val loginChange = preferencesManager.getDataProfile(Variables.LoginActive.title)
             if (email.isNotBlank() && password.isNotBlank() && loginChange == "true") {
                 viewModelScope.launch {
+                    // Realiza una llamada al repositorio para iniciar sesión con el correo electrónico y la contraseña almacenados
                     repository.loginUser(LoginUserRequest(email, password)).onSuccess {
                         if (it.successful == "true") {
+                            // Si el inicio de sesión es exitoso, navega a la pantalla del menú
                             navController.popBackStack()
                             navController.navigate(AppScreens.Menu.route)
                         }
                     }.onFailure {
+                        // Si ocurre un error durante el inicio de sesión, muestra un mensaje de error y navega a la pantalla del menú
                         Toast.makeText(context, "Ha ocurrido un error", Toast.LENGTH_LONG).show()
                         navController.popBackStack()
                         navController.navigate(AppScreens.Menu.route)
                     }
                 }
             } else {
+                // Si no se encuentra un correo electrónico o contraseña almacenados o el inicio de sesión está desactivado, navega a la pantalla de sesión
                 navController.popBackStack()
                 navController.navigate(AppScreens.Session.route)
             }

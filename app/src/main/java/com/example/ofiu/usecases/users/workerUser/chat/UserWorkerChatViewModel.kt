@@ -35,7 +35,7 @@ class UserWorkerChatViewModel @Inject constructor(
 
     private val chatCollectionsRefInfor = db.collection(_idRecibe).orderBy("lastMinute", Query.Direction.DESCENDING)
 
-
+    // Se crea una referencia a la colección de chats del usuario actual (_idRecibe) ordenada por el campo "lastMinute" en orden descendente
     init {
         val chatQuery = chatCollectionsRefInfor
         chatQuery.addSnapshotListener { snapshot, exception ->
@@ -43,6 +43,8 @@ class UserWorkerChatViewModel @Inject constructor(
                 println("Ocurrió un error al obtener los mensajes: $exception")
                 return@addSnapshotListener
             }
+
+            // Se obtienen los datos de los chats desde el snapshot
             val listChats = snapshot?.mapNotNull {
                 val name = it.getString("name")
                 val previewMessage = it.getString("previewMessage")
@@ -63,6 +65,10 @@ class UserWorkerChatViewModel @Inject constructor(
                 } else {
                     ""
                 }
+
+                // Se verifica que los datos obtenidos no sean nulos y se asignan a las variables correspondientes
+                // También se crea un objeto Chats a partir de los datos obtenidos
+                // Si algún dato es nulo, se retorna null para ser filtrado más adelante
                 if (name != null
                     && previewMessage != null
                     && imageProfile != null
@@ -84,6 +90,7 @@ class UserWorkerChatViewModel @Inject constructor(
                     null
                 }
             }.orEmpty().toMutableList()
+            // Se actualiza el valor de _chats con la lista de chats obtenida
             _chats.value = listChats
         }
     }
@@ -94,8 +101,10 @@ class UserWorkerChatViewModel @Inject constructor(
         name: String,
         imageProfile: String
     ) {
+        // Cuando se hace clic en un chat, se obtienen los datos necesarios para la navegación a la pantalla de mensajes
         val idUser = _idEnvia.value
         val image = imageProfile.replace("/", "-")
+        // Se navega a la pantalla de mensajes con los parámetros proporcionados
         navHostController.navigate(AppScreens.Messages.route + "/$idPro/$idUser/$name/$image/$idUser")
     }
 

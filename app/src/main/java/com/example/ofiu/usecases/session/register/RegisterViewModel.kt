@@ -79,23 +79,30 @@ class RegisterViewModel @Inject constructor(
         password: String,
         passwordRepeat: String
     ) {
+        // Actualiza los valores de los campos de entrada
         _name.value = name
         _lastName.value = lastName
         _email.value = email
         _phone.value = phone
         _password.value = password
         _passwordRepeat.value = passwordRepeat
+
+        // Valida los campos de contraseña y repetición de contraseña
         _passwordEnable.value = isValidPassword(password)
         _passwordVal.value = isValidPasswordRepeat(password, passwordRepeat)
+
+        // Verifica si los datos ingresados son válidos
         _validButton.value = isValidData(name, lastName, email, phone, password, passwordRepeat)
     }
 
     private fun isValidPassword(password: String): Boolean {
         val pattern = """^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$""".toRegex()
+        // Comprueba si la contraseña cumple con el patrón establecido
         return pattern.matches(password)
     }
 
     private fun isValidPasswordRepeat(password: String, passwordRepeat: String): Boolean {
+        // Verifica si la contraseña y la repetición de contraseña coinciden
         return (password == passwordRepeat)
     }
 
@@ -107,6 +114,7 @@ class RegisterViewModel @Inject constructor(
         password: String,
         passwordRepeat: String
     ): Boolean {
+        // Verifica si todos los campos de datos son válidos
         return (name.isNotBlank() && lastName.isNotBlank()
                 && email.isNotBlank() && phone.isNotBlank()
                 && password.isNotBlank()
@@ -115,6 +123,7 @@ class RegisterViewModel @Inject constructor(
     }
 
     fun onVisibility() {
+        // Invierte el valor actual de _visibility
         _visibility.value = _visibility.value != true
     }
 
@@ -132,14 +141,17 @@ class RegisterViewModel @Inject constructor(
             val user = RegisterUserRequest(
                 name, lastName, email, phone, password
             )
+            // Llama al repositorio para agregar un nuevo usuario
             repository.addUser(user).onSuccess {
                 _response.value = it
                 if (it.response == "true"){
                     delay(4000)
+                    // Navega a la pantalla de sesión si la respuesta es "true"
                     navHostController.popBackStack()
                     navHostController.navigate(AppScreens.Session.route)
                 }
             }.onFailure {
+                // Muestra un mensaje de error en caso de fallo
                 _response.value = UserResponse("Es un error $it")
             }
             _isLoading.value = false

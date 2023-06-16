@@ -27,6 +27,8 @@ import javax.inject.Singleton
 @Module
 object Module {
 
+    // Proporciona una instancia de OfiuApi para la comunicación con el servidor de Ofiu
+
     @Provides
     @Singleton
     fun provideOfiuApi(): OfiuApi {
@@ -37,6 +39,8 @@ object Module {
                 OkHttpClient.Builder().build()
             ).build().create(OfiuApi::class.java)
     }
+
+    // Proporciona una instancia de ChatGptApi para la comunicación con el servidor de ChatGpt
 
     @Provides
     @Singleton
@@ -51,6 +55,7 @@ object Module {
                 .build()).build().create()
     }
 
+    // Proporciona una instancia de OfiuRepository con todas las dependencias necesarias
 
     @Provides
     @Singleton
@@ -72,6 +77,7 @@ object Module {
         )
     }
 
+    // Proporciona una instancia de ProcessCameraProvider utilizando la instancia de la aplicación
 
     @Provides
     @Singleton
@@ -79,11 +85,15 @@ object Module {
         return ProcessCameraProvider.getInstance(application).get()
     }
 
+    // Proporciona una instancia de Preview.Builder para la vista previa de la cámara
+
     @Provides
     @Singleton
     fun provideCameraPreview(): Preview {
         return Preview.Builder().build()
     }
+
+    // Proporciona una instancia de ImageCapture.Builder para capturar imágenes de la cámara
 
     @Provides
     @Singleton
@@ -91,6 +101,9 @@ object Module {
         return ImageCapture.Builder()
             .build()
     }
+
+
+    // Proporciona una instancia de ImageAnalysis.Builder para analizar imágenes de la cámara
 
     @Provides
     @Singleton

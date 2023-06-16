@@ -15,6 +15,8 @@ import okhttp3.RequestBody
 import retrofit2.http.Part
 
 interface OfiuRepository {
+
+    // Funciones relacionadas con usuarios
     suspend fun addUser(user: RegisterUserRequest): Result<UserResponse>
     suspend fun loginUser(user: LoginUserRequest): Result<LoginResponse>
     suspend fun changeUser(user: UserRequest): Result<UserResponse>
@@ -29,6 +31,9 @@ interface OfiuRepository {
     suspend fun updatePassword(email: String, password: String, passwordRepeat: String): Result<UserResponse>
     suspend fun sendCode(email: String, code: String): Result<UserResponse>
     suspend fun reportUser(idprof: String, iduser: String, deta:String): Result<UserResponse>
+
+    // Funciones relacionadas con la galería de imágenes
+
     suspend fun updatePhotoProfile(
         id: RequestBody,
         image: MultipartBody.Part
@@ -44,13 +49,16 @@ interface OfiuRepository {
         images: Array<MultipartBody.Part>
     ): Result<UserResponse>
 
-    //Repository Camera
+    // Funciones relacionadas con la cámara
+
     suspend fun captureImage(): ImageCapture
     suspend fun showCameraPreview(
         previewView: PreviewView,
         lifecycleOwner: LifecycleOwner,
         cameraFacing: Boolean
     )
+
+    // Funciones relacionadas con la comunicación con GPT
 
     suspend fun promptGpt(prompt: String): Result<GptResponseDto>
     suspend fun getTags(prompt: String): Result<GptResponseDto>

@@ -24,46 +24,58 @@ class LoginViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager,
 ) : ViewModel() {
 
+    // LiveData para almacenar la respuesta del inicio de sesión
     private val _response = MutableLiveData<LoginResponse>()
     val response: LiveData<LoginResponse> = _response
 
+    // LiveData para almacenar el valor del campo de correo electrónico
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
 
+    // LiveData para almacenar el valor del campo de contraseña
     private val _password = MutableLiveData<String>()
     val password: LiveData<String> = _password
 
+    // LiveData para habilitar o deshabilitar la navegación hacia atrás
     private val _backEnable = MutableLiveData<Boolean>()
     val backEnable: LiveData<Boolean> = _backEnable
 
+    // LiveData para controlar la visibilidad del botón de inicio de sesión
     private val _visibilityButton = MutableLiveData<Boolean>()
     val visibilityButton: LiveData<Boolean> = _visibilityButton
 
+    // LiveData para controlar la visualización del indicador de carga
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    // LiveData para habilitar o deshabilitar el botón de inicio de sesión
     private val _buttonValid = MutableLiveData<Boolean>()
     val buttonValid: LiveData<Boolean> = _buttonValid
 
 
+    // Función para manejar los cambios en los campos de correo electrónico y contraseña
     fun onTextLoginChange(email: String, password: String) {
         _email.value = email
         _password.value = password
         _buttonValid.value = validData(email, password)
     }
 
+    // Función para validar los datos de inicio de sesión
     fun validData(email: String, password: String): Boolean {
         return (email.isNotBlank() && password.isNotBlank())
     }
 
+    // Función para deshabilitar la navegación hacia atrás
     fun onBackEnable() {
         _backEnable.value = false
     }
 
+    // Función para controlar la visibilidad del botón de contraseña
     fun onVisibilityButton() {
         _visibilityButton.value = _visibilityButton.value != true
     }
 
+    // Función para realizar la operación de inicio de sesión
     fun onLoginSelected(
         email: String,
         password: String,
@@ -75,8 +87,10 @@ class LoginViewModel @Inject constructor(
         _buttonValid.value = false
         viewModelScope.launch {
             repository.loginUser(LoginUserRequest(email, password)).onSuccess {
+                // La solicitud de inicio de sesión fue exitosa
                 _response.value = it
                 if (_response.value?.successful.contentEquals("true")) {
+                    // Inicio de sesión exitoso, realizar acciones adicionales
                     _password.value = ""
                     focusManager.clearFocus()
                     navController.popBackStack()

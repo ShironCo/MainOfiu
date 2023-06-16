@@ -33,10 +33,11 @@ class UserChatViewModel @Inject constructor(
 
     val chats: LiveData<List<Chats>> = _chats
 
-
+// Referencia a la colección de chats en Firestore
     private val chatCollectionsRefInfor = db.collection(_idEnvia)
 
     init {
+        // Se realiza una consulta a la colección de chats y se establece un listener para obtener los mensajes en tiempo real
         val chatQuery = chatCollectionsRefInfor
         chatQuery.addSnapshotListener { snapshot, exception ->
             if (exception != null) {
@@ -50,6 +51,7 @@ class UserChatViewModel @Inject constructor(
                 val idRecibe = it.getString("idRecibe")
                 val idEnvia = it.getString("idEnvia")
                 val lastMinute = it.getTimestamp("lastMinute")
+                // Se formatea la fecha del último mensaje para mostrarla en un formato específico
                 val fecha = if (lastMinute != null) {
                     val milliseconds = lastMinute.toDate().time
                     val date = Date(milliseconds)
@@ -63,6 +65,7 @@ class UserChatViewModel @Inject constructor(
                 } else {
                     ""
                 }
+                // Se verifica si todos los datos necesarios están presentes para construir el objeto Chats
                 if (name != null
                     && previewMessage != null
                     && imageProfile != null
@@ -100,6 +103,7 @@ class UserChatViewModel @Inject constructor(
         println(imageProfile)
         val image = imageProfile.replace("/", "-")
         println(idPro)
+        // Se navega a la pantalla de mensajes con los parámetros necesarios
         navHostController.navigate(AppScreens.Messages.route + "/$idUser/$idPro/$name/$image/$idUser")
     }
 

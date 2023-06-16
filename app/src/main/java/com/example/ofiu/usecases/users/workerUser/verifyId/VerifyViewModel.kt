@@ -214,32 +214,43 @@ class VerifyViewModel @Inject constructor(
 
     fun onSendImages(navController: NavHostController, context: Context) {
         _validButtonId.value = true
-        val uri : List<Uri> = listOf(
-            preferencesManager.getDataProfile(Variables.ImageFrontal.title).toUri(),
-            preferencesManager.getDataProfile(Variables.ImageTrasera.title).toUri(),
-            preferencesManager.getDataProfile(Variables.ImageFace.title).toUri(),
-        )
         viewModelScope.launch {
-                val id = preferencesManager.getDataProfile(Variables.IdUser.title)
-                val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
-                val list: List<MultipartBody.Part> = locationToMultipart(uri, context)
-                val array = list.toTypedArray()
-                repository.sendImage(requestBody, array).onSuccess {
-                    if (it.response == "Fotos subidas" ){
-                        onCleanImages()
-                        _showAlertDialog.value = 1
-                        delay(4000)
-                        navController.popBackStack()
-                        println(it.response)
-                    }else if (it.response == "Tu verificación ya se encuentra en proceso."){
-                        Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
-                        onCleanImages()
-                        navController.popBackStack()
-                        println(it.response)
-                    }
-                }.onFailure {
-                    Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+            val uri: List<Uri> = listOf(
+                preferencesManager.getDataProfile(Variables.ImageFrontal.title).toUri(),
+                preferencesManager.getDataProfile(Variables.ImageTrasera.title).toUri(),
+                preferencesManager.getDataProfile(Variables.ImageFace.title).toUri(),
+            )
+            sendVerify(navController, context, uri)
+            navController.popBackStack()
+        }
+    }
+
+    private suspend fun sendVerify(
+        navHostController: NavHostController,
+        context: Context,
+        uri: List<Uri>
+    ) {
+        withContext(Dispatchers.IO) {
+            val id = preferencesManager.getDataProfile(Variables.IdUser.title)
+            val requestBody = id.toRequestBody("text/plain".toMediaTypeOrNull())
+            val list: List<MultipartBody.Part> = locationToMultipart(uri, context)
+            val array = list.toTypedArray()
+            repository.sendImage(requestBody, array).onSuccess {
+                if (it.response == "Tu verificacion ya se encuentra en proceso.") {
+                    Toast.makeText(context, it.response, Toast.LENGTH_LONG).show()
+                    onCleanImages()
+                    navHostController.popBackStack()
+                    println(it.response)
+                } else {
+//                    println(it.response)
+//                    onCleanImages()
+//                    delay(4000)
+//                    navHostController.popBackStack()
+//                    println(it.response)
                 }
+            }.onFailure {
+                Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
