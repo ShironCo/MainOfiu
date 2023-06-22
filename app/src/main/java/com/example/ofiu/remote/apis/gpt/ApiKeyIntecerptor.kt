@@ -1,5 +1,6 @@
 package com.example.ofiu.remote.apis.gpt
 
+import com.example.ofiu.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -12,7 +13,7 @@ class ApiKeyInterceptor: Interceptor {
 
         // Agregar el encabezado de autorización a la solicitud con la clave de API
 
-        request.addHeader("Authorization", "Bearer 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")
+        request.addHeader("Authorization", "Bearer ${BuildConfig.API_KEY}")
 
         // Proceder con la cadena de interceptores y devolver la respuesta modificada
         return chain.proceed(request.build())
