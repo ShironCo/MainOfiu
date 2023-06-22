@@ -5,7 +5,7 @@
     <string name="register">Registrarse</string>
     <string name="loginapp">─── O conectate usando ───</string>
     <string name="forgotPass">¿Olvidaste la contraseña?</string>
-    <string name="valPass">La contraseña debe tener una longitud mínima de 8 caracteres y además debe incluir al menos un carácter especial, mayúscula y minúscula.</string>
+    <string name="valPass">La contraseña debe tener una longitud mínima de 8 caracteres y además debe incluir al menos un carácter especial (@,%,!,?,&amp;), mayúscula y minúscula.</string>
     <string name="policy">Para poder continuar con el proceso, es necesario que aceptes los siguientes términos y condiciones.</string>
     <string name="policyTitle">Políticas Legales</string>
     <string name="termAndConditions">Términos y condiciones</string>
